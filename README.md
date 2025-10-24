@@ -14,4 +14,8 @@ Contributing
 "endOfLine": "auto"
 }
 
--Recommended to install all 3 VSCode extensions
+-Recommended to install all 3 VSCode extensions:
+https://marketplace.visualstudio.com/items?itemName=rvest.vs-code-prettier-eslint
+
+-Following AirBNB Javascript style guide at:
+https://airbnb.io/javascript/react
