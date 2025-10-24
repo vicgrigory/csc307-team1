@@ -3,9 +3,8 @@ import Table from "./Table";
 import Form from "./Form";
 
 function MyApp() {
- 
   const [characters, setCharacters] = useState([]);
- 
+
   function removeOneCharacter(index) {
     const userToDelete = characters[index];
 
@@ -18,35 +17,35 @@ function MyApp() {
     }).then(() => {
       setCharacters((prev) => prev.filter((_, i) => i !== index));
     });
-
-
   }
 
-  function updateList(person) { 
+  function updateList(person) {
     postUser(person)
       .then((res) => res.json())
       .then((data) => setCharacters([...characters, data]))
       .catch((error) => {
         console.log(error);
-      })
-  }  
+      });
+  }
 
   function fetchUsers() {
     const promise = fetch("http://localhost:8000/users");
     return promise;
   }
-    
+
   useEffect(() => {
     fetchUsers()
-	  .then((res) => res.json())
-	  .then((json) => {
-      if (!Array.isArray(json)) {
-        json = [json];
-      }
-      setCharacters(json)
-    })
-	  .catch((error) => { console.log(error); });
-  }, [] );
+      .then((res) => res.json())
+      .then((json) => {
+        if (!Array.isArray(json)) {
+          json = [json];
+        }
+        setCharacters(json);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   function postUser(person) {
     const promise = fetch("http://localhost:8000/users", {
@@ -60,17 +59,11 @@ function MyApp() {
   }
 
   return (
-  <div className="container">
-    <Table
-      characterData={characters}
-      removeCharacter={removeOneCharacter}
-    />
-    <Form handleSubmit={updateList} />
-  </div>
+    <div className="container">
+      <Table characterData={characters} removeCharacter={removeOneCharacter} />
+      <Form handleSubmit={updateList} />
+    </div>
   );
-
-
 }
-
 
 export default MyApp;

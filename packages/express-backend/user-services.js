@@ -40,7 +40,7 @@ function findUserByName(name) {
   return userModel.find({ name: name });
 }
 
-function deleteByID(_id){
+function deleteByID(_id) {
   return userModel.findByIdAndDelete(_id);
 }
 

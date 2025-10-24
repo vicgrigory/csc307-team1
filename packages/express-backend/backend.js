@@ -7,48 +7,41 @@ const port = 8000;
 app.use(cors());
 app.use(express.json());
 
+const findUserById = (_id) => userServices.findUserById(_id);
 
-const findUserById = (_id) =>
-  userServices.findUserById(_id);
+const addUser = (user) => userServices.addUser(user);
 
-const addUser = (user) => 
-  userServices.addUser(user);
+const getUsers = (name, job) => userServices.getUsers(name, job);
 
-const getUsers = (name, job) =>
-  userServices.getUsers(name, job);
+const findUserByName = (name) => userServices.findUserByName(name);
 
-const findUserByName = (name) =>
-  userServices.findUserByName(name); 
-
-const deleteByID = (_id) =>
-  userServices.deleteByID(_id);
-
+const deleteByID = (_id) => userServices.deleteByID(_id);
 
 app.get("/users/:id", (req, res) => {
   const _id = req.params["_id"];
   findUserById(_id)
-    .then(result => {
+    .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
       } else {
         res.send(result);
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send("Internal Server Error.");
     });
 });
 
 app.delete("/users", (req, res) => {
   deleteByID(req.body._id)
-    .then(result => {
+    .then((result) => {
       if (result === null) {
         res.status(404).send("Resource not found.");
       } else {
         res.status(204).send();
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send("Internal Server Error.");
     });
 });
@@ -56,8 +49,8 @@ app.delete("/users", (req, res) => {
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd)
-  .then((user) => res.status(201).send(user))
-  .catch((err) => res.status(500).send("Internal Server Error: " + err));
+    .then((user) => res.status(201).send(user))
+    .catch((err) => res.status(500).send("Internal Server Error: " + err));
 });
 
 app.get("/users", (req, res) => {
@@ -66,9 +59,6 @@ app.get("/users", (req, res) => {
     .catch((err) => res.status(500).send("Internal Server Error: " + err));
 });
 
-
 app.listen(port, () => {
-  console.log(
-    `Example app listening at http://localhost:${port}`
-  );
+  console.log(`Example app listening at http://localhost:${port}`);
 });
