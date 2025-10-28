@@ -1,25 +1,31 @@
 import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
+const WebUserSchema = new mongoose.Schema(
+    { //_id is primary key
+    username: {
+        type: String,
+        required: [true, "Enter a unique username."],
+        unique: true,
+        immutable: true // Change to false if we want to change usernames
     },
-    job: {
-      type: String,
-      required: true,
-      trim: true,
-      validate(value) {
-        if (value.length < 2)
-          throw new Error("Invalid job, must be at least 2 characters.");
-      },
+    creation: { // Do not specify
+        type: Date,
+        default: Date.now(),
+        immutable: true
     },
-  },
-  { collection: "users_list" },
+    about: {
+        type: String
+    },
+    profile: {
+        type: String
+    },
+    favorites: {
+        type: [Schema.Types.ObjectID],
+        ref: 'File'
+    }
+    }
 );
 
-const User = mongoose.model("User", UserSchema);
+const WebUser = mongoose.model("WebUser", WebUserSchema, 'data');
 
-export default User;
+export default WebUser;
