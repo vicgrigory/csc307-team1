@@ -21,7 +21,8 @@ const WebUserSchema = new mongoose.Schema(
     },
     favorites: {
         type: [Schema.Types.ObjectID],
-        ref: 'File'
+        ref: 'File',
+        default: []
     }
     }
 );

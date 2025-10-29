@@ -1,58 +1,53 @@
 import mongoose from "mongoose";
-import userModel from "./example_user.js";
+import userModel from "./user.js";
 
 mongoose.set("debug", true);
 
-mongoose
-  .connect("mongodb://localhost:27017/users", {
+mongoose.connect("mongodb://localhost:27017/users", {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .catch((error) => console.log(error));
+    useUnifiedTopology: true
+}).catch((error) => console.log(error));
 
-function getUsers(name, job) {
-  let promise;
-  if (name === undefined && job === undefined) {
-    promise = userModel.find();
-  } else if (name && !job) {
-    promise = findUserByName(name);
-  } else if (job && !name) {
-    promise = findUserByJob(job);
-  }
-  return promise;
+function createUser(username) { // if we add a password, it should be hashed by this point
+    const userToAdd = new userModel({ username: username });
+    const promise = userToAdd.save();
+    return promise;
 }
 
-function findUserById(id) {
-  return userModel.findById(id);
+function editUser(_id, username, about, profile) {
+    return userModel.findOne({ _id: _id }).updateOne({ username: username, about: about, profile: profile });
 }
 
-function findUserbyNameAndJob(name, job) {
-  return userModel.find({ name: name, job: job });
+function getUser(username) {
+    return userModel.findOne({ username: username });
 }
 
-function addUser(user) {
-  const userToAdd = new userModel(user);
-  const promise = userToAdd.save();
-  return promise;
+function addFavorite(username, fileID, ...list) {
+    if (!list.includes(fileID)) {
+        listAdded = list.concat(fileID);
+        return userModel.findOne({ username: username }).updateOne({ favorites: listAdded });
+    }
+    return 0; // no action taken, item already in favorites
 }
 
-function findUserByName(name) {
-  return userModel.find({ name: name });
+function removeFavorite(username, fileID, ...list) {
+    const index = list.indexOf(fileID);
+    if (index > -1) {
+        list.splice(index, 1); // id like to do this w/o modifying the original array
+        return userModel.findOne({ username: username }).updateOne({ favorites: list });
+    }
+    return 1;
 }
 
-function deleteByID(_id) {
-  return userModel.findByIdAndDelete(_id);
+function deleteMyUser(_id) { // how to handle things made by removed users? can we null their data so theyre not technically removed from the db?
+    //log out
+    return userModel.findByIdAndDelete(_id);
 }
 
-function findUserByJob(job) {
-  return userModel.find({ job: job });
+function deleteOtherUser(_id) { // need to add mod column in user table
+    return userModel.findByIdAndDelete(_id);
 }
 
 export default {
-  addUser,
-  getUsers,
-  findUserById,
-  findUserByName,
-  findUserByJob,
-  deleteByID,
+    createUser, editUser, deleteMyUser, deleteOtherUser, getUser, addFavorite, removeFavorite
 };
