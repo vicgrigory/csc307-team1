@@ -4,8 +4,8 @@ import userModel from "./user.js";
 mongoose.set("debug", true);
 
 mongoose.connect("mongodb://localhost:27017/users", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+    //useNewUrlParser: true,
+    //useUnifiedTopology: true
 }).catch((error) => console.log(error));
 
 function createUser(username) { // if we add a password, it should be hashed by this point
@@ -39,9 +39,9 @@ function removeFavorite(username, fileID, ...list) {
     return 1;
 }
 
-function deleteMyUser(_id) { // how to handle things made by removed users? can we null their data so theyre not technically removed from the db?
+function deleteMyUser(username) { // how to handle things made by removed users? can we null their data so theyre not technically removed from the db?
     //log out
-    return userModel.findByIdAndDelete(_id);
+    return userModel.findOneAndDelete({ username: username });
 }
 
 function deleteOtherUser(_id) { // need to add mod column in user table

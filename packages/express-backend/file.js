@@ -17,7 +17,7 @@ const FileSchema = new mongoose.Schema(
         type: Date
     },
     userID: {
-        type: Schema.Types.ObjectID,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'WebUser',
         required: [true, "A valid username was not given."],
         immutable: true

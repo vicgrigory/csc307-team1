@@ -6,7 +6,7 @@ const WebUserSchema = new mongoose.Schema(
         type: String,
         required: [true, "Enter a unique username."],
         unique: true,
-        immutable: true // Change to false if we want to change usernames
+        immutable: false // Change to true if we want to lock usernames
     },
     creation: { // Do not specify
         type: Date,
@@ -14,13 +14,15 @@ const WebUserSchema = new mongoose.Schema(
         immutable: true
     },
     about: {
-        type: String
+        type: String,
+        default: ""
     },
     profile: {
-        type: String
+        type: String,
+        default: ""
     },
-    favorites: {
-        type: [Schema.Types.ObjectID],
+    favorites: { // Do not specify
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'File',
         default: []
     }
