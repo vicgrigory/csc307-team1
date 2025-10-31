@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
 import userModel from "./user.js";
 
+dotenv.config();
 mongoose.set("debug", true);
 
-mongoose.connect("mongodb://localhost:27017/users", {
+mongoose.connect(process.env.MONGODB_URI, {
     //useNewUrlParser: true,
     //useUnifiedTopology: true
 }).catch((error) => console.log(error));
@@ -12,6 +14,14 @@ function createUser(username) { // if we add a password, it should be hashed by 
     const userToAdd = new userModel({ username: username });
     const promise = userToAdd.save();
     return promise;
+}
+
+function setAsModerator(username) {
+    return userModel.findOne({ username: username }).updateOne({ type: 'moderator' });
+}
+
+function setAsRegular(username) {
+    return userModel.findOne({ username: username }).updateOne({ type: 'regular' });
 }
 
 function editUser(_id, username, about, profile) {
@@ -40,14 +50,18 @@ function removeFavorite(username, fileID, ...list) {
 }
 
 function deleteMyUser(username) { // how to handle things made by removed users? can we null their data so theyre not technically removed from the db?
-    //log out
+    //log out user as well
     return userModel.findOneAndDelete({ username: username });
 }
 
-function deleteOtherUser(_id) { // need to add mod column in user table
-    return userModel.findByIdAndDelete(_id);
+function deleteOtherUser(_modId, _deleteId) { // need to add mod column in user table
+    const mod = userModel.findOne({ _id: _modId });
+    if (mod.type == 'moderator') {
+        return userModel.findByIdAndDelete(_id);
+    }
+    return 401; // Not authorized
 }
 
 export default {
-    createUser, editUser, deleteMyUser, deleteOtherUser, getUser, addFavorite, removeFavorite
+    createUser, editUser, deleteMyUser, deleteOtherUser, getUser, addFavorite, removeFavorite, setAsModerator, setAsRegular
 };

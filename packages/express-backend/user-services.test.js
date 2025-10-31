@@ -1,16 +1,39 @@
-import dotenv from 'dotenv';
+
 import userStuff from './user-services.js';
 import user from './user.js';
-dotenv.config();
+
 
 /* Initialization */
-beforeAll(() => {
-    teardownDB();
-    setupDB();
+beforeAll(async () => {
+    await teardownDB();
+    await setupDB();
 })
-afterAll(() => {
-    teardownDB();
+afterAll(async () => {
+    await teardownDB();
 })
+
+/* Functions */
+async function setupDB() {
+    await user.insertMany([
+        {
+            username: "help",
+            about: "i am cool",
+            profile: "heehee"
+        },
+        {
+            username: "criminal",
+            about: "hackermans"
+        },
+        {
+            username: "regular user",
+            about: "i am a completely legal and cool user",
+            profile: "pretend we have a link here"
+        }
+    ]);
+};
+async function teardownDB() {
+    await user.deleteMany();
+};
 
 /* Tests */
 // createUser
@@ -53,6 +76,21 @@ test("Edit user: regular use, about only", async () => {
     const user = await userStuff.getUser("epic username");
     await expect(userStuff.editUser(user._id, user.username, user.about, "cool new profile pic")).resolves.toBeDefined();
 });
+// setAsModerator + setAsRegular
+test("Set moderator: regular use", async () => {
+    const cool = await expect(userStuff.setAsModerator("epic username"));
+    expect(cool).toBeDefined();
+    console.log(cool);
+});
+test("Set moderator: nonexistent user", async () => {
+
+});
+test("Remove moderator: regular use", async () => {
+
+});
+test("Remove moderator: nonexistent user", async () => {
+
+});
 // deleteMyUser
 test("Delete user by username: regular use", async () => {
 
@@ -64,26 +102,3 @@ test("Delete user by username: nonexistent", async () => {
 
 });
 // deleteOtherUser
-
-/* Functions */
-async function setupDB() {
-    await user.insertMany([
-        {
-            username: "help",
-            about: "i am cool",
-            profile: "heehee"
-        },
-        {
-            username: "criminal",
-            about: "hackermans"
-        },
-        {
-            username: "regular user",
-            about: "i am a completely legal and cool user",
-            profile: "pretend we have a link here"
-        }
-    ]);
-};
-async function teardownDB() {
-    await user.deleteMany({ });
-}

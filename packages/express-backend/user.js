@@ -8,6 +8,11 @@ const WebUserSchema = new mongoose.Schema(
         unique: true,
         immutable: false // Change to true if we want to lock usernames
     },
+    type: {
+        type: String,
+        enum: ['regular', 'moderator'],
+        default: 'regular'
+    },
     creation: { // Do not specify
         type: Date,
         default: Date.now(),
