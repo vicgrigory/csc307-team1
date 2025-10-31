@@ -4,15 +4,20 @@
   "type": "module",
   "main": "backend.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --detectOpenHandles",
     "dev": "npx nodemon backend.js",
     "start": "node backend.js"
+  },
+  "jest": {
+    "transform": {}
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jest": "^30.2.0"
   }
 }
