@@ -1,4 +1,5 @@
 
+import userServices from './user-services.js';
 import userStuff from './user-services.js';
 import user from './user.js';
 
@@ -11,7 +12,6 @@ beforeAll(async () => {
 afterAll(async () => {
     await teardownDB();
 })
-
 /* Functions */
 async function setupDB() {
     await user.insertMany([
@@ -25,9 +25,20 @@ async function setupDB() {
             about: "hackermans"
         },
         {
-            username: "regular user",
-            about: "i am a completely legal and cool user",
-            profile: "pretend we have a link here"
+            username: "peak",
+            about: "mega peak"
+        },
+        {
+            username: "why does this take so long",
+            about: "dark falz"
+        },
+        {
+            username: "mod 1",
+            type: 'moderator'
+        },
+        {
+            username: "mod 2",
+            type: 'moderator'
         }
     ]);
 };
@@ -37,68 +48,204 @@ async function teardownDB() {
 
 /* Tests */
 // createUser
-test("Add user: regular use", async () => {
-    await expect(userStuff.createUser("i cant find the db")).resolves.toBeDefined();
+describe("ADD", () => {
+    describe("success", () => {
+        test("normal", async () => {
+            await expect((userStuff.createUser("having fun"))).resolves.toBeTruthy();
+        });
+    });
+    describe("fail", () => {
+        test("empty string username", async () => {
+            expect(async () => {
+                await userStuff.createUser("");
+            }).rejects.toThrow();
+        });
+        test("no input username", async () => {
+            expect(async () => {
+                await userStuff.createUser();
+            }).rejects.toThrow();
+        })
+        test("duplicate", async () => {
+            expect(async () => {
+                await userStuff.createUser("criminal");
+            }).rejects.toThrow();
+        });
+    });
 });
-test("Add user: empty username", async () => {
-    await expect(userStuff.createUser("")).rejects.toThrow();
-});
-test("Add user: duplicate", async () => {
-    await expect(userStuff.createUser("i cant find the db")).rejects.toThrow();
-});
-test("Add user: silly string", async () => {
-    await expect(userStuff.createUser("SUPER LONG AND COMPLICATED STRING FU4379FQB48GIURKDVWA/..WE>'F'[EWF'4.'FG;WR.")).resolves.toBeDefined();
-});
+
 // getUser
-test("Get user: regular use", async () => {
-    await expect(userStuff.getUser("i cant find the db")).resolves.toBeDefined();
+describe("GET", () => {
+    describe("success", () => {
+        test("1: username check", async () => {
+            expect((await userStuff.getUser("help")).username).toBe("help");
+        });
+        test("1: about check", async () => {
+            expect((await userStuff.getUser("help")).about).toBe("i am cool");
+        });
+        test("1: profile check", async () => {
+            expect((await userStuff.getUser("help")).profile).toBe("heehee");
+        });
+    });
+    describe("fail", () => {
+        test("nonexistent", async () => {
+            expect(async () => {
+                await userStuff.getUser("who is this bro");
+            }).rejects.toThrow();
+        });
+        test("empty", async () => {
+            expect(async () => {
+                await userStuff.getUser("");
+            }).rejects.toThrow();
+        });
+    });
 });
-test("Get user: nonexistent user", async () => {
-    await expect(userStuff.getUser("who is this bro")).resolves.toBeNull();
-});
-test("Get user: no input", async () => {
-    await expect(userStuff.getUser("")).resolves.toBeDefined();
-});
+
 // editUser
-test("Edit user: regular use, all", async () => {
-    const user = await userStuff.getUser("i cant find the db");
-    await expect(userStuff.editUser(user._id, "new cool username", "look at this cool about text!!!", "profile pic link")).resolves.toBeDefined();
+describe("EDIT", () => {
+    describe("success", () => {
+        test("normal usage + validity checking", async () => {
+            await userStuff.editUser(await userStuff.getUser("help"), "new cool username", "look at this cool about text!!!", "profile pic link");
+            expect((await userStuff.getUser("new cool username")).username).toBe("new cool username");
+            expect((await userStuff.getUser("new cool username")).about).toBe("look at this cool about text!!!");
+            expect((await userStuff.getUser("new cool username")).profile).toBe("profile pic link");
+        });
+    });
+    describe("fail", () => {
+        test("invalid id", async () => {
+            expect(async () => {
+                await userStuff.editUser("invalid id", "cool", "stuff", "here");
+            }).rejects.toThrow();
+        });
+        test("empty id", async () => {
+            expect(async () => {
+                await userStuff.editUser("", "its", "scarce", "here");
+            }).rejects.toThrow();
+        });
+        test("invalid fields", async () => {
+            expect(async () => {
+                await userStuff.editUser((await userStuff.getUser("new cool username"))._id, null, "cool", "cool");
+            });
+            expect(async () => {
+                await userStuff.editUser((await userStuff.getUser("new cool username"))._id, "cool", null, "cool");
+            });
+            expect(async () => {
+                await userStuff.editUser((await userStuff.getUser("new cool username"))._id, "cool", "cool", null);
+            });
+        });
+    });
 });
-test("Edit user: regular use, username only", async () => {
-    const user = await userStuff.getUser("new cool username");
-    await expect(userStuff.editUser(user._id, "epic username", user.about, user.profile)).resolves.toBeDefined();
-});
-test("Edit user: regular use, profile only", async () => {
-    const user = await userStuff.getUser("epic username");
-    await expect(userStuff.editUser(user._id, user.username, "cool about section", user.profile)).resolves.toBeDefined();
-});
-test("Edit user: regular use, about only", async () => {
-    const user = await userStuff.getUser("epic username");
-    await expect(userStuff.editUser(user._id, user.username, user.about, "cool new profile pic")).resolves.toBeDefined();
-});
+
 // setAsModerator + setAsRegular
-test("Set moderator: regular use", async () => {
-    const cool = await expect(userStuff.setAsModerator("epic username"));
-    expect(cool).toBeDefined();
-    console.log(cool);
+describe("MOD", () => {
+    describe("success", () => {
+        test("set as a mod", async () => {
+            await userStuff.setAsModerator("criminal");
+            expect((await userStuff.getUser("criminal")).type).toBe("moderator");
+        });
+        test("remove a mod", async () =>{
+            console.log(await userStuff.getUser("criminal"));
+            await userStuff.setAsRegular("criminal");
+            expect((await userStuff.getUser("criminal")).type).toBe("regular");
+        });
+    });
+    describe("fail", () => {
+        test("set nonexistent", async () => {
+            expect(async () => {
+                await userStuff.setAsModerator("xue hua piao piao");
+            }).rejects.toThrow();
+        });
+        test("remove nonexistent", async () => {
+            expect(async () => {
+                await userStuff.setAsRegular("bei feng xiao xiao");
+            }).rejects.toThrow();
+        });
+        test("set as mod again", async () => {
+            await userStuff.setAsModerator("criminal");
+            expect(async () => {
+                await userStuff.setAsModerator("criminal");
+            }).rejects.toThrow();
+        });
+        test("set as regular again", async () => {
+            await userStuff.setAsRegular("criminal");
+            expect(async () => {
+                await userStuff.setAsRegular("criminal");
+            }).rejects.toThrow();
+        });
+    });
 });
-test("Set moderator: nonexistent user", async () => {
 
-});
-test("Remove moderator: regular use", async () => {
-
-});
-test("Remove moderator: nonexistent user", async () => {
-
-});
 // deleteMyUser
-test("Delete user by username: regular use", async () => {
-
+describe("MY DEL", () => {
+    describe("success", () => {
+        test("Delete user by username: regular use", async () => {
+            await expect(userStuff.deleteMyUser("new cool username")).resolves.toBeTruthy();
+            expect(async () => {
+                await userStuff.getUser("new cool username");
+            }).rejects.toThrow();
+        });
+    });
+    describe("fail", () => {
+        test("empty string", async () => {
+            expect(async () => {
+                await userStuff.deleteMyUser("");
+            }).rejects.toThrow();
+        });
+        test("no input", async () => {
+            expect(async () => {
+                await userStuff.deleteMyUser();
+            }).rejects.toThrow();
+        });
+        test("nonexistent", async () => {
+            expect(async () => {
+                await userStuff.deleteMyUser("garbage");
+            }).rejects.toThrow();
+        });
+    });
 });
-test("Delete user by username: no input", async () => {
 
-});
-test("Delete user by username: nonexistent", async () => {
-
-});
 // deleteOtherUser
+describe("MOD DEL", () => {
+    describe("success", () => {
+        test("mod deletes regular", async () => {
+            console.log((await userStuff.getUser("mod 1"))._id)
+            await expect(userStuff.deleteOtherUser((await userStuff.getUser("mod 1"))._id, (await userStuff.getUser("peak"))._id)).resolves.toBeTruthy();
+        });
+    });
+    describe("fail", () => {
+        test("regular deletes regular", async () => {
+            expect(async () => {
+                await userStuff.deleteOtherUser((await userStuff.getUser("why does this take so long"))._id, (await userStuff.getUser("criminal"))._id);
+            }).rejects.toThrow();
+        });
+        test("mod deletes mod", async () => {
+            expect(async () => {
+                await userStuff.deleteOtherUser((await userStuff.getUser("mod 1"))._id, (await userStuff.getUser("mod 2"))._id);
+            }).rejects.toThrow();
+        });
+        test("regular deletes mod", async () => {
+            expect(async () => {
+                await userStuff.deleteOtherUser((await userStuff.getUser("criminal"))._id, (await userStuff.getUser("mod 1"))._id);
+            }).rejects.toThrow();
+        });
+        test("nonexistent deletee", async () => {
+            expect(async () => {
+                await userStuff.deleteOtherUser((await userStuff.getUser("mod 1"))._id, (await userStuff.getUser("coca cola"))._id);
+            }).rejects.toThrow();
+        });
+        test("nonexistent deleter", async () => {
+            expect(async () => {
+                await userStuff.deleteOtherUser((await userStuff.getUser("hee hee hee hah"))._id, (await userStuff.getUser("criminal"))._id);
+            }).rejects.toThrow();
+        });
+        test("empty deletee", async () => {
+            expect(async () => {
+                await userStuff.deleteOtherUser((await userStuff.getUser("mod 1"))._id, );
+            }).rejects.toThrow();
+        });
+        test("empty deleter", async () => {
+            expect(async () => {
+                await userStuff.deleteOtherUser(null, (await userStuff.getUser("criminal"))._id);
+            }).rejects.toThrow();
+        });
+    });
+});
