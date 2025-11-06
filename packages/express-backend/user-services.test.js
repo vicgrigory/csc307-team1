@@ -1,12 +1,12 @@
-
-import userServices from './user-services.js';
+import { MongoClient as mongo } from 'mongodb';
 import userStuff from './user-services.js';
-import user from './user.js';
-
+import users from './user.js';
+let connection;
+let db;
+let user;
 
 /* Initialization */
 beforeAll(async () => {
-    await teardownDB();
     await setupDB();
 })
 afterAll(async () => {
@@ -14,6 +14,13 @@ afterAll(async () => {
 })
 /* Functions */
 async function setupDB() {
+    // this needs to be in the services file :( ??
+    connection = await mongo.connect(global.__MONGO_URI__, {
+        //useNewUrlParser: true,
+        //useUnifiedTopology: true,
+    });
+    db = await connection.db();
+    user = await db.collection('WebUser');
     await user.insertMany([
         {
             username: "help",
@@ -43,7 +50,8 @@ async function setupDB() {
     ]);
 };
 async function teardownDB() {
-    await user.deleteMany();
+    await db.collection('WebUser').deleteMany();
+    await connection.close();
 };
 
 /* Tests */
@@ -51,7 +59,7 @@ async function teardownDB() {
 describe("ADD", () => {
     describe("success", () => {
         test("normal", async () => {
-            await expect((userStuff.createUser("having fun"))).resolves.toBeTruthy();
+            expect((userStuff.createUser("having fun"))).resolves.toBeTruthy();
         });
     });
     describe("fail", () => {
@@ -100,37 +108,55 @@ describe("GET", () => {
     });
 });
 
-// editUser
-describe("EDIT", () => {
+// editInformation
+describe("EDIT PROFILE", () => {
     describe("success", () => {
-        test("normal usage + validity checking", async () => {
-            await userStuff.editUser(await userStuff.getUser("help"), "new cool username", "look at this cool about text!!!", "profile pic link");
-            expect((await userStuff.getUser("new cool username")).username).toBe("new cool username");
-            expect((await userStuff.getUser("new cool username")).about).toBe("look at this cool about text!!!");
-            expect((await userStuff.getUser("new cool username")).profile).toBe("profile pic link");
+        test("all fields", async () => {
+            await userStuff.editInformation((await userStuff.getUser("help"))._id, "look at this cool about text!!!", "profile pic link");
+            expect((await userStuff.getUser("help")).about).toBe("look at this cool about text!!!");
+            expect((await userStuff.getUser("help")).profile).toBe("profile pic link");
+        });
+        test("null fields", async () => {
+            await userStuff.editInformation((await userStuff.getUser("help"))._id, null, null);
+            expect((await userStuff.getUser("help")).about).toBe("look at this cool about text!!!");
+            expect((await userStuff.getUser("help")).profile).toBe("profile pic link");
+        });
+        test("empty fields", async () => {
+            await userStuff.editInformation((await userStuff.getUser("help"))._id, "", "");
+            expect((await userStuff.getUser("help")).about).toBe("");
+            expect((await userStuff.getUser("help")).profile).toBe("");
         });
     });
     describe("fail", () => {
         test("invalid id", async () => {
             expect(async () => {
-                await userStuff.editUser("invalid id", "cool", "stuff", "here");
+                await userStuff.editInformation("invalid id", "cool", "stuff");
             }).rejects.toThrow();
         });
         test("empty id", async () => {
             expect(async () => {
-                await userStuff.editUser("", "its", "scarce", "here");
+                await userStuff.editInformation("", "scarce", "here");
             }).rejects.toThrow();
         });
-        test("invalid fields", async () => {
-            expect(async () => {
-                await userStuff.editUser((await userStuff.getUser("new cool username"))._id, null, "cool", "cool");
-            });
-            expect(async () => {
-                await userStuff.editUser((await userStuff.getUser("new cool username"))._id, "cool", null, "cool");
-            });
-            expect(async () => {
-                await userStuff.editUser((await userStuff.getUser("new cool username"))._id, "cool", "cool", null);
-            });
+    });
+});
+
+// editUsername
+describe("EDIT USERNAME", () => {
+    describe("success", () => {
+        test("normal", async () => {
+
+        });
+    });
+    describe("fail", () => {
+        test("invalid id", async () => {
+
+        });
+        test("null id", async ()=> {
+
+        });
+        test("duplicate", async () => {
+
         });
     });
 });
@@ -175,10 +201,10 @@ describe("MOD", () => {
 });
 
 // deleteMyUser
-describe("MY DEL", () => {
+describe("DEL", () => {
     describe("success", () => {
         test("Delete user by username: regular use", async () => {
-            await expect(userStuff.deleteMyUser("new cool username")).resolves.toBeTruthy();
+            await expect(userStuff.deleteUser("new cool username")).resolves.toBeTruthy();
             expect(async () => {
                 await userStuff.getUser("new cool username");
             }).rejects.toThrow();
@@ -187,64 +213,17 @@ describe("MY DEL", () => {
     describe("fail", () => {
         test("empty string", async () => {
             expect(async () => {
-                await userStuff.deleteMyUser("");
+                await userStuff.deleteUser("");
             }).rejects.toThrow();
         });
         test("no input", async () => {
             expect(async () => {
-                await userStuff.deleteMyUser();
+                await userStuff.deleteUser();
             }).rejects.toThrow();
         });
         test("nonexistent", async () => {
             expect(async () => {
-                await userStuff.deleteMyUser("garbage");
-            }).rejects.toThrow();
-        });
-    });
-});
-
-// deleteOtherUser
-describe("MOD DEL", () => {
-    describe("success", () => {
-        test("mod deletes regular", async () => {
-            console.log((await userStuff.getUser("mod 1"))._id)
-            await expect(userStuff.deleteOtherUser((await userStuff.getUser("mod 1"))._id, (await userStuff.getUser("peak"))._id)).resolves.toBeTruthy();
-        });
-    });
-    describe("fail", () => {
-        test("regular deletes regular", async () => {
-            expect(async () => {
-                await userStuff.deleteOtherUser((await userStuff.getUser("why does this take so long"))._id, (await userStuff.getUser("criminal"))._id);
-            }).rejects.toThrow();
-        });
-        test("mod deletes mod", async () => {
-            expect(async () => {
-                await userStuff.deleteOtherUser((await userStuff.getUser("mod 1"))._id, (await userStuff.getUser("mod 2"))._id);
-            }).rejects.toThrow();
-        });
-        test("regular deletes mod", async () => {
-            expect(async () => {
-                await userStuff.deleteOtherUser((await userStuff.getUser("criminal"))._id, (await userStuff.getUser("mod 1"))._id);
-            }).rejects.toThrow();
-        });
-        test("nonexistent deletee", async () => {
-            expect(async () => {
-                await userStuff.deleteOtherUser((await userStuff.getUser("mod 1"))._id, (await userStuff.getUser("coca cola"))._id);
-            }).rejects.toThrow();
-        });
-        test("nonexistent deleter", async () => {
-            expect(async () => {
-                await userStuff.deleteOtherUser((await userStuff.getUser("hee hee hee hah"))._id, (await userStuff.getUser("criminal"))._id);
-            }).rejects.toThrow();
-        });
-        test("empty deletee", async () => {
-            expect(async () => {
-                await userStuff.deleteOtherUser((await userStuff.getUser("mod 1"))._id, );
-            }).rejects.toThrow();
-        });
-        test("empty deleter", async () => {
-            expect(async () => {
-                await userStuff.deleteOtherUser(null, (await userStuff.getUser("criminal"))._id);
+                await userStuff.deleteUser("garbage");
             }).rejects.toThrow();
         });
     });

@@ -8,6 +8,7 @@ const WebUserSchema = new mongoose.Schema(
         unique: true,
         immutable: false // Change to true if we want to lock usernames
     },
+    // Can add encrypted password field here
     type: {
         type: String,
         enum: ['regular', 'moderator'],

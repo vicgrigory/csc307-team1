@@ -3,19 +3,22 @@ import reviewModel from "./review.js";
 
 mongoose.set("debug", true);
 
-mongoose.connect("mongodb://localhost:27017/users", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+mongoose.connect("mongodb://localhost:27017/data", {
+    //useNewUrlParser: true,
+    //useUnifiedTopology: true
 }).catch((error) => console.log(error));
 
+/*
+*/
 function addReview(review) {
     const reviewToAdd = new reviewModel(review);
     const promise = reviewToAdd.save();
     return promise;
 }
 
-//need appropriate perms
-function editReview(reviewID, title, content, rating) { //this is assuming it autofills and we can update everything. can write separate functions if needed
+/*
+*/
+function editReview(reviewID, title, content, rating) {
     base = reviewModel.findOne({ _id: reviewID })
     if (title) {
         base = base.updateOne({ title: title });
@@ -29,6 +32,8 @@ function editReview(reviewID, title, content, rating) { //this is assuming it au
     return base;
 }
 
+/*
+*/
 function deleteReview(reviewID) {
     return reviewModel.findByIdAndDelete(reviewID);
 }

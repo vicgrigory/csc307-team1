@@ -6,6 +6,10 @@ const FileSchema = new mongoose.Schema(
         type: String,
         required: [true, "File requires a title."]
     },
+    link: {
+        type: String,
+        required: [true, "No link to file specified."]
+    },
     filetype: {
         type: String, enum: ["mp3", "pdf"],
         required: [true, "File requires a valid filetype."]
@@ -19,13 +23,16 @@ const FileSchema = new mongoose.Schema(
     userID: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'WebUser',
-        required: [true, "A valid username was not given."],
+        required: [true, "A valid user ID was not given."],
         immutable: true
     },
     upload: { // Do not specify
         type: Date,
         default: Date.now(),
         immutable: true
+    },
+    tags: {
+        type: [String], enum: ["test", "math", "science", "history"]
     }
     }
 );

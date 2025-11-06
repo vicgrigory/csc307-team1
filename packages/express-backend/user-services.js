@@ -5,7 +5,8 @@ import userModel from "./user.js";
 dotenv.config();
 mongoose.set("debug", true);
 
-mongoose.connect(process.env.MONGODB_URI, {
+//process.env.MONGODB_URI <- use this in production
+mongoose.connect("mongodb://localhost:27017/data", {
     //useNewUrlParser: true,
     //useUnifiedTopology: true
 }).catch((error) => console.log(error));
@@ -62,26 +63,48 @@ async function setAsRegular(desiredUsername) {
     throw new Error("User is not a moderator!");
 }
 
-/* -------- WILL BE EDITING
+/*
 Edits user credentials by replacing the current ones with what is entered. Checks for a valid id, since the username is able to be changed.
-**** Will probably change this to only change values when they are not null for ease of use. Let me know.
 _desiredID: ID of the user to be changing details for. Can use getUser("username")._id to retrieve this.
-desiredUsername: Username to set for this user.
 desiredAbout: About section to set for this user.
 desiredProfile: Profile picture to set for this user.
 */
-async function editUser(_desiredID, desiredUsername, desiredAbout, desiredProfile) {
-    if (!_desiredID) {
+async function editInformation(_desiredId, desiredAbout, desiredProfile) {
+    if (!_desiredId) {
         throw new Error("Invalid ID!");
     }
-    if (!desiredUsername) {
-        throw new Error("Cannot set username to empty!");
-    }
-    const user = await userModel.findOne({ _id: _desiredID });
+    const user = await userModel.findOne({ _id: _desiredId });
     if (!user) {
         throw new Error("User could not be found!");
     }
-    return userModel.findOne({ _id: _desiredID }).updateOne({ username: desiredUsername, about: desiredAbout, profile: desiredProfile });
+    if (desiredAbout === null || desiredAbout === undefined) {
+        desiredAbout = user.about;
+    }
+    if (desiredProfile === null || desiredProfile === undefined) {
+        desiredProfile = user.profile;
+    }
+    return userModel.findOne({ _id: _desiredId }).updateOne({ username: desiredUsername, about: desiredAbout, profile: desiredProfile });
+}
+
+/*
+Same as above, but specifically for the username.
+*/
+async function editUsername(_desiredId, desiredUsername) {
+    if (!_desiredId) {
+        throw new Error("Invalid ID!");
+    }
+    if (!desiredUsername) {
+        throw new Error("Invalid username!");
+    }
+    const user = await userModel.findOne({ _id: _desiredId });
+    const dup = await userModel.findOne({ username: desiredUsername });
+    if (user) {
+        if (!dup) {
+            return userModel.updateOne({ _id: _desiredId }, { username: desiredUsername })
+        }
+        throw new Error("That username is taken!");
+    }
+    throw new Error("User could not be found!");
 }
 
 /*
@@ -98,91 +121,22 @@ async function getUser(desiredUsername) {
     return userModel.findOne({ username: desiredUsername });
 }
 
-/* -------- NOT TESTED YET
-Adds a file to a list of favorites. Checks whether that file exists and is already in the list before modifying.
-desiredUsername: Username of the user adding the file to their favorites.
-fileID: File ID of the file to be added to the list.
-list: [WILL BE REMOVING] List of the user's current favorites.
-*/
-function addFavorite(desiredUsername, fileID, ...list) {
-    if (!desiredUsername) {
-        throw new Error("Invalid username!");
-    }
-    if (!fileID) { // Add file check in here. Refer to getFile in its services.
-        throw new Error("Invalid file specified!");
-    }
-    if (!list.includes(fileID)) {
-        listAdded = list.concat(fileID);
-        return userModel.findOne({ username: desiredUsername }).updateOne({ favorites: listAdded });
-    }
-    throw new Error("This file is already in the list!");
-}
-
-/* -------- NOT TESTED YET
-Removes a file from a list of favorites. Checks whether that file exists and is in the list before modifying.
-desiredUsername: Username of the user to be added to the list.
-fileID: File ID of the file to be added to the list.
-list: [WILL BE REMOVING] List of the user's current favorites.
-*/
-function removeFavorite(desiredUsername, fileID, ...list) {
-    if (!desiredUsername) {
-        throw new Error("Invalid username!");
-    }
-    if (!fileID) { // Add file check.
-        throw new Error("Invalid file specified!");
-    }
-    const index = list.indexOf(fileID);
-    if (index > -1) {
-        // id like to do this w/o modifying the original array at some point
-        list.splice(index, 1);
-        return userModel.findOne({ username: desiredUsername }).updateOne({ favorites: list });
-    }
-    throw new Error("This file is not in the list!");
-}
-
 /*
-Deletes a user from the database. Checks whether that user exists before modifying.
+Deletes a user from the database. Checks whether that user exists before modifying. Assumes that whoever is deleting has the permissions to do so.
 desiredUsername: Username of the user to be deleted. Can switch for _id if needed.
 */
-async function deleteMyUser(desiredUsername) { // how to handle things made by removed users? can we null their data so theyre not technically removed from the db?
+async function deleteUser(desiredUsername) { // how to handle things made by removed users? can we null their data so theyre not technically removed from the db?
     //log out user as well on frontish end
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
     const user = await userModel.findOne({ username: desiredUsername });
-    console.log(`user: ${user}`)
     if (!user) {
         throw new Error("This user does not exist!")
     }
     return userModel.deleteOne({ username: desiredUsername }); //want to change to use user for less db queries
 }
 
-/*
-Allows a moderator to delete another, regular user from the database. Checks whether both user IDs exist, and if they are of the correct privileges before modifying.
-_modId: ID of the moderator performing the action. Must be a moderator for this function to work.
-_deletId: ID of the user to be deleted. Cannot be a moderator user, in that case must use the setAsRegular function on the desired user before removing them.
-*/
-async function deleteOtherUser(_modId, _deleteId) {
-    if (!_modId || !_deleteId) {
-        throw new Error("An ID is invalid!");
-    }
-    const mod = await userModel.findOne({ _id: _modId });
-    const user = await userModel.findOne({ _id: _deleteId});
-    if (!mod) {
-        throw new Error("Mod user does not exist!");
-    }
-    if (!user) {
-        throw new Error("User to be deleted does not exist!");
-    }
-    if (mod.type == 'moderator') {
-        if (user.type == 'regular') {
-            return userModel.findByIdAndDelete(_deleteId);
-        }
-        throw new Error("User to be deleted is currently a moderator, demote them first!");
-    }
-    throw new Error("Mod ID does not correspond to a moderator!");
-}
-
 export default {
-    createUser, editUser, deleteMyUser, deleteOtherUser, getUser, addFavorite, removeFavorite, setAsModerator, setAsRegular
+    createUser, editInformation, editUsername, deleteUser, getUser, setAsModerator, setAsRegular
 };
