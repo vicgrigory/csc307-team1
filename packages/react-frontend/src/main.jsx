@@ -1,14 +1,11 @@
-// src/main.jsx
 import React from "react";
-import ReactDOMClient from "react-dom/client";
+import ReactDOM from "react-dom/client";
 import MyApp from "./MyApp";
-import "./main.css";
+import "./main.css"; // optional, for your styles
 
-// Create the container
-const container = document.getElementById("root");
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <MyApp />
+  </React.StrictMode>
+);
 
-// Create a root
-const root = ReactDOMClient.createRoot(container);
-
-// Initial render: Render an element to the Root
-root.render(<MyApp />);

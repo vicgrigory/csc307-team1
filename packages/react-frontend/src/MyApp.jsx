@@ -1,69 +1,44 @@
-import React, { useState, useEffect } from "react";
-import Table from "./Table";
-import Form from "./Form";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Profile from "./pages/Profile";
+import NavBar from "./components/NavBar";
 
 function MyApp() {
-  const [characters, setCharacters] = useState([]);
-
-  function removeOneCharacter(index) {
-    const userToDelete = characters[index];
-
-    const promise = fetch("http://localhost:8000/users", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userToDelete),
-    }).then(() => {
-      setCharacters((prev) => prev.filter((_, i) => i !== index));
-    });
-  }
-
-  function updateList(person) {
-    postUser(person)
-      .then((res) => res.json())
-      .then((data) => setCharacters([...characters, data]))
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  function fetchUsers() {
-    const promise = fetch("http://localhost:8000/users");
-    return promise;
-  }
-
-  useEffect(() => {
-    fetchUsers()
-      .then((res) => res.json())
-      .then((json) => {
-        if (!Array.isArray(json)) {
-          json = [json];
-        }
-        setCharacters(json);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
-  function postUser(person) {
-    const promise = fetch("http://localhost:8000/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(person),
-    });
-    return promise;
-  }
-
   return (
-    <div className="container">
-      <Table characterData={characters} removeCharacter={removeOneCharacter} />
-      <Form handleSubmit={updateList} />
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <NavBar current="home" />
+              <Home />
+            </>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <>
+              <NavBar current="about" />
+              <About />
+            </>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <>
+              <NavBar current="profile" />
+              <Profile />
+            </>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 
 export default MyApp;
+
