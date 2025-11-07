@@ -1,25 +1,44 @@
-// src/MyApp.jsx
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import About from "./pages/About";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import Profile from "./pages/Profile";
-import "./main.css"; // make sure your CSS is imported
+import NavBar from "./components/NavBar";
 
-export default function MyApp() {
+function MyApp() {
   return (
     <Router>
-      <nav className="navbar">
-        <Link to="/">Home</Link>
-        <Link to="/about">About</Link>
-	<Link to="/profile">Profile</Link>
-      </nav>
-
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-	<Route path="/profile" element={<Profile />} />
+        <Route
+          path="/"
+          element={
+            <>
+              <NavBar current="home" />
+              <Home />
+            </>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <>
+              <NavBar current="about" />
+              <About />
+            </>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <>
+              <NavBar current="profile" />
+              <Profile />
+            </>
+          }
+        />
       </Routes>
     </Router>
   );
 }
+
+export default MyApp;
 
