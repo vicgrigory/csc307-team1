@@ -10,18 +10,6 @@ mongoose.connect("mongodb://localhost:27017/data", {
 }).catch((error) => console.log(error));
 
 /*
-How I'm implementing filters:
-- pressing the filter buttons automatically requeries the database and pulls up the results
-- search searches by filename unless otherwise specified
-- filters: filetype (dropdown menu?), tags
-    these need to be queried uniquely to find all tags / filetypes, then shown on the react page
-- *possible sortbys: title, upload date, creation date
-- *possible extra search filters: creator
-
-* may be out of scope, will not implement until we're confirmed doing so
-*/
-
-/*
 Adds a file into the database. This requires a title, link to the file, the specified filetype (can implement this if needed), and the user ID of the uploader.
 desiredUsername: Username of the user uploading the file.
 fileTitle: Title of the file, shown on webpages instead of the link/ filename.
@@ -42,7 +30,10 @@ async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreat
         throw new Error("Must define a file type!");
     }
     const uploader = await userFunctions.getUser(desiredUsername);
-    if (uploader) {
+    if (!uploader) {
+        throw new Error("Username is not valid!");
+    }
+    try {
         return fileModel.insertOne({
             title: fileTitle,
             link: fileLink,
@@ -51,8 +42,10 @@ async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreat
             creator: fileCreator,
             creationDate: fileDate
         });
+    } catch(error) {
+        throw new Error("An error occured while adding your file!");
     }
-    throw new Error("Username is not valid!");
+    
 }
 
 /*
@@ -63,11 +56,15 @@ async function getFile(fileId) {
     if (!fileId) {
         throw new Error("Invalid file ID!");
     }
-    const file = fileModel.findOne({ _id: fileId});
+    const file = await fileModel.findOne({ _id: fileId});
     if (!file) {
         throw new Error("File does not exist!");
     }
-    return fileModel.findOne({ _id: fileId });
+    try {
+        return fileModel.findOne({ _id: fileId });
+    } catch(error) {
+        throw new Error("An error occured while getting your file!");
+    }  
 }
 
 /*
@@ -98,7 +95,11 @@ async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDat
     if (fileDate === null || fileDate === undefined) {
         fileDate = file.creationDate;
     }
-    return fileModel.updateOne({ _id: fileId }, { title: fileTitle, creator: fileCreator, creationDate: fileDate });
+    try {
+        return fileModel.updateOne({ _id: fileId }, { title: fileTitle, creator: fileCreator, creationDate: fileDate });
+    } catch(error) {
+        throw new Error("An error occured while editing your file!");
+    }
 }
 
 /*
@@ -109,10 +110,15 @@ async function removeFile(fileId) {
     if (!fileId) {
         throw new Error("Invalid file ID!");
     }
-    if (await fileModel.findOne({ _id: fileId })) {
-        return fileModel.findByIdAndDelete(fileId);
+    const file = await fileModel.findOne({ _id: fileId });
+    if (!file) {
+        throw new Error("File could not be found!");
     }
-    throw new Error("File could not be found!");
+    try {
+        return fileModel.findByIdAndDelete(fileId);
+    } catch(error) {
+        throw new Error("An error occured while removing your file!");
+    }
 }
 
 /*
@@ -123,67 +129,113 @@ tags: (optional) The tags applied to the search query, should be an array of str
 function searchFiles(query, ...tags) {
     if (!query) {
         if (tags) {
-            return fileModel.find().where({ tags: { $all: tags } });
+            try {
+                return fileModel.find().where({ tags: { $all: tags } });
+            } catch(error) {
+                throw new Error("An error occured while searching for files [tags only]!");
+            }
         }
-        return fileModel.find();
+        try {
+            return fileModel.find();
+        } catch(error) {
+            throw new Error("An error occured while searching for files [no input]!");
+        }
     }
     if (!tags) {
-        return fileModel.find().where({ name: /query/i });
+        try {
+            return fileModel.find().where({ name: /query/i });
+        } catch(error) {
+            throw new Error("An error occured while searching for files [query only]!");
+        }
     }
-    return fileModel.find().where({ name: /query/i, tags: { $all: tags } })
+    try {
+        return fileModel.find().where({ name: /query/i, tags: { $all: tags } });
+    } catch(error) {
+        throw new Error("An error occured while searching for files [query and tags]!");
+    }
 }
 
-function myFiles(desiredUsername) {
+/*
+Gets all files uploaded by a specific user.
+desiredUsername: Username of the user to search files for.
+*/
+async function myFiles(desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
-    const uploader = userFunctions.getUser(desiredUsername);
-    if (uploader) {
-        return fileModel.find({ userID: uploader._id });
+    const uploader = await userFunctions.getUser(desiredUsername);
+    if (!uploader) {
+        throw new Error("User could not be found!"); // If we delete users, keeping their ID in the database would be useful if we want to keep their files.
     }
-    throw new Error("User could not be found!"); // If we delete users, keeping their ID in the database would be useful if we want to keep their files.
+    try {
+        return fileModel.find({ userID: uploader._id });
+    } catch(error) {
+        throw new Error("An error occured while getting this user's files!");
+    }
 }
 
-/* -------- NOT TESTED YET
+/*
 Adds a file to a list of favorites. Checks whether that file exists and is already in the list before modifying.
 desiredUsername: Username of the user adding the file to their favorites.
-fileID: File ID of the file to be added to the list.
-list: [WILL BE REMOVING] List of the user's current favorites.
+fileId: File ID of the file to be added to the list.
 */
-function addFavorite(desiredUsername, fileId) {
+async function addFavorite(desiredUsername, fileId) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
-    if (!fileID) { // Add file check in here. Refer to getFile in its services.
-        throw new Error("Invalid file specified!");
+    const user = await userFunctions.getUser(desiredUsername);
+    if (!user) {
+        throw new Error("Username does not correspond to a valid user!");
     }
-    if (!list.includes(fileId)) {
-        listAdded = list.concat(fileId);
+    if (!fileId) {
+        throw new Error("Invalid file ID!");
+    }
+    const file = await fileModel.findOne({ _id: fileId });
+    if (!file) {
+        throw new Error("File ID does not correspond to a valid file!");
+    }
+    if (list.includes(fileId)) {
+        throw new Error("This file is already in the list!");
+    }
+    let listAdded = list.concat(fileId);
+    try {
         return userModel.findOne({ username: desiredUsername }).updateOne({ favorites: listAdded });
+    } catch(error) {
+        throw new Error("An error occured while adding this file to favorites!");
     }
-    throw new Error("This file is already in the list!");
 }
 
-/* -------- NOT TESTED YET
+/*
 Removes a file from a list of favorites. Checks whether that file exists and is in the list before modifying.
 desiredUsername: Username of the user to be added to the list.
-fileID: File ID of the file to be added to the list.
-list: [WILL BE REMOVING] List of the user's current favorites.
+fileId: File ID of the file to be added to the list.
 */
-function removeFavorite(desiredUsername, fileId) {
+async function removeFavorite(desiredUsername, fileId) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
-    if (!fileId) { // Add file check.
+    const user = await userFunctions.getUser(desiredUsername);
+    if (!user) {
+        throw new Error("Username does not correspond to valid user!");
+    }
+    if (!fileId) {
         throw new Error("Invalid file specified!");
     }
+    const file = await fileModel.findOne({ _id: fileId });
+    if (!file) {
+        throw new Error("File ID does not correspond to a valid file!");
+    }
     const index = list.indexOf(fileId);
-    if (index > -1) {
+    if (index < 0) {
+        throw new Error("This file is not in the list!");
+    }
+    try {
         // id like to do this w/o modifying the original array at some point
         list.splice(index, 1);
         return userModel.findOne({ username: desiredUsername }).updateOne({ favorites: list });
+    } catch(error) {
+        throw new Error("An error occured while removing this file from favorites!");
     }
-    throw new Error("This file is not in the list!");
 }
 
 export default {
