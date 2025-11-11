@@ -14,12 +14,12 @@ mongoose.connect(process.env.MONGODB_URI, {
 Creates a new user in the database with a desired username, setting the about and profile to empty strings and sets the user as a non moderator.
 desiredUsername: String. Currently no limit as to what it can be, can add that in if needed.
 */
-async function createUser(desiredUsername) { // if we add a password, it should be hashed by this point
+async function createUser(desiredUsername, hashedPassword) { // if we add a password, it should be hashed by this point
     if (!desiredUsername) {
         throw new Error("Username cannot be empty!");
     }
     if (( await userModel.findOne({ username: desiredUsername }) ) === null) {
-        return userModel.insertOne({ username: desiredUsername });
+        return userModel.insertOne({ username: desiredUsername, hashedPassword: hashedPassword});
     };
     throw new Error(`The username ${desiredUsername} is taken!`);
 }

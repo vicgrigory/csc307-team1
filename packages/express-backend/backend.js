@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import userServices from "./user-services.js";
+import { authenticateUser, registerUser, loginUser } from "./auth.js";
 
 const app = express();
 const port = 8000;
@@ -17,7 +18,12 @@ const findUserByName = (name) => userServices.findUserByName(name);
 
 const deleteByID = (_id) => userServices.deleteByID(_id);
 
-app.get("/users/:id", (req, res) => {
+app.post("/login", loginUser);
+
+app.post("/signup", registerUser);
+
+
+app.get("/users/:id", authenticateUser, (req, res) => {
   const _id = req.params["_id"];
   findUserById(_id)
     .then((result) => {
@@ -32,7 +38,7 @@ app.get("/users/:id", (req, res) => {
     });
 });
 
-app.delete("/users", (req, res) => {
+app.delete("/users", authenticateUser, (req, res) => {
   deleteByID(req.body._id)
     .then((result) => {
       if (result === null) {
@@ -46,14 +52,14 @@ app.delete("/users", (req, res) => {
     });
 });
 
-app.post("/users", (req, res) => {
+app.post("/users", authenticateUser, (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd)
     .then((user) => res.status(201).send(user))
     .catch((err) => res.status(500).send("Internal Server Error: " + err));
 });
 
-app.get("/users", (req, res) => {
+app.get("/users", authenticateUser, (req, res) => {
   getUsers(req.query.name, req.query.job)
     .then((users) => res.status(200).send(users))
     .catch((err) => res.status(500).send("Internal Server Error: " + err));
