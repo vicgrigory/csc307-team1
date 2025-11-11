@@ -101,7 +101,7 @@ title: New title. Null means keep old.
 content: New content. Null means keep old.
 rating: New rating. Null means keep old.
 */
-async function editReview(desiredUsername, reviewId, reviewTitle, reviewContent, reviewRating) {
+async function editReview(desiredUsername, reviewId, reviewContent, reviewRating) {
     if (!reviewId) {
         throw new Error("Invalid review ID!");
     }
@@ -119,9 +119,6 @@ async function editReview(desiredUsername, reviewId, reviewTitle, reviewContent,
     if ((review.userID != user._id) && (user.type != 'moderator')) {
         throw new Error("Not authorized!");
     }
-    if (!reviewTitle) {
-        reviewTitle = review.title;
-    }
     if (!reviewContent) {
         reviewContent = review.content;
     }
@@ -129,7 +126,7 @@ async function editReview(desiredUsername, reviewId, reviewTitle, reviewContent,
         reviewRating = review.rating;
     }
     try {
-        return reviewModel.updateOne({ _id: reviewId }, { title: reviewTitle, content: reviewContent, rating: reviewRating });
+        return reviewModel.updateOne({ _id: reviewId }, { content: reviewContent, rating: reviewRating });
     } catch(error) {
         throw new Error("An error occured while updating your review!");
     }
