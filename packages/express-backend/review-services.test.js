@@ -18,13 +18,16 @@ afterAll(async () => {
 async function setupDB() {
     await user.insertMany([
         {
-            username: "reg 1"
+            username: "reg 1",
+            hashedPassword: "hash"
         },
         {
-            username: "reg 2"
+            username: "reg 2",
+            hashedPassword: "hash"
         },
         {
-            username: "reg 3"
+            username: "reg 3",
+            hashedPassword: "hash"
         },
         {
             username: "mod 1",
