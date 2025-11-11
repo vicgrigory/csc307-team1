@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 import dotenv from 'dotenv';
 import userModel from "./user.js";
 
-dotenv.config();
+dotenv.config({
+  override: false
+});
 mongoose.set("debug", true);
 
 mongoose.connect(process.env.MONGODB_URI, {
