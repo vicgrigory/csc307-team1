@@ -10,7 +10,7 @@ beforeAll(async () => {
 afterAll(async () => {
     await tearDownDB();
 });
-*/
+
 /* Functions 
 async function setupDB() {
     await user.insertMany([
@@ -52,8 +52,8 @@ async function tearDownDB() {
     await user.deleteMany();
     await file.deleteMany();
 }
-*/
-/* Tests */
+
+/* Tests 
 // myFiles
 describe("USER", () => {
     describe("success", () => {
@@ -297,25 +297,42 @@ describe("EDIT", () => {
 // removeFile
 describe("DELETE", () => {
     describe("success", () => {
-        test("valid", async () => {
-
+        let three;
+        let four;
+        let five;
+        beforeAll(async () => {
+            three = await fileStuff.searchFiles("file 3");
+            four = await fileStuff.searchFiles("file 4");
+            five = await fileStuff.searchFiles("file 5");
         });
         test("authorized - owner", async () => {
-
+            await fileStuff.removeFile(four._id, "reg 1");
+            expect(async () => {
+                await fileStuff.getFile(four._id);
+            }).rejects.toThrow();
         });
         test("authorized - mod", async () => {
-
+            await fileStuff.removeFile(three._id, "mod 1");
+            expect(async () => {
+                await fileStuff.getFile(three._id);
+            }).rejects.toThrow();
         });
     });
     describe("fail", () => {
         test("invalid file id", async () => {
-
+            expect(async () => {
+                await fileStuff.removeFile(null, "mod 1");
+            }).rejects.toThrow();
         });
-        test("null file id", async () => {
-
+        test("nonexistent file id", async () => {
+            expect(async () => {
+                await fileStuff.removeFile("random", "mod 1");
+            }).rejects.toThrow();
         });
         test("not authorized", async () => {
-
+            expect(async () => {
+                await fileStuff.removeFile(five._id, "reg 2");
+            }).rejects.toThrow();
         });
 
     });
@@ -323,58 +340,85 @@ describe("DELETE", () => {
 
 // addFavorite
 describe("ADDFAV", () => {
+    let two;
+    beforeAll(async () => {
+        two = await fileStuff.searchFiles("file 2");
+    });
     describe("success", () => {
         test("normal use", async () => {
-
+            await fileStuff.addFavorite("reg 1", two._id);
+            let user = userStuff.getUser("reg 1");
+            expect(user.favorites).toContain(two);
         });
     });
     describe("fail", () => {
         test("invalid file id", async () => {
-
+            expect(async () => {
+                await fileStuff.addFavorite("reg 1", null);
+            }).rejects.toThrow();
         });
         test("nonexistent file id", async () => {
-
+            expect(async () => {
+                await fileStuff.addFavorite("reg 1", "hi");
+            }).rejects.toThrow();
         });
         test("invalid username", async () => {
-
+            expect(async () => {
+                await fileStuff.addFavorite(null, two._id);
+            }).rejects.toThrow();
         });
         test("nonexistent username", async () => {
-
+            expect(async () => {
+                await fileStuff.addFavorite("peak", two._id);
+            }).rejects.toThrow();
         });
         test("already in list", async () => {
-
-        });
-        test("not authorized", async () => {
-
+            expect(async () => {
+                await fileStuff.addFavorite("reg 1", two._id);
+            }).rejects.toThrow();
         });
     });
 });
 
 // removeFavorite
 describe("DELFAV", () => {
+    let two;
+    beforeAll(async () => {
+        two = await fileStuff.searchFiles("file 2");
+    });
     describe("success", () => {
         test("normal use", async () => {
-
+            await fileStuff.removeFavorite("reg 1", two._id);
+            let user = userStuff.getUser("reg 1");
+            expect(user.favorites).not.toContain(two);
         });
     });
     describe("fail", () => {
         test("invalid file id", async () => {
-
+            expect(async () => {
+                await fileStuff.removeFavorite("reg 1", null);
+            }).rejects.toThrow();
         });
         test("nonexistent file id", async () => {
-
+            expect(async () => {
+                await fileStuff.removeFavorite("reg 1", "hi");
+            }).rejects.toThrow();
         });
         test("invalid username", async () => {
-
+            expect(async () => {
+                await fileStuff.removeFavorite(null, two._id);
+            }).rejects.toThrow();
         });
         test("nonexistent username", async () => {
-
+            expect(async () => {
+                await fileStuff.removeFavorite("peak", two._id);
+            }).rejects.toThrow();
         });
         test("not in list", async () => {
-
-        });
-        test("not authorized", async () => {
-
+            expect(async () => {
+                await fileStuff.removeFavorite("reg 1", two._id);
+            }).rejects.toThrow();
         });
     });
 });
+*/

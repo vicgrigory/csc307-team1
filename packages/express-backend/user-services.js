@@ -27,6 +27,8 @@ async function createUser(desiredUsername) { // if we add a password, it should 
     throw new Error(`The username ${desiredUsername} is taken!`);
 }
 
+// add retrieved hash password
+
 /*
 Sets an existing user as a moderator. Checks for a valid username and that the user is not already a moderator before performing the action.
 desiredUsername: String. Function will return an error if it cannot find that user in the database, or if that user is already a moderator. Can set this to _id if needed.

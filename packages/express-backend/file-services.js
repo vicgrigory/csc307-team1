@@ -105,16 +105,27 @@ async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDat
 /* need a function to alter tags */
 
 /*
-Removes a file from the database. Requires the fileID, assumes the backend checks whether the user owns the file/ has permissions to delete it.
+Removes a file from the database. Requires the fileID and username.
 fileID: File ID of the media to remove.
+desiredUsername: Username of the user trying to complete the action.
 */
-async function removeFile(fileId) {
+async function removeFile(fileId, desiredUsername) {
     if (!fileId) {
         throw new Error("Invalid file ID!");
     }
+    if (!desiredUsername) {
+        throw new Error("Invalid username!");
+    }
     const file = await fileModel.findOne({ _id: fileId });
+    const user = await userFunctions.getUser(desiredUsername);
     if (!file) {
         throw new Error("File could not be found!");
+    }
+    if (!user) {
+        throw new Error("User could not be found!");
+    }
+    if ((user._id != file.userID) || (user.type != 'moderator')) {
+        throw new Error("User is unauthorized to perform this action!");
     }
     try {
         return fileModel.findByIdAndDelete(fileId);
