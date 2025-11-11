@@ -2,9 +2,8 @@ import mongoose from "mongoose";
 import dotenv from 'dotenv';
 import userModel from "./user.js";
 
-dotenv.config({
-  override: false
-});
+console.log("Runtime check: MONGODB_URI is", process.env.MONGODB_URI ? "defined" : "undefined");
+
 mongoose.set("debug", true);
 
 mongoose.connect(process.env.MONGODB_URI, {
