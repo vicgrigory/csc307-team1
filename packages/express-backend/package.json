@@ -9,6 +9,8 @@
     "start": "node backend.js"
   },
   "jest": {
+    "testEnvironment": "node",
+    "setupFiles": ["<rootDir>/jest.env.js"],
     "transform": {}
   },
   "author": "",
