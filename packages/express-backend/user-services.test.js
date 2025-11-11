@@ -14,27 +14,33 @@ async function setupDB() {
     await users.insertMany([
         {
             username: "reg 1",
+            hashedPassword: "hash",
             about: "about 1",
             profile: "profile 1"
         },
         {
             username: "reg 2",
+            hashedPassword: "hash",
             about: "about 2"
         },
         {
             username: "reg 3",
+            hashedPassword: "hash",
             about: "about 3"
         },
         {
             username: "reg 4",
+            hashedPassword: "hash",
             about: "about 4"
         },
         {
             username: "mod 1",
+            hashedPassword: "hash",
             type: 'moderator'
         },
         {
             username: "mod 2",
+            hashedPassword: "hash",
             type: 'moderator'
         }
     ]);
@@ -48,13 +54,13 @@ async function teardownDB() {
 describe("GET", () => {
     describe("success", () => {
         test("1: username check", async () => {
-            expect((await userStuff.getUser("help")).username).toBe("help");
+            expect((await userStuff.getUser("reg 1")).username).toBe("reg 1");
         });
         test("1: about check", async () => {
-            expect((await userStuff.getUser("help")).about).toBe("i am cool");
+            expect((await userStuff.getUser("reg 1")).about).toBe("about 1");
         });
         test("1: profile check", async () => {
-            expect((await userStuff.getUser("help")).profile).toBe("heehee");
+            expect((await userStuff.getUser("reg 1")).profile).toBe("profile 1");
         });
     });
     describe("fail", () => {
@@ -70,7 +76,7 @@ describe("GET", () => {
         });
     });
 });
-/*
+
 // createUser
 describe("ADD", () => {
     describe("success", () => {
@@ -108,19 +114,19 @@ describe("ADD", () => {
 describe("EDIT PROFILE", () => {
     describe("success", () => {
         test("all fields", async () => {
-            await userStuff.editInformation((await userStuff.getUser("help"))._id, "look at this cool about text!!!", "profile pic link");
-            expect((await userStuff.getUser("help")).about).toBe("look at this cool about text!!!");
-            expect((await userStuff.getUser("help")).profile).toBe("profile pic link");
+            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, "altered about", "altered profile");
+            expect((await userStuff.getUser("reg 1")).about).toBe("altered about");
+            expect((await userStuff.getUser("reg 1")).profile).toBe("altered profile");
         });
         test("null fields", async () => {
-            await userStuff.editInformation((await userStuff.getUser("help"))._id, null, null);
-            expect((await userStuff.getUser("help")).about).toBe("look at this cool about text!!!");
-            expect((await userStuff.getUser("help")).profile).toBe("profile pic link");
+            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, null, null);
+            expect((await userStuff.getUser("reg 1")).about).toBe("altered about");
+            expect((await userStuff.getUser("reg 1")).profile).toBe("altered profile");
         });
         test("empty fields", async () => {
-            await userStuff.editInformation((await userStuff.getUser("help"))._id, "", "");
-            expect((await userStuff.getUser("help")).about).toBe("");
-            expect((await userStuff.getUser("help")).profile).toBe("");
+            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, "", "");
+            expect((await userStuff.getUser("reg 1")).about).toBe("");
+            expect((await userStuff.getUser("reg 1")).profile).toBe("");
         });
     });
     describe("fail", () => {
@@ -141,18 +147,29 @@ describe("EDIT PROFILE", () => {
 describe("EDIT USERNAME", () => {
     describe("success", () => {
         test("normal", async () => {
-
+            let curUser = await userStuff.getUser("reg 2");
+            await userStuff.editUsername(curUser._id, "reg 69");
+            let result = await userStuff.getUser("reg 69");
+            expect(result.username).toBe("reg 69");
+            expect(curUser._id).toEqual(result._id);
         });
     });
     describe("fail", () => {
         test("invalid id", async () => {
-
+            expect(async () => {
+                await userStuff.editUsername(null, "grug");
+            }).rejects.toThrow();
         });
         test("null id", async ()=> {
-
+            expect(async () => {
+                await userStuff.editUsername("jiafei", "grug");
+            }).rejects.toThrow();
         });
         test("duplicate", async () => {
-
+            let curUser = await userStuff.getUser("reg 69");
+            expect(async () => {
+                await userStuff.editUsername(curUser._id, "reg 1");
+            }).rejects.toThrow();
         });
     });
 });
@@ -161,13 +178,13 @@ describe("EDIT USERNAME", () => {
 describe("MOD", () => {
     describe("success", () => {
         test("set as a mod", async () => {
-            await userStuff.setAsModerator("criminal");
-            expect((await userStuff.getUser("criminal")).type).toBe("moderator");
+            await userStuff.setAsModerator("reg 4");
+            expect((await userStuff.getUser("reg 4")).type).toBe("moderator");
         });
         test("remove a mod", async () =>{
-            console.log(await userStuff.getUser("criminal"));
-            await userStuff.setAsRegular("criminal");
-            expect((await userStuff.getUser("criminal")).type).toBe("regular");
+            console.log(await userStuff.getUser("reg 4"));
+            await userStuff.setAsRegular("reg 4");
+            expect((await userStuff.getUser("reg 4")).type).toBe("regular");
         });
     });
     describe("fail", () => {
@@ -182,15 +199,15 @@ describe("MOD", () => {
             }).rejects.toThrow();
         });
         test("set as mod again", async () => {
-            await userStuff.setAsModerator("criminal");
+            await userStuff.setAsModerator("reg 4");
             expect(async () => {
-                await userStuff.setAsModerator("criminal");
+                await userStuff.setAsModerator("reg 4");
             }).rejects.toThrow();
         });
         test("set as regular again", async () => {
-            await userStuff.setAsRegular("criminal");
+            await userStuff.setAsRegular("reg 4");
             expect(async () => {
-                await userStuff.setAsRegular("criminal");
+                await userStuff.setAsRegular("reg 4");
             }).rejects.toThrow();
         });
     });
@@ -200,9 +217,9 @@ describe("MOD", () => {
 describe("DEL", () => {
     describe("success", () => {
         test("Delete user by username: regular use", async () => {
-            await expect(userStuff.deleteUser("new cool username")).resolves.toBeTruthy();
+            await expect(userStuff.deleteUser("reg 1")).resolves.toBeTruthy();
             expect(async () => {
-                await userStuff.getUser("new cool username");
+                await userStuff.getUser("reg 1");
             }).rejects.toThrow();
         });
     });
@@ -224,4 +241,3 @@ describe("DEL", () => {
         });
     });
 });
-*/

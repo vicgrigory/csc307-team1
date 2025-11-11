@@ -92,7 +92,7 @@ async function editInformation(_desiredId, desiredAbout, desiredProfile) {
     if (desiredProfile === null || desiredProfile === undefined) {
         desiredProfile = user.profile;
     }
-    return userModel.findOne({ _id: _desiredId }).updateOne({ username: desiredUsername, about: desiredAbout, profile: desiredProfile });
+    return userModel.findOne({ _id: _desiredId }).updateOne({ about: desiredAbout, profile: desiredProfile });
 }
 
 /*
