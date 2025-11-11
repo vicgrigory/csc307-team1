@@ -6,7 +6,7 @@ dotenv.config();
 mongoose.set("debug", true);
 
 //process.env.MONGODB_URI <- use this in production
-mongoose.connect("mongodb://localhost:27017/data", {
+await mongoose.connect("mongodb://localhost:27017/data", {
     //useNewUrlParser: true,
     //useUnifiedTopology: true
 }).catch((error) => console.log(error));
@@ -19,9 +19,11 @@ async function createUser(desiredUsername) { // if we add a password, it should 
     if (!desiredUsername) {
         throw new Error("Username cannot be empty!");
     }
-    if (( await userModel.findOne({ username: desiredUsername }) ) === null) {
+    if (!(await userModel.findOne({ username: desiredUsername }))) {
+        //console.log(`success, ${desiredUsername}`);
         return userModel.insertOne({ username: desiredUsername });
     };
+    //console.log(`fail, ${desiredUsername}`);
     throw new Error(`The username ${desiredUsername} is taken!`);
 }
 
@@ -115,7 +117,9 @@ async function getUser(desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
-    if ((await userModel.findOne({ username: desiredUsername })) == undefined) { // probably a better way to do this
+    let user = await userModel.find();
+    console.log(user);
+    if (!(await userModel.findOne({ username: desiredUsername }))) { // probably a better way to do this
         throw new Error("User could not be found!");
     }
     return userModel.findOne({ username: desiredUsername });

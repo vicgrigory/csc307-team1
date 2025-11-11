@@ -1,9 +1,7 @@
-import dotenv from "dotenv";
 import reviewStuff from './review-services';
 import review from './review';
-dotenv.config();
 
-/* Initialization */
+/* Initialization 
 beforeAll(async () => {
     await tearDownDB();
     await setupDB();
@@ -11,7 +9,8 @@ beforeAll(async () => {
 afterAll(async () => {
     await tearDownDB();
 });
-/* Functions */
+*/
+/* Functions 
 async function setupDB() {
     await review.insertMany([
         {
@@ -22,7 +21,7 @@ async function setupDB() {
 async function tearDownDB() {
     await review.deleteMany();
 }
-
+*/
 /* Tests */
 /*
 // addReview

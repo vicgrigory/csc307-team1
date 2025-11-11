@@ -37,6 +37,6 @@ const FileSchema = new mongoose.Schema(
     }
 );
 
-const File = mongoose.model("File", FileSchema, 'data');
+const File = mongoose.model("File", FileSchema);
 
 export default File;

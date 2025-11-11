@@ -102,6 +102,8 @@ async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDat
     }
 }
 
+/* need a function to alter tags */
+
 /*
 Removes a file from the database. Requires the fileID, assumes the backend checks whether the user owns the file/ has permissions to delete it.
 fileID: File ID of the media to remove.

@@ -8,7 +8,7 @@ const WebUserSchema = new mongoose.Schema(
         unique: true,
         immutable: false // Change to true if we want to lock usernames
     },
-    // Can add encrypted password field here
+    // Can add hashed password field here
     type: {
         type: String,
         enum: ['regular', 'moderator'],
@@ -35,6 +35,6 @@ const WebUserSchema = new mongoose.Schema(
     }
 );
 
-const WebUser = mongoose.model("WebUser", WebUserSchema, 'data');
+const WebUser = mongoose.model("WebUser", WebUserSchema);
 
 export default WebUser;

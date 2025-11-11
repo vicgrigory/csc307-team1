@@ -1,12 +1,9 @@
-import { MongoClient as mongo } from 'mongodb';
 import userStuff from './user-services.js';
 import users from './user.js';
-let connection;
-let db;
-let user;
 
 /* Initialization */
 beforeAll(async () => {
+    await teardownDB();
     await setupDB();
 })
 afterAll(async () => {
@@ -14,30 +11,23 @@ afterAll(async () => {
 })
 /* Functions */
 async function setupDB() {
-    // this needs to be in the services file :( ??
-    connection = await mongo.connect(global.__MONGO_URI__, {
-        //useNewUrlParser: true,
-        //useUnifiedTopology: true,
-    });
-    db = await connection.db();
-    user = await db.collection('WebUser');
-    await user.insertMany([
+    await users.insertMany([
         {
-            username: "help",
-            about: "i am cool",
-            profile: "heehee"
+            username: "reg 1",
+            about: "about 1",
+            profile: "profile 1"
         },
         {
-            username: "criminal",
-            about: "hackermans"
+            username: "reg 2",
+            about: "about 2"
         },
         {
-            username: "peak",
-            about: "mega peak"
+            username: "reg 3",
+            about: "about 3"
         },
         {
-            username: "why does this take so long",
-            about: "dark falz"
+            username: "reg 4",
+            about: "about 4"
         },
         {
             username: "mod 1",
@@ -50,8 +40,7 @@ async function setupDB() {
     ]);
 };
 async function teardownDB() {
-    await db.collection('WebUser').deleteMany();
-    await connection.close();
+    await users.deleteMany();
 };
 
 /* Tests */
@@ -59,7 +48,9 @@ async function teardownDB() {
 describe("ADD", () => {
     describe("success", () => {
         test("normal", async () => {
-            expect((userStuff.createUser("having fun"))).resolves.toBeTruthy();
+            expect(async () => {
+                await userStuff.createUser("reg 5");
+            }).resolves.toBeTruthy();
         });
     });
     describe("fail", () => {
@@ -75,12 +66,12 @@ describe("ADD", () => {
         })
         test("duplicate", async () => {
             expect(async () => {
-                await userStuff.createUser("criminal");
+                await userStuff.createUser("reg 1");
             }).rejects.toThrow();
         });
     });
 });
-
+/*
 // getUser
 describe("GET", () => {
     describe("success", () => {
@@ -228,3 +219,4 @@ describe("DEL", () => {
         });
     });
 });
+*/

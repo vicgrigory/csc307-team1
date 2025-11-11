@@ -4,12 +4,10 @@ const ReviewSchema = new mongoose.Schema(
     {
     mediaID: { // Composite Key
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'File',
         required: [true, "No valid media specified."]
     },
     userID: { // Composite Key
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'WebUser',
         required: [true, "No valid username specified."]
     },
     title: {
@@ -32,6 +30,6 @@ const ReviewSchema = new mongoose.Schema(
 ReviewSchema.index({ mediaID: 1, userID: 1 }, {unique: true});
 // A user can only add 1 review to a file.
 
-const Review = mongoose.model("Review", ReviewSchema, 'data');
+const Review = mongoose.model("Review", ReviewSchema);
 
 export default Review;
