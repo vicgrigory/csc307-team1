@@ -15,19 +15,24 @@ await mongoose.connect("mongodb://localhost:27017/data", {
 Creates a new user in the database with a desired username, setting the about and profile to empty strings and sets the user as a non moderator.
 desiredUsername: String. Currently no limit as to what it can be, can add that in if needed.
 */
-async function createUser(desiredUsername, hashedPassword) { // if we add a password, it should be hashed by this point
+async function createUser(desiredUsername, hash) { // if we add a password, it should be hashed by this point
     if (!desiredUsername) {
         throw new Error("Username cannot be empty!");
-    }
-    if (!(await userModel.findOne({ username: desiredUsername }))) {
-        //console.log(`success, ${desiredUsername}`);
-        return userModel.insertOne({ username: desiredUsername });
     };
-    //console.log(`fail, ${desiredUsername}`);
-    throw new Error(`The username ${desiredUsername} is taken!`);
+    if (await userModel.findOne({ username: desiredUsername })) {
+        throw new Error(`The username ${desiredUsername} is taken!`);
+    };
+    if (!hash) {
+        throw new Error("No hash specified!");
+    }
+    try {
+        return userModel.insertOne({ username: desiredUsername, hashedPassword: hash });
+    } catch(error) {
+        throw new Error("There was an error adding this user!");
+    }
 }
 
-// ADD HASHED PASSWORD STUFF
+// Function to change password here
 
 /*
 Sets an existing user as a moderator. Checks for a valid username and that the user is not already a moderator before performing the action.

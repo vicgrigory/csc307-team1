@@ -44,34 +44,6 @@ async function teardownDB() {
 };
 
 /* Tests */
-// createUser
-describe("ADD", () => {
-    describe("success", () => {
-        test("normal", async () => {
-            expect(async () => {
-                await userStuff.createUser("reg 5");
-            }).resolves.toBeTruthy();
-        });
-    });
-    describe("fail", () => {
-        test("empty string username", async () => {
-            expect(async () => {
-                await userStuff.createUser("");
-            }).rejects.toThrow();
-        });
-        test("no input username", async () => {
-            expect(async () => {
-                await userStuff.createUser();
-            }).rejects.toThrow();
-        })
-        test("duplicate", async () => {
-            expect(async () => {
-                await userStuff.createUser("reg 1");
-            }).rejects.toThrow();
-        });
-    });
-});
-/*
 // getUser
 describe("GET", () => {
     describe("success", () => {
@@ -94,6 +66,39 @@ describe("GET", () => {
         test("empty", async () => {
             expect(async () => {
                 await userStuff.getUser("");
+            }).rejects.toThrow();
+        });
+    });
+});
+/*
+// createUser
+describe("ADD", () => {
+    describe("success", () => {
+        test("normal", async () => {
+            let newUser = await userStuff.createUser("reg 5", "hash");
+            expect(newUser.username).toBe("reg 5");
+            expect(newUser.hashedPassword).toBe("hash");
+        });
+    });
+    describe("fail", () => {
+        test("empty string username", async () => {
+            expect(async () => {
+                await userStuff.createUser("", "hash");
+            }).rejects.toThrow();
+        });
+        test("no input username", async () => {
+            expect(async () => {
+                await userStuff.createUser(null, "hash");
+            }).rejects.toThrow();
+        });
+        test("no hash", async () => {
+            expect(async () => {
+                await userStuff.createUser("reg 6");
+            }).rejects.toThrow();
+        });
+        test("duplicate", async () => {
+            expect(async () => {
+                await userStuff.createUser("reg 1", "hash");
             }).rejects.toThrow();
         });
     });
