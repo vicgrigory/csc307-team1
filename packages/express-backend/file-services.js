@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import fileModel from "./file.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
