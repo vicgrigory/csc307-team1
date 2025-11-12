@@ -1,11 +1,20 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
 import userModel from "./user.js";
 
-dotenv.config({ override: false }); // loads ./.env that we wrote above
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-console.log("Runtime check: MONGODB_URI is", process.env.MONGODB_URI ? "defined" : "undefined");
+dotenv.config({
+  path: path.join(__dirname, ".env"),
+  override: false,
+  // quiet: true,  // uncomment to silence dotenv logs
+});
 
+if (!process.env.MONGODB_URI) {
+  throw new Error("MONGODB_URI is undefined at runtime");
+}
 
 mongoose.set("debug", true);
 
