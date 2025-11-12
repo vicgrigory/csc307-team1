@@ -23,6 +23,10 @@ mongoose.connect(process.env.MONGODB_URI, {
     //useUnifiedTopology: true
 }).catch((error) => console.log(error));
 
+export async function disconnectDB() {
+  await mongoose.connection.close(true);
+}
+
 /*
 Creates a new user in the database with a desired username, setting the about and profile to empty strings and sets the user as a non moderator.
 desiredUsername: String. Currently no limit as to what it can be, can add that in if needed.
