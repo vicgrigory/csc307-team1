@@ -11,7 +11,6 @@ beforeAll(async () => {
 })
 afterAll(async () => {
     await teardownDB();
-    await userServices.disconnectDB();
 })
 /* Functions */
 async function setupDB() {
