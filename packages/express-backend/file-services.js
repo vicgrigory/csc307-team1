@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
 import fileModel from "./file.js";
 import userFunctions from "./user-services.js";
 
 mongoose.set("debug", true);
 
-mongoose.connect("mongodb://localhost:27017/data", {
+//process.env.MONGODB_URI <- use this in production
+await mongoose.connect("mongodb://localhost:27017/data", {
 //    useNewUrlParser: true,
 //    useUNifiedTopology: true
 }).catch((error) => console.log(error));
@@ -139,32 +141,42 @@ Searches the database for desired files. Tags are not necessary, but each additi
 query: The search query. Can probably implement a way to search other things, but right now it searches the name.
 tags: (optional) The tags applied to the search query, should be an array of strings.
 */
-function searchFiles(query, ...tags) {
+function searchFiles(query, tag) {
+    if (query === undefined) {
+        query = null;
+    }
+    if (tag === undefined) {
+        tag = null;
+    }
+    //console.log("query:", query, !query);
     if (!query) {
-        if (tags) {
+        //console.log("tags:", tags, tags===null || tags.length == 0);
+        if (tag===null || tag.length == 0) {
             try {
-                return fileModel.find().where({ tags: { $all: tags } });
+                return fileModel.find({}).exec();
             } catch(error) {
-                throw new Error("An error occured while searching for files [tags only]!");
+                throw new Error("An error occured while searching for files [no input]!");
+            }   
+        }
+        try {
+            return fileModel.find({ tags: {$all: tag}}).exec();
+        } catch(error) {
+            throw new Error("An error occured while searching for files [tags only]!");
+        }
+    } else if (query) {
+        //console.log("tags:", tags, tags===null || tags.length == 0);
+        if (tag===null || tag.length == 0) {
+            try {
+                return fileModel.find({ name: {$regex: query, $options:"i"}}).exec();
+            } catch(error) {
+                throw new Error("An error occured while searching for files [query only]!");
             }
         }
         try {
-            return fileModel.find();
+            return fileModel.find({ name: {$regex: query}, tags: {$all: tag} }).exec();
         } catch(error) {
-            throw new Error("An error occured while searching for files [no input]!");
+            throw new Error("An error occured while searching for files [query and tags]!");
         }
-    }
-    if (!tags) {
-        try {
-            return fileModel.find().where({ name: /query/i });
-        } catch(error) {
-            throw new Error("An error occured while searching for files [query only]!");
-        }
-    }
-    try {
-        return fileModel.find().where({ name: /query/i, tags: { $all: tags } });
-    } catch(error) {
-        throw new Error("An error occured while searching for files [query and tags]!");
     }
 }
 

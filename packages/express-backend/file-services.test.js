@@ -3,7 +3,7 @@ import file from './file';
 import user from './user';
 import userStuff from './user-services';
 
-/* Initialization 
+/* Initialization */
 beforeAll(async () => {
     await setupDB();
 });
@@ -11,7 +11,7 @@ afterAll(async () => {
     await tearDownDB();
 });
 
-/* Functions 
+/* Functions */
 async function setupDB() {
     await user.insertMany([
         {
@@ -56,7 +56,7 @@ async function tearDownDB() {
     await file.deleteMany();
 }
 
-/* Tests 
+/* Tests */
 // myFiles
 describe("USER", () => {
     describe("success", () => {
@@ -66,18 +66,14 @@ describe("USER", () => {
             }).resolves.toBeTruthy;
         });
         test("normal use, parameters", async () => {
-            retrived = await fileStuff.myFiles("reg 1");
-            expect(retrieved).toContain({
-                title: "file 1",
-                link: "external link 1",
-                filetype: 'mp3',
-                userID: (await userStuff.getUser("reg 1"))._id,
-                tags: ["test", "science"]
-            })
+            let retrieved = (await fileStuff.myFiles("reg 1"))[0];
+            expect(["file 1", "file 3"]).toContain(retrieved.title);
+            expect(["external link 1", "external link 3"]).toContain(retrieved.link);
+            expect(['mp3', 'pdf']).toContain(retrieved.filetype);
         });
         test("no results", async () => {
-            retrived = await fileStuff.myFiles("reg 2");
-            expect(retrieved).toContain([]);
+            let retrieved = await fileStuff.myFiles("reg 2");
+            expect(retrieved).toEqual([]);
         });
     });
     describe("fail", () => {
@@ -98,32 +94,28 @@ describe("USER", () => {
 describe("QUERY", () => {
     describe("success", () => {
         test("query and no tags", async () => {
-            expect(async () => {
-                await fileStuff.searchFiles("file");
-            }).resolves.toBe();
+            let result = await fileStuff.searchFiles("file", null)[0];
+            console.log(result);
+            expect(["file 1", "file 2", "file 3"]).toContain(result.title);
         });
         test("no query but tags", async () => {
-            expect(async () => {
-                await fileStuff.searchFiles(null, "science", "math");
-            }).resolves.toBe();
+            let result = await fileStuff.searchFiles(null, ["science", "math"])[0];
+            expect(["file 2"]).toContain(result.title);
         });
         test("query and tags", async () => {
-            expect(async () => {
-                await fileStuff.searchFiles("2", "math");
-            }).resolves.toBe();
+            let result = await fileStuff.searchFiles("2", ["math", "science"])[0];
+            expect(["file 2"]).toContain(result.title);
         });
         test("nothing inputted", async () => {
-            expect(async () => {
-                await fileStuff.searchFiles();
-            }).resolves.toBe();
+            let result = await fileStuff.searchFiles(null, null)[0];
+            expect(["file 1", "file 2", "file 3"]).toContain(result.title);
         });
         test("no results", async () => {
-            expect(async () => {
-                await fileStuff.searchFiles("3", "math");
-            }).resolves.toBe([]);
+            let result = await fileStuff.searchFiles("3", ["math"]);
+            expect(result).toEqual([]);
         });
     });
-    describe("fail", () => {
+    describe("fail", () => { // implement
         test("invalid tag", async () => {
             expect(async () => {
                 await fileStuff.searchFiles("some query", "huh");
@@ -131,7 +123,7 @@ describe("QUERY", () => {
         });
     });
 });
-
+/*
 // getFile
 describe("GET", () => {
     describe("success", () => {
@@ -168,13 +160,12 @@ describe("ADD", () => {
         let fullFile
         let minFile
         beforeAll(async () => {
-            let newFullFile = await fileStuff.addFile("reg 1", "file 4", "link 4", 'pdf', "creator 4", "date 4");
-            fullFile = fileStuff.getFile(newFullFile._id);
-            let newMinFile = await fileStuff.addFile("mod 1", "file 5", "link 5", 'mp3');
-            minFile = fileStuff.getFile(newMinFile._id);
+            fullFile = await fileStuff.addFile("reg 1", "file 4", "link 4", 'pdf', "creator 4", "date 4");
+            minFile = await fileStuff.addFile("mod 1", "file 5", "link 5", 'mp3');
         });
         test("full username check", async () => {
-            expect(fullFile.userID).toBe("reg 1");
+            let curUser = await userStuff.getUser("reg 1");
+            expect(fullFile.userID).toEqual(curUser._id);
         });
         test("full title check", async () => {
             expect(fullFile.title).toBe("file 4");
@@ -183,7 +174,8 @@ describe("ADD", () => {
             expect(fullFile.link).toBe("link 4");
         });
         test("minimal username check", async () => {
-            expect(minFile.userID).toBe("mod 1");
+            let curUser = await userStuff.getUser("mod 1");
+            expect(minFile.userID).toEqual(curUser._id);
         });
         test("minimal title check", async () => {
             expect(minFile.title).toBe("file 5");
@@ -225,14 +217,14 @@ describe("ADD", () => {
         });
     });
 });
-
+/*
 // editFile
 describe("EDIT", () => {
     describe("success", () => {
         let editFile;
         beforeAll(async () => {
             let results = await fileStuff.searchFiles("file");
-            editFile = results._id;
+            editFile = results._id; // Rewrite to search through array
         });
         test("all fields, title check", async () => {
             await fileStuff.editFile(editFile, "reg 1", "file 6", "creator 6", "date 6");

@@ -46,8 +46,6 @@ async function setAsModerator(desiredUsername) {
     if (!user) {
         throw new Error("User could not be found!");
     }
-    console.log(user);
-    console.log(`username: ${desiredUsername}, status: ${user.type}, mod?: ${user.type == "moderator"}`);
     if (user.type == "regular") {
         return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'moderator' });
     };
@@ -125,7 +123,6 @@ async function getUser(desiredUsername) {
         throw new Error("Invalid username!");
     }
     let user = await userModel.find();
-    console.log(user);
     if (!(await userModel.findOne({ username: desiredUsername }))) { // probably a better way to do this
         throw new Error("User could not be found!");
     }
