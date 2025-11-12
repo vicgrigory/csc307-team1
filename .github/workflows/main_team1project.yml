@@ -23,18 +23,13 @@ jobs:
         with:
           node-version: '24.x'
           
-      - name: Debug MONGODB_URI visibility
+      - name: Write .env for tests
         working-directory: packages/express-backend
-        env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
-          echo "🔍 Checking MONGODB_URI presence..."
-          if [ -z "$MONGODB_URI" ]; then
-             echo "❌ MONGODB_URI is missing"
-             exit 1
-          else
-             echo "✅ MONGODB_URI detected (length: ${#MONGODB_URI})"
-          fi
+          rm -f .env
+          printf "MONGODB_URI=%s\n" "${{ secrets.MONGODB_URI }}" >> .env
+          grep -E '^MONGODB_URI=' .env >/dev/null && echo ".env has MONGODB_URI"
+    
           
       - name: npm install, build, and test
         run: |
@@ -42,8 +37,6 @@ jobs:
               npm run -w express-backend build --if-present
               npm run -w express-backend test --if-present
         working-directory: packages/express-backend
-        env:
-          MONGO_URI: ${{ secrets.MONGODB_URI }}
         
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -74,6 +67,7 @@ jobs:
           package: .
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FE20453577CF4D7B9DAAC1EAFFA7D634 }}
+
 
 
 
