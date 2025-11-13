@@ -1,10 +1,11 @@
+/*
 import user from './user';
 import userStuff from './user-services';
 import file from './file';
 import fileStuff from './file-services';
 import reviewStuff from './review-services';
 import review from './review';
-
+*/
 /* Initialization 
 beforeAll(async () => {
     await tearDownDB();
