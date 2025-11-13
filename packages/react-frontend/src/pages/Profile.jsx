@@ -10,7 +10,7 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
 
   // Profile picture state
-  const [profilePic, setProfilePic] = useState("https://via.placeholder.com/150");
+  const [profilePic, setProfilePic] = useState("https://media.newyorker.com/photos/59095bb86552fa0be682d9d0/master/w_2240,c_limit/Monkey-Selfie.jpg");
 
   // Example lists
   const favoriteMedia = ["Pride and Prejudice", "The Beatles Anthology", "Metropolis (1927)"];
