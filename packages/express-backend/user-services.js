@@ -1,14 +1,31 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
 import userModel from "./user.js";
 
-dotenv.config();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+dotenv.config({
+  path: path.join(__dirname, ".env"),
+  override: false,
+  // quiet: true,  // uncomment to silence dotenv logs
+});
+
+if (!process.env.MONGODB_URI) {
+  throw new Error("MONGODB_URI is undefined at runtime");
+}
+
 mongoose.set("debug", true);
 
 mongoose.connect(process.env.MONGODB_URI, {
     //useNewUrlParser: true,
     //useUnifiedTopology: true
 }).catch((error) => console.log(error));
+
+export async function disconnectDB() {
+  await mongoose.connection.close(true);
+}
 
 /*
 Creates a new user in the database with a desired username, setting the about and profile to empty strings and sets the user as a non moderator.

@@ -1,9 +1,25 @@
 import mongoose from "mongoose";
 import fileModel from "./file.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+dotenv.config({
+  path: path.join(__dirname, ".env"),
+  override: false,
+  // quiet: true,  // uncomment to silence dotenv logs
+});
+
+if (!process.env.MONGODB_URI) {
+  throw new Error("MONGODB_URI is undefined at runtime");
+}
 
 mongoose.set("debug", true);
 
-mongoose.connect("mongodb://localhost:27017/users", {
+mongoose.connect("process.env.MONGODB_URI", {
     useNewUrlParser: true,
     useUNifiedTopology: true
 }).catch((error) => console.log(error));
