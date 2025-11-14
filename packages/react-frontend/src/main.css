@@ -383,7 +383,7 @@ html {
 }
 
 body {
-  background: linear-gradient(to bottom, #c4edf2 0%, #bde6eb 100%);
+  background: #c4edf2;
   margin: 0;
   padding: 0;
 }
