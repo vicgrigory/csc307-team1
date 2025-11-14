@@ -1,0 +1,105 @@
+/* Home.css */
+
+/* Top grey bar */
+.home-header {
+    width: 100%;
+    background-color: #242424;  
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Welcome section (hero text) */
+.home-hero {
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Big, bold welcome */
+.home-hero h1 {
+  font-size: 3.5rem;     
+  font-weight: 1000;
+  margin-bottom: 1rem;
+}
+
+/* Centers the paragraph */
+.home-hero p {
+  font-size: 1.3rem;
+  line-height: 1.65;
+  max-width: 850px;
+  margin: 0 auto;       
+  color: #444;
+}
+
+/* Logo (top-left) */
+.home-logo {
+    width: 100px;
+    height: auto;
+    cursor: pointer;
+    display: block;
+}
+
+/* Search bar (top-middle) */
+.home-search-bar {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    margin: 0 1.5rem;
+}
+
+/* Search bar input */
+.input {
+  width: 100%;
+  max-width: 400px;
+  min-width: 220px;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border-radius: 999px;   
+  border: 1px solid #bbb;
+  background-color: #fefefe !important;
+}
+
+/* Light grey bar under top header containing links*/
+.links-bar {
+    width: 100%;
+    background-color: #9c9c9c;   
+    padding: 0.6rem 0;         
+}
+
+/* Style each link */
+.links-link {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 0 1.5rem;            
+  border-right: 2px solid #6d6d6d;
+}
+
+.links-link:last-child {
+  border-right: none;
+}
+
+/* Formatting the links in the light grey top bar*/
+.links-nav {
+  display: flex;
+  justify-content: center;                  
+  align-items: center;
+}
+
+/* Profile Picture (top-right) */
+.profile-picture {
+    width: 100px;
+    height: auto;
+    cursor: pointer;
+    display: block;
+}
+
+
+
+
+
+
+
+

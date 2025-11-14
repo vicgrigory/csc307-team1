@@ -1,65 +1,69 @@
-import { useState } from "react";
+// src/pages/Home.jsx
+import "./Home.css";
+
+import { Link } from "react-router-dom";
+
+import logo from "../assets/OpenShelf-Logo.png";
+import profile_pic from "../assets/Profile-Picture.png";
 
 export default function Home() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all");
-
+  // Example "Today's Pick" data (replace with dynamic content later)
   const todaysPick = {
     image: "https://via.placeholder.com/200x300", // placeholder image
     title: "Pride and Prejudice",
-    author: "Jane Austen",
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log("Searching for:", searchTerm, "Filter:", filter);
-    // Later: fetch(`http://localhost:8000/search?query=${searchTerm}&filter=${filter}`)
+    author: "Jane Austen"
   };
 
   return (
     <div className="page-container">
-      <h1>Welcome to OpenShelf</h1>
-      <p>This is the home page of your digital library.</p>
+      {/* Top bar of the Home Page containing Logo, Search Bar, and Profile link */}
+      <header className="home-header">
+        {/* OpenShelf Logo (top-left) */}
+        <Link to="/">
+          <img src={logo} alt="OpenShelf Logo" className="home-logo" />
+        </Link>
 
-      {/* Search Bar */}
-      <form onSubmit={handleSearch} className="search-form">
-        <input
-          type="text"
-          placeholder="Search books, music, or media..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
-        />
-
-        {/* Filter Dropdown */}
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="search-filter"
-        >
-          <option value="all">All Media</option>
-          <option value="books">Books</option>
-          <option value="music">Music</option>
-          <option value="videos">Videos</option>
-          <option value="images">Images</option>
-        </select>
-
-        <button type="submit" className="search-button">Search</button>
-      </form>
-
-      {/* Today's Pick Section */}
-      <section>
-        <h2>Today's Pick</h2>
-        <div className="todays-pick">
-          <img
-            src={todaysPick.image}
-            alt={todaysPick.title}
-            className="todays-pick-image"
+        {/* Search bar (top-middle) */}
+        <div className="home-search-bar">
+          <input
+            type="text"
+            placeholder="Search OpenShelf..."
+            className="input"
           />
-          <p className="todays-pick-title">{todaysPick.title}</p>
-          <p className="todays-pick-author">{todaysPick.author}</p>
         </div>
-      </section>
+
+        {/* Profile (top-right) */}
+        <Link to="/profile">
+          <img src={profile_pic} alt="Profile Picture" className="profile-picture" />
+        </Link>
+      </header>
+
+      {/* Bar that contains the links to the other pages */} 
+      <header className="links-bar">
+        <nav className="links-nav">
+          <Link to="/about" className="links-link">About</Link>
+          <Link to="/post" className="links-link">Upload</Link>
+          <Link to="/recentposted" className="links-link">Recently Posted</Link>
+          <Link to="/popular" className="links-link">Most Popular</Link>
+          <Link to="/categories" className="links-link">Categories</Link>
+        </nav>
+      </header>
+
+      <main className="home-page-content">
+        {/* Welcome message */}
+        <section className="home-hero">
+          <h1>Welcome to OpenShelf!</h1>
+          <p>
+            OpenShelf is a student-driven digital library where you can upload, share,
+            and discover textbooks, research papers, videos, and other academic media,
+            designed by students, for students.
+          </p> 
+          <p>
+            Feel free to dive in, share your knowledge,
+            and discover something new today - access to academic materials has never been easier!
+          </p>
+        </section>
+      </main>
     </div>
   );
 }
