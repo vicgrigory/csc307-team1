@@ -12,7 +12,6 @@ function MyApp() {
           path="/"
           element={
             <>
-              <NavBar current="home" />
               <Home />
             </>
           }
@@ -21,7 +20,6 @@ function MyApp() {
           path="/about"
           element={
             <>
-              <NavBar current="about" />
               <About />
             </>
           }
