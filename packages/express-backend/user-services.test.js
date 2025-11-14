@@ -1,8 +1,8 @@
-/*
+
 import userStuff from './user-services.js';
 import users from './user.js';
 
-/* Initialization 
+/* Initialization */
 beforeAll(async () => {
     await teardownDB();
     await setupDB();
@@ -10,7 +10,7 @@ beforeAll(async () => {
 afterAll(async () => {
     await teardownDB();
 })
-/* Functions 
+/* Functions */
 async function setupDB() {
     await users.insertMany([
         {
@@ -50,7 +50,7 @@ async function teardownDB() {
     await users.deleteMany();
 };
 
-/* Tests 
+/* Tests */
 // getUser
 describe("GET", () => {
     describe("success", () => {
@@ -242,4 +242,3 @@ describe("DEL", () => {
         });
     });
 });
-*/

@@ -31,7 +31,7 @@ async function addReview(fileId, desiredUsername, reviewTitle, reviewContent, re
     if (!reviewContent) {
         throw new Error("Review must contain content!");
     }
-    if (!reviewRating || 0< reviewRating< 5) {
+    if (!reviewRating || !(0<= reviewRating<= 5)) {
         throw new Error("Review must contain a rating from 0-5!");
     }
     const file = await fileFunctions.getFile(fileId);
@@ -116,15 +116,17 @@ async function editReview(desiredUsername, reviewId, reviewContent, reviewRating
     if (!user) {
         throw new Error("Username does not correspond to a valid user!");
     }
-    if ((review.userID != user._id) && (user.type != 'moderator')) {
+    if (!(review.userID.equals(user._id)) && (user.type != 'moderator')) {
         throw new Error("Not authorized!");
     }
+    console.log(reviewContent, reviewRating);
     if (!reviewContent) {
         reviewContent = review.content;
     }
-    if (!reviewRating) {
+    if (reviewRating === null || reviewRating === undefined) {
         reviewRating = review.rating;
     }
+    console.log(reviewContent, reviewRating);
     try {
         return reviewModel.updateOne({ _id: reviewId }, { content: reviewContent, rating: reviewRating });
     } catch(error) {
@@ -152,7 +154,7 @@ async function deleteReview(desiredUsername, reviewId) {
     if (!user) {
         throw new Error("Username does not correspond to a valid user!");
     }
-    if ((review.userID != user._id) && (user.type != 'moderator')) {
+    if (!(review.userID.equals(user._id)) && (user.type != 'moderator')) {
         throw new Error("Not authorized!");
     }
     try {

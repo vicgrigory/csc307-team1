@@ -1,5 +1,5 @@
+
 import user from './user';
-import userStuff from './user-services';
 import file from './file';
 import fileStuff from './file-services';
 import reviewStuff from './review-services';
@@ -11,7 +11,7 @@ beforeAll(async () => {
     await setupDB();
 });
 afterAll(async () => {
-    //await tearDownDB();
+    await tearDownDB();
 });
 
 /* Functions */
@@ -31,6 +31,7 @@ async function setupDB() {
         },
         {
             username: "mod 1",
+            hashedPassword: "hash",
             type: 'moderator'
         }
     ])
@@ -77,17 +78,13 @@ describe("GET /USER", () => {
     describe("success", () => {
         test("results", async () => {
             let result = await reviewStuff.getReviewsUser("reg 1");
-            expect(result).toContain({
-                mediaID: (await file.findOne({title: "file 1"}))._id,
-                userID: (await user.findOne({username: "reg 1"}))._id,
-                title: "review 1",
-                content: "this sucks",
-                rating: 0
-            });
+            expect(result[0].title).toBe("review 1");
+            expect(result[0].content).toBe("this sucks");
+            expect(result[0].rating).toBe(0);
         });
         test("no results", async () => {
             let result = await reviewStuff.getReviewsUser("reg 2");
-            expect(result).toBeNull();
+            expect(result).toEqual([]);
         });
     });
     describe("fail", () => {
@@ -104,7 +101,7 @@ describe("GET /USER", () => {
         
     });
 });
-/*
+
 // getReview media
 describe("GET /MEDIA", () => {
     describe("success", () => {
@@ -115,25 +112,17 @@ describe("GET /MEDIA", () => {
             curFileTwo = await fileStuff.searchFiles("file 2");
         });
         test("results", async () => {
-            let result = await reviewStuff.getReviewsMedia(curFileOne._id);
-            expect(result).toBe({
-                mediaID: (await file.findOne({title: "file 1"}))._id,
-                userID: (await user.findOne({username: "reg 1"}))._id,
-                title: "review 1",
-                content: "this sucks",
-                rating: 0
-            },
-            {
-                mediaID: (await file.findOne({title: "file 1"}))._id,
-                userID: (await user.findOne({username: "mod 1"}))._id,
-                title: "review 2",
-                content: "this is peak",
-                rating: 5
-            });
+            let result = await reviewStuff.getReviewsMedia(curFileOne[0]._id);
+            expect(result[0].title).toBe("review 1");
+            expect(result[0].content).toBe("this sucks");
+            expect(result[0].rating).toBe(0);
+            expect(result[1].title).toBe("review 2");
+            expect(result[1].content).toBe("this is peak");
+            expect(result[1].rating).toBe(5);
         });
         test("no results", async () => {
-            let result = await reviewStuff.getReviewsMedia(curFileTwo);
-            expect(result).toBeNull();
+            let result = await reviewStuff.getReviewsMedia(curFileTwo[0]);
+            expect(result).toEqual([]);
         });
     });
     describe("fail", () => {
@@ -158,11 +147,11 @@ describe("ADD", () => {
             curFile = await fileStuff.searchFiles("file 1");
         });
         test("normal use", async () => {
-            await reviewStuff.addReview(curFile._id, "reg 3", "review 3", "content 3", 5);
+            await reviewStuff.addReview(curFile[0]._id, "reg 3", "review 3", "content 3", 5);
             let curReview = await reviewStuff.getReviewsUser("reg 3");
-            expect(curReview.title).toBe("review 3");
-            expect(curReview.content).toBe("content 3");
-            expect(curReview.rating).toBe(5);
+            expect(curReview[0].title).toBe("review 3");
+            expect(curReview[0].content).toBe("content 3");
+            expect(curReview[0].rating).toBe(5);
         });
     });
     describe("fail", () => {
@@ -217,32 +206,33 @@ describe("EDIT", () => {
     });
     describe("success", () => {
         test("content and rating", async () => {
-            await reviewStuff.editReview("reg 1", curReview._id, "new content", 5);
+            await reviewStuff.editReview("reg 1", curReview[0]._id, "new content", 5);
             let result = await reviewStuff.getReviewsUser("reg 1");
-            expect(result.content).toBe("new content");
-            expect(result.rating).toBe(5);
+            console.log(result);
+            expect(result[0].content).toBe("new content");
+            expect(result[0].rating).toBe(5);
         });
         test("content only", async () => {
-            await reviewStuff.editReview("reg 1", curReview._id, "content 1");
+            await reviewStuff.editReview("reg 1", curReview[0]._id, "content 1");
             let result = await reviewStuff.getReviewsUser("reg 1");
-            expect(result.content).toBe("content 1");
+            expect(result[0].content).toBe("content 1");
         });
         test("rating only", async () => {
-            await reviewStuff.editReview("reg 1", curReview._id, null, 0);
+            await reviewStuff.editReview("reg 1", curReview[0]._id, null, 0);
             let result = await reviewStuff.getReviewsUser("reg 1");
-            expect(result.rating).toBe(0);
+            expect(result[0].rating).toBe(0);
         });
         test("none", async () => {
-            await reviewStuff.editReview("reg 1", curReview._id);
+            await reviewStuff.editReview("reg 1", curReview[0]._id);
             let result = await reviewStuff.getReviewsUser("reg 1");
-            expect(result.content).toBe("content 1");
-            expect(result.rating).toBe(0);
+            expect(result[0].content).toBe("content 1");
+            expect(result[0].rating).toBe(0);
         });
         test("mod auth", async () => {
-            await reviewStuff.editReview("mod 1", curReview._id, "content 4", 4);
+            await reviewStuff.editReview("mod 1", curReview[0]._id, "content 4", 4);
             let result = await reviewStuff.getReviewsUser("reg 1");
-            expect(result.content).toBe("content 4");
-            expect(result.rating).toBe(4);
+            expect(result[0].content).toBe("content 4");
+            expect(result[0].rating).toBe(4);
         });
     });
     describe("fail", () => {
@@ -286,14 +276,14 @@ describe("DEL", () => {
     });
     describe("success", () => {
         test("normal use", async () => {
-            await reviewStuff.deleteReview("reg 1", curFileOne._id);
+            await reviewStuff.deleteReview("reg 1", curFileOne[0]._id);
             let result = await reviewStuff.getReviewsUser("reg 1");
-            expect(result).toBeNull();
+            expect(result).toEqual([]);
         });
         test("mod auth", async () => {
-            await reviewStuff.deleteReview("mod 1", curFileTwo._id);
+            await reviewStuff.deleteReview("mod 1", curFileTwo[0]._id);
             let result = await reviewStuff.getReviewsUser("reg 3");
-            expect(result).toBeNull();
+            expect(result).toEqual([]);
         });
     });
     describe("fail", () => {
@@ -309,19 +299,18 @@ describe("DEL", () => {
         });
         test("invalid user", async () => {
             expect(async () => {
-                await reviewStuff.deleteReview(null, curFileThree._id);
+                await reviewStuff.deleteReview(null, curFileThree[0]._id);
             }).rejects.toThrow();
         });
         test("nonexistent user", async () => {
             expect(async () => {
-                await reviewStuff.deleteReview("peak", curFileThree._id);
+                await reviewStuff.deleteReview("peak", curFileThree[0]._id);
             }).rejects.toThrow();
         });
         test("not authorized", async () => {
             expect(async () => {
-                await reviewStuff.deleteReview("reg 1", curFileThree._id);
+                await reviewStuff.deleteReview("reg 1", curFileThree[0]._id);
             }).rejects.toThrow();
         });
     });
 });
-*/
