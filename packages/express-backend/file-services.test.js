@@ -3,9 +3,10 @@ import fileStuff from './file-services';
 import file from './file';
 import user from './user';
 import userStuff from './user-services';
-*/
+
 /* Initialization 
 beforeAll(async () => {
+    await tearDownDB();
     await setupDB();
 });
 afterAll(async () => {
@@ -95,21 +96,20 @@ describe("USER", () => {
 describe("QUERY", () => {
     describe("success", () => {
         test("query and no tags", async () => {
-            let result = await fileStuff.searchFiles("file", null)[0];
-            console.log(result);
-            expect(["file 1", "file 2", "file 3"]).toContain(result.title);
+            let result = await fileStuff.searchFiles("file", null);
+            expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
         });
         test("no query but tags", async () => {
-            let result = await fileStuff.searchFiles(null, ["science", "math"])[0];
-            expect(["file 2"]).toContain(result.title);
+            let result = await fileStuff.searchFiles(null, ["science", "math"]);
+            expect(["file 2"]).toContain(result[0].title);
         });
         test("query and tags", async () => {
-            let result = await fileStuff.searchFiles("2", ["math", "science"])[0];
-            expect(["file 2"]).toContain(result.title);
+            let result = await fileStuff.searchFiles("2", ["math", "science"]);
+            expect(["file 2"]).toContain(result[0].title);
         });
         test("nothing inputted", async () => {
-            let result = await fileStuff.searchFiles(null, null)[0];
-            expect(["file 1", "file 2", "file 3"]).toContain(result.title);
+            let result = await fileStuff.searchFiles(null, null);
+            expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
         });
         test("no results", async () => {
             let result = await fileStuff.searchFiles("3", ["math"]);
@@ -124,20 +124,21 @@ describe("QUERY", () => {
         });
     });
 });
-/*
+
 // getFile
 describe("GET", () => {
     describe("success", () => {
         let fileDet;
         beforeAll(async () => {
-            let fileId = (await fileStuff.searchFiles("file"))._id
+            let fileId = (await fileStuff.searchFiles("file 1"))[0]._id;
+            console.log(fileId);
             fileDet = await fileStuff.getFile(fileId);
         })
         test("title check", async () => {
-            expect(fileDet.title).toBe();
+            expect(fileDet.title).toBe("file 1");
         });
         test("link check", async () => {
-            expect(fileDet.link).toBe();
+            expect(fileDet.link).toBe("external link 1");
         });
         // these should be enough to verify the file but can add more if needed
     });
@@ -158,8 +159,8 @@ describe("GET", () => {
 // addFile
 describe("ADD", () => {
     describe("success", () => {
-        let fullFile
-        let minFile
+        let fullFile;
+        let minFile;
         beforeAll(async () => {
             fullFile = await fileStuff.addFile("reg 1", "file 4", "link 4", 'pdf', "creator 4", "date 4");
             minFile = await fileStuff.addFile("mod 1", "file 5", "link 5", 'mp3');
@@ -218,17 +219,18 @@ describe("ADD", () => {
         });
     });
 });
-/*
+
 // editFile
 describe("EDIT", () => {
     describe("success", () => {
         let editFile;
         beforeAll(async () => {
             let results = await fileStuff.searchFiles("file");
-            editFile = results._id; // Rewrite to search through array
+            editFile = results[0]._id; // Rewrite to search through array
+            console.log((await user.findOne({_id: results[0].userID})).username);
         });
         test("all fields, title check", async () => {
-            await fileStuff.editFile(editFile, "reg 1", "file 6", "creator 6", "date 6");
+            await fileStuff.editFile(editFile, "reg 1", "file 6", "creator 6", new Date("2001-09-11"));
             let result = await fileStuff.getFile(editFile);
             expect(result.title).toBe("file 6"); // can add more tests here if needed
         });
@@ -243,22 +245,22 @@ describe("EDIT", () => {
             expect(result.creator).toBe("creator 1");
         });
         test("date only", async () => {
-            await fileStuff.editFile(editFile, "reg 1", null, null, "date 1");
+            await fileStuff.editFile(editFile, "reg 1", null, null, new Date("2008-11-13"));
             let result = await fileStuff.getFile(editFile);
-            expect(result.creationDate).toBe("date 1");
+            expect(result.creationDate).toEqual(new Date("2008-11-13"));
         });
         test("nothing", async () => {
             await fileStuff.editFile(editFile, "reg 1", null, null, null);
             let result = await fileStuff.getFile(editFile);
             expect(result.title).toBe("file 1");
             expect(result.creator).toBe("creator 1");
-            expect(result.creationDate).toBe("date 1");
+            expect(result.creationDate).toEqual(new Date("2008-11-13"));
         });
         test("mod editing", async () => {
-            await fileStuff.editFile(editFile, "mod 1", null, "", "");
+            await fileStuff.editFile(editFile, "mod 1", null, "mario mario", new Date("2006-10-24"));
             let result = await fileStuff.getFile(editFile);
-            expect(result.creationDate).toBe("");
-            expect(result.creator).toBe("");
+            expect(result.creator).toBe("mario mario");
+            expect(result.creationDate).toEqual(new Date("2006-10-24"));
         });
     });
     describe("fail", () => {
@@ -302,15 +304,15 @@ describe("DELETE", () => {
             five = await fileStuff.searchFiles("file 5");
         });
         test("authorized - owner", async () => {
-            await fileStuff.removeFile(four._id, "reg 1");
+            await fileStuff.removeFile(four[0]._id, "reg 1");
             expect(async () => {
-                await fileStuff.getFile(four._id);
+                await fileStuff.getFile(four[0]._id);
             }).rejects.toThrow();
         });
         test("authorized - mod", async () => {
-            await fileStuff.removeFile(three._id, "mod 1");
+            await fileStuff.removeFile(three[0]._id, "mod 1");
             expect(async () => {
-                await fileStuff.getFile(three._id);
+                await fileStuff.getFile(three[0]._id);
             }).rejects.toThrow();
         });
     });
@@ -327,7 +329,7 @@ describe("DELETE", () => {
         });
         test("not authorized", async () => {
             expect(async () => {
-                await fileStuff.removeFile(five._id, "reg 2");
+                await fileStuff.removeFile(five[0]._id, "reg 2");
             }).rejects.toThrow();
         });
 
@@ -342,9 +344,9 @@ describe("ADDFAV", () => {
     });
     describe("success", () => {
         test("normal use", async () => {
-            await fileStuff.addFavorite("reg 1", two._id);
-            let user = userStuff.getUser("reg 1");
-            expect(user.favorites).toContain(two);
+            await fileStuff.addFavorite("reg 1", two[0]._id);
+            let curUser = await userStuff.getUser("reg 1");
+            expect(curUser.favorites).toContainEqual(two[0]._id);
         });
     });
     describe("fail", () => {
@@ -384,9 +386,9 @@ describe("DELFAV", () => {
     });
     describe("success", () => {
         test("normal use", async () => {
-            await fileStuff.removeFavorite("reg 1", two._id);
-            let user = userStuff.getUser("reg 1");
-            expect(user.favorites).not.toContain(two);
+            await fileStuff.removeFavorite("reg 1", two[0]._id);
+            let curUser = await userStuff.getUser("reg 1");
+            expect(curUser.favorites).not.toContainEqual(two[0]._id);
         });
     });
     describe("fail", () => {

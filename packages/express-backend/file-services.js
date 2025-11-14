@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
 import fileModel from "./file.js";
+import userModel from "./user";
 import userFunctions from "./user-services.js";
 
 mongoose.set("debug", true);
@@ -80,12 +81,12 @@ async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDat
     if (!fileId) {
         throw new Error("Invalid file ID!");
     }
-    const file = await fileModel.getFile(fileId);
+    const file = await fileModel.findOne({_id: fileId});
     if (!file) {
         throw new Error("File ID does not correspond to a valid file!");
     }
     const user = await userFunctions.getUser(desiredUsername);
-    if (file.userID != user._id) {
+    if ((!user._id.equals(file.userID)) && (user.type != 'moderator')) {
         throw new Error("Not authorized!");
     }
     if (!fileTitle) {
@@ -126,7 +127,7 @@ async function removeFile(fileId, desiredUsername) {
     if (!user) {
         throw new Error("User could not be found!");
     }
-    if ((user._id != file.userID) || (user.type != 'moderator')) {
+    if ((!user._id.equals(file.userID)) && (user.type != 'moderator')) {
         throw new Error("User is unauthorized to perform this action!");
     }
     try {
@@ -145,35 +146,32 @@ function searchFiles(query, tag) {
     if (query === undefined) {
         query = null;
     }
-    if (tag === undefined) {
+    if (tag === undefined) { // check if tag is array or not
         tag = null;
     }
-    //console.log("query:", query, !query);
     if (!query) {
-        //console.log("tags:", tags, tags===null || tags.length == 0);
         if (tag===null || tag.length == 0) {
             try {
-                return fileModel.find({}).exec();
+                return fileModel.find();
             } catch(error) {
                 throw new Error("An error occured while searching for files [no input]!");
             }   
         }
         try {
-            return fileModel.find({ tags: {$all: tag}}).exec();
+            return fileModel.find({ tags: {$all: tag}});
         } catch(error) {
             throw new Error("An error occured while searching for files [tags only]!");
         }
     } else if (query) {
-        //console.log("tags:", tags, tags===null || tags.length == 0);
         if (tag===null || tag.length == 0) {
             try {
-                return fileModel.find({ name: {$regex: query, $options:"i"}}).exec();
+                return fileModel.find({ title: { $regex: query, $options:'i' }});
             } catch(error) {
                 throw new Error("An error occured while searching for files [query only]!");
             }
         }
         try {
-            return fileModel.find({ name: {$regex: query}, tags: {$all: tag} }).exec();
+            return fileModel.find({ title: {$regex: query, $options:'i' }, tags: {$all: tag} });
         } catch(error) {
             throw new Error("An error occured while searching for files [query and tags]!");
         }
@@ -219,14 +217,14 @@ async function addFavorite(desiredUsername, fileId) {
     if (!file) {
         throw new Error("File ID does not correspond to a valid file!");
     }
-    if (list.includes(fileId)) {
+    if (user.favorites.includes(fileId)) {
         throw new Error("This file is already in the list!");
     }
-    let listAdded = list.concat(fileId);
     try {
-        return userModel.findOne({ username: desiredUsername }).updateOne({ favorites: listAdded });
+        user.favorites.push(fileId);
+        return user.save();
     } catch(error) {
-        throw new Error("An error occured while adding this file to favorites!");
+        throw new Error("An error occured while adding this file to favorites!", error);
     }
 }
 
@@ -250,14 +248,12 @@ async function removeFavorite(desiredUsername, fileId) {
     if (!file) {
         throw new Error("File ID does not correspond to a valid file!");
     }
-    const index = list.indexOf(fileId);
-    if (index < 0) {
+    if (!user.favorites.includes(fileId)) {
         throw new Error("This file is not in the list!");
     }
     try {
-        // id like to do this w/o modifying the original array at some point
-        list.splice(index, 1);
-        return userModel.findOne({ username: desiredUsername }).updateOne({ favorites: list });
+        user.favorites.pull(fileId);
+        return user.save();
     } catch(error) {
         throw new Error("An error occured while removing this file from favorites!");
     }

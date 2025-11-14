@@ -1,21 +1,20 @@
-/*
 import user from './user';
 import userStuff from './user-services';
 import file from './file';
 import fileStuff from './file-services';
 import reviewStuff from './review-services';
 import review from './review';
-*/
-/* Initialization 
+
+/* Initialization */
 beforeAll(async () => {
     await tearDownDB();
     await setupDB();
 });
 afterAll(async () => {
-    await tearDownDB();
+    //await tearDownDB();
 });
 
-/* Functions 
+/* Functions */
 async function setupDB() {
     await user.insertMany([
         {
@@ -72,7 +71,7 @@ async function tearDownDB() {
     await user.deleteMany();
 }
 
-/* Tests 
+/* Tests */
 // getReview user
 describe("GET /USER", () => {
     describe("success", () => {
@@ -105,7 +104,7 @@ describe("GET /USER", () => {
         
     });
 });
-
+/*
 // getReview media
 describe("GET /MEDIA", () => {
     describe("success", () => {

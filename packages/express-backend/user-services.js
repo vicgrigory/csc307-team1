@@ -122,8 +122,7 @@ async function getUser(desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
-    let user = await userModel.find();
-    if (!(await userModel.findOne({ username: desiredUsername }))) { // probably a better way to do this
+    if (!(userModel.findOne({ username: desiredUsername }))) { // probably a better way to do this
         throw new Error("User could not be found!");
     }
     return userModel.findOne({ username: desiredUsername });
