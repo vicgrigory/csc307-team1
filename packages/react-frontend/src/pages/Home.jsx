@@ -1,4 +1,5 @@
-// src/pages/Home.jsx
+// Home.jsx
+
 import "./Home.css";
 
 import { Link } from "react-router-dom";
@@ -16,39 +17,6 @@ export default function Home() {
 
   return (
     <div className="page-container">
-      {/* Top bar of the Home Page containing Logo, Search Bar, and Profile link */}
-      <header className="home-header">
-        {/* OpenShelf Logo (top-left) */}
-        <Link to="/">
-          <img src={logo} alt="OpenShelf Logo" className="home-logo" />
-        </Link>
-
-        {/* Search bar (top-middle) */}
-        <div className="home-search-bar">
-          <input
-            type="text"
-            placeholder="Search OpenShelf..."
-            className="input"
-          />
-        </div>
-
-        {/* Profile (top-right) */}
-        <Link to="/profile">
-          <img src={profile_pic} alt="Profile Picture" className="profile-picture" />
-        </Link>
-      </header>
-
-      {/* Bar that contains the links to the other pages */} 
-      <header className="links-bar">
-        <nav className="links-nav">
-          <Link to="/about" className="links-link">About</Link>
-          <Link to="/post" className="links-link">Upload</Link>
-          <Link to="/recentposted" className="links-link">Recently Posted</Link>
-          <Link to="/popular" className="links-link">Most Popular</Link>
-          <Link to="/categories" className="links-link">Categories</Link>
-        </nav>
-      </header>
-
       <main className="home-page-content">
         {/* Welcome message */}
         <section className="home-hero">

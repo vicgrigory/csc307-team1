@@ -7,7 +7,7 @@ export default function AccountManagement() {
   const [accountType] = useState("Moderator");
   const [bio, setBio] = useState("This is where your bio will appear.");
 
-  const [profilePic, setProfilePic] = useState("https://media.newyorker.com/photos/59095bb86552fa0be682d9d0/master/w_2240,c_limit/Monkey-Selfie.jpg"");
+  const [profilePic, setProfilePic] = useState("https://media.newyorker.com/photos/59095bb86552fa0be682d9d0/master/w_2240,c_limit/Monkey-Selfie.jpg");
 
   const [currentView, setCurrentView] = useState("general");
 
