@@ -73,7 +73,7 @@ async function tearDownDB() {
 }
 
 /* Tests */
-// getReview user
+// getReviewsUser
 describe("GET /USER", () => {
     describe("success", () => {
         test("results", async () => {
@@ -102,7 +102,7 @@ describe("GET /USER", () => {
     });
 });
 
-// getReview media
+// getReviewsMedia
 describe("GET /MEDIA", () => {
     describe("success", () => {
         let curFileOne;

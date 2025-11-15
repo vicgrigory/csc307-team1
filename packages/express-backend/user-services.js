@@ -12,31 +12,26 @@ await mongoose.connect("mongodb://localhost:27017/data", {
 }).catch((error) => console.log(error));
 
 /*
-Creates a new user in the database with a desired username, setting the about and profile to empty strings and sets the user as a non moderator.
-desiredUsername: String. Currently no limit as to what it can be, can add that in if needed.
+Creates a new user in the database.
+Returns a promise for the new user (one JSON).
 */
-async function createUser(desiredUsername, hash) { // if we add a password, it should be hashed by this point
+async function createUser(desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Username cannot be empty!");
     };
     if (await userModel.findOne({ username: desiredUsername })) {
         throw new Error(`The username ${desiredUsername} is taken!`);
     };
-    if (!hash) {
-        throw new Error("No hash specified!");
-    }
     try {
-        return userModel.insertOne({ username: desiredUsername, hashedPassword: hash });
+        return userModel.insertOne({ username: desiredUsername });
     } catch(error) {
         throw new Error("There was an error adding this user!");
     }
 }
 
-// Function to change password here
-
 /*
-Sets an existing user as a moderator. Checks for a valid username and that the user is not already a moderator before performing the action.
-desiredUsername: String. Function will return an error if it cannot find that user in the database, or if that user is already a moderator. Can set this to _id if needed.
+Sets a user in the database as a moderator.
+Returns a promise for the updated user (one JSON).
 */
 async function setAsModerator(desiredUsername) {
     if (!desiredUsername) {
@@ -53,8 +48,8 @@ async function setAsModerator(desiredUsername) {
 }
 
 /*
-Sets an existing user as a regular user. Checks for a valid username and that the user is a moderator before performing the action.
-desiredUsername: String. Function will return an error if it cannot find that user in the database, or if that user is already not a moderator. Can set this to _id if needed.
+Sets a user in the database as a regular user.
+Returns a promise for the updated user (one JSON).
 */
 async function setAsRegular(desiredUsername) {
     if (!desiredUsername) {
@@ -71,10 +66,8 @@ async function setAsRegular(desiredUsername) {
 }
 
 /*
-Edits user credentials by replacing the current ones with what is entered. Checks for a valid id, since the username is able to be changed.
-_desiredID: ID of the user to be changing details for. Can use getUser("username")._id to retrieve this.
-desiredAbout: About section to set for this user.
-desiredProfile: Profile picture to set for this user.
+Change nonessential user credentials.
+Returns a promise for the updated user (one JSON).
 */
 async function editInformation(_desiredId, desiredAbout, desiredProfile) {
     if (!_desiredId) {
@@ -94,7 +87,8 @@ async function editInformation(_desiredId, desiredAbout, desiredProfile) {
 }
 
 /*
-Same as above, but specifically for the username.
+Change username.
+Returns a promise for the updated user (one JSON).
 */
 async function editUsername(_desiredId, desiredUsername) {
     if (!_desiredId) {
@@ -115,25 +109,25 @@ async function editUsername(_desiredId, desiredUsername) {
 }
 
 /*
-Retrieves user information based on their current username. This will return all the values of the user (see user.js). Checks for a valid username.
-desiredUsername: Username of the user to retrieve information for.
+Retrieves a user from the database from their username.
+Returns a promise with desired user details (one JSON).
 */
 async function getUser(desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
-    if (!(userModel.findOne({ username: desiredUsername }))) { // probably a better way to do this
+    if (!(await userModel.findOne({ username: desiredUsername }))) {
         throw new Error("User could not be found!");
     }
     return userModel.findOne({ username: desiredUsername });
 }
 
 /*
-Deletes a user from the database. Checks whether that user exists before modifying. Assumes that whoever is deleting has the permissions to do so.
-desiredUsername: Username of the user to be deleted. Can switch for _id if needed.
+Deletes a user from the database.
+** May alter this to redact their credentials so files can retain information.
+Returns a promise for the deleted user (one JSON).
 */
-async function deleteUser(desiredUsername) { // how to handle things made by removed users? can we null their data so theyre not technically removed from the db?
-    //log out user as well on frontish end
+async function deleteUser(desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
@@ -141,7 +135,7 @@ async function deleteUser(desiredUsername) { // how to handle things made by rem
     if (!user) {
         throw new Error("This user does not exist!")
     }
-    return userModel.deleteOne({ username: desiredUsername }); //want to change to use user for less db queries
+    return userModel.deleteOne({ username: desiredUsername });
 }
 
 export default {

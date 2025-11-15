@@ -226,13 +226,13 @@ describe("EDIT", () => {
         let editFile;
         beforeAll(async () => {
             let results = await fileStuff.searchFiles("file");
-            editFile = results[0]._id; // Rewrite to search through array
+            editFile = results[0]._id;
             console.log((await user.findOne({_id: results[0].userID})).username);
         });
         test("all fields, title check", async () => {
             await fileStuff.editFile(editFile, "reg 1", "file 6", "creator 6", new Date("2001-09-11"));
             let result = await fileStuff.getFile(editFile);
-            expect(result.title).toBe("file 6"); // can add more tests here if needed
+            expect(result.title).toBe("file 6");
         });
         test("title only", async () => {
             await fileStuff.editFile(editFile, "reg 1", "file 1");
@@ -297,11 +297,9 @@ describe("DELETE", () => {
     describe("success", () => {
         let three;
         let four;
-        let five;
         beforeAll(async () => {
             three = await fileStuff.searchFiles("file 3");
             four = await fileStuff.searchFiles("file 4");
-            five = await fileStuff.searchFiles("file 5");
         });
         test("authorized - owner", async () => {
             await fileStuff.removeFile(four[0]._id, "reg 1");
@@ -317,6 +315,10 @@ describe("DELETE", () => {
         });
     });
     describe("fail", () => {
+        let five;
+        beforeAll(async () => {
+            five = await fileStuff.searchFiles("file 5");
+        })
         test("invalid file id", async () => {
             expect(async () => {
                 await fileStuff.removeFile(null, "mod 1");

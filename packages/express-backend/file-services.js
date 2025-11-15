@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
-import dotenv from 'dotenv';
 import fileModel from "./file.js";
-import userModel from "./user";
 import userFunctions from "./user-services.js";
 
 mongoose.set("debug", true);
@@ -13,13 +11,10 @@ await mongoose.connect("mongodb://localhost:27017/data", {
 }).catch((error) => console.log(error));
 
 /*
-Adds a file into the database. This requires a title, link to the file, the specified filetype (can implement this if needed), and the user ID of the uploader.
-desiredUsername: Username of the user uploading the file.
-fileTitle: Title of the file, shown on webpages instead of the link/ filename.
-fileLink: Link to the file, where the user will be directed if they wish to view it. Can use for embedding as well. Validity should be handled on the backend, if at all.
-fileType: Type of file (pdf, mp3, etc.). Function will error handle if this is not currently supported. Can optionally add a way to extract from the link.
+Add a file.
+Returns a promise for that file (one JSON).
 */
-async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreator, fileDate) {
+async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreator, fileDate, fileTags) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
     }
@@ -43,7 +38,8 @@ async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreat
             filetype: fileType,
             userID: uploader._id,
             creator: fileCreator,
-            creationDate: fileDate
+            creationDate: fileDate,
+            tags: fileTags
         });
     } catch(error) {
         throw new Error("An error occured while adding your file!");
@@ -52,8 +48,8 @@ async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreat
 }
 
 /*
-Gets a file from the database from its ID, probably better to use for the media page and not search. Can use findFiles to get a list of them and their information.
-fileId: ID of the file to retrieve.
+Get a file by its ID.
+Returns a promise for that file (one JSON).
 */
 async function getFile(fileId) {
     if (!fileId) {
@@ -71,13 +67,10 @@ async function getFile(fileId) {
 }
 
 /*
-Edits a file currently in the database. File link and file type are inaccessible, as that would change the post itself. Can add in if needed. Assumes the user has permissions to change the file.
-fileId: ID of the file to modify. Use myFiles on the user to retrieve their files, which will populate the ID as well. Can add more robust searches if needed.
-fileTitle: New title of the file. Will not modify if it is null.
-fileCreator: New original creator of the file. Will not modify if it is null.
-fileDate: New original date of the file. Will not modify if it is null.
+Edit a file. Tags must be an array.
+Returns a promise for that file (one JSON).
 */
-async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDate) {
+async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDate, fileTags) {
     if (!fileId) {
         throw new Error("Invalid file ID!");
     }
@@ -98,19 +91,22 @@ async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDat
     if (fileDate === null || fileDate === undefined) {
         fileDate = file.creationDate;
     }
+    if (!fileTags) {
+        fileTags = file.tags;
+    }
+    if (Array.isArray(fileTags)) {
+        throw new Error("Tags must be in an array!");
+    }
     try {
-        return fileModel.updateOne({ _id: fileId }, { title: fileTitle, creator: fileCreator, creationDate: fileDate });
+        return fileModel.updateOne({ _id: fileId }, { title: fileTitle, creator: fileCreator, creationDate: fileDate, tags: fileTags });
     } catch(error) {
         throw new Error("An error occured while editing your file!");
     }
 }
 
-/* need a function to alter tags */
-
 /*
-Removes a file from the database. Requires the fileID and username.
-fileID: File ID of the media to remove.
-desiredUsername: Username of the user trying to complete the action.
+Delete a file.
+Returns a promise for that file (one JSON).
 */
 async function removeFile(fileId, desiredUsername) {
     if (!fileId) {
@@ -138,16 +134,18 @@ async function removeFile(fileId, desiredUsername) {
 }
 
 /*
-Searches the database for desired files. Tags are not necessary, but each addition of a tag needs this function to be called again.
-query: The search query. Can probably implement a way to search other things, but right now it searches the name.
-tags: (optional) The tags applied to the search query, should be an array of strings.
+Search through files. Tags are custom, but must be in an array.
+Returns a promise of a list of files (array of JSONs).
 */
 function searchFiles(query, tag) {
     if (query === undefined) {
         query = null;
     }
-    if (tag === undefined) { // check if tag is array or not
+    if (tag === undefined) {
         tag = null;
+    }
+    if (!Array.isArray(tag)) {
+        throw new Error("Please use an array when searching tags!");
     }
     if (!query) {
         if (tag===null || tag.length == 0) {
@@ -165,13 +163,13 @@ function searchFiles(query, tag) {
     } else if (query) {
         if (tag===null || tag.length == 0) {
             try {
-                return fileModel.find({ title: { $regex: query, $options:'i' }});
+                return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}] });
             } catch(error) {
                 throw new Error("An error occured while searching for files [query only]!");
             }
         }
         try {
-            return fileModel.find({ title: {$regex: query, $options:'i' }, tags: {$all: tag} });
+            return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}], tags: {$all: tag}});
         } catch(error) {
             throw new Error("An error occured while searching for files [query and tags]!");
         }
@@ -179,8 +177,8 @@ function searchFiles(query, tag) {
 }
 
 /*
-Gets all files uploaded by a specific user.
-desiredUsername: Username of the user to search files for.
+Get all files uploaded by a user.
+Returns a promise of a list of files (array of JSONs).
 */
 async function myFiles(desiredUsername) {
     if (!desiredUsername) {
@@ -198,9 +196,8 @@ async function myFiles(desiredUsername) {
 }
 
 /*
-Adds a file to a list of favorites. Checks whether that file exists and is already in the list before modifying.
-desiredUsername: Username of the user adding the file to their favorites.
-fileId: File ID of the file to be added to the list.
+Add a file to a user's favorites.
+Returns a promise for that user (one JSON).
 */
 async function addFavorite(desiredUsername, fileId) {
     if (!desiredUsername) {
@@ -229,9 +226,8 @@ async function addFavorite(desiredUsername, fileId) {
 }
 
 /*
-Removes a file from a list of favorites. Checks whether that file exists and is in the list before modifying.
-desiredUsername: Username of the user to be added to the list.
-fileId: File ID of the file to be added to the list.
+Remove a file from a user's favorites.
+Returns a promise for that user (one JSON).
 */
 async function removeFavorite(desiredUsername, fileId) {
     if (!desiredUsername) {

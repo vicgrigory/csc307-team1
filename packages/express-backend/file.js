@@ -11,7 +11,7 @@ const FileSchema = new mongoose.Schema(
         required: [true, "No link to file specified."]
     },
     filetype: {
-        type: String, enum: ["mp3", "pdf"],
+        type: String,
         required: [true, "File requires a valid filetype."]
     },
     creator: {
@@ -32,7 +32,8 @@ const FileSchema = new mongoose.Schema(
         immutable: true
     },
     tags: {
-        type: [String], enum: ["test", "math", "science", "history"]
+        type: [String],
+        default: []
     }
     }
 );

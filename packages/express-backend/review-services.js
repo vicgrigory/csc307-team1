@@ -11,12 +11,9 @@ mongoose.connect("mongodb://localhost:27017/data", {
 }).catch((error) => console.log(error));
 
 /*
-Adds a review for the specified media from the specifed user. Must include all fields.
-fileId: ID for the file specified.
-desiredUsername: Username of the person making the review. Function will check for validity.
-reviewTitle: Title of the review.
-reviewContent: Content of the review (the actual review).
-reviewRating: Rating of the file from 0-5.
+Adds a review for a user under a media.
+Returns a promise for that review (one JSON).
+** reviewRating is an integer from 0 to 5. See review.js
 */
 async function addReview(fileId, desiredUsername, reviewTitle, reviewContent, reviewRating) {
     if (!fileId) {
@@ -56,8 +53,8 @@ async function addReview(fileId, desiredUsername, reviewTitle, reviewContent, re
 }
 
 /*
-Gets reviews for a specific file ID. Useful for searches.
-fileId: File ID of the file to retrieve reviews for.
+Gets reviews for a file.
+Returns a promise for a list of reviews (array of JSONs).
 */
 async function getReviewsMedia(fileId) {
     if (!fileId) {
@@ -75,8 +72,8 @@ async function getReviewsMedia(fileId) {
 }
 
 /*
-Gets reviews made by a user. Profile specific function.
-desiredUsername: Username of the reviews to get.
+Gets reviews made by a user.
+Returns a promise for a list of reviews (array of JSONs).
 */
 async function getReviewsUser(desiredUsername) {
     if (!desiredUsername) {
@@ -94,12 +91,8 @@ async function getReviewsUser(desiredUsername) {
 }
 
 /*
-Edits an existing review. Checks for authentication.
-desiredUsername: Username of the person editing the review.
-reviewId: ID of the review to edit.
-title: New title. Null means keep old.
-content: New content. Null means keep old.
-rating: New rating. Null means keep old.
+Edits an existing review.
+Returns a promise for that review (one JSON).
 */
 async function editReview(desiredUsername, reviewId, reviewContent, reviewRating) {
     if (!reviewId) {
@@ -135,9 +128,8 @@ async function editReview(desiredUsername, reviewId, reviewContent, reviewRating
 }
 
 /*
-Deletes an existing review. Checks for authentication.
-desiredUsername: Username of the person trying to delete the review.
-reviewId: ID of the review to delete.
+Deletes a review.
+Returns a promise for that review (one JSON).
 */
 async function deleteReview(desiredUsername, reviewId) {
     if (!reviewId) {
