@@ -41,10 +41,14 @@ async function setAsModerator(desiredUsername) {
     if (!user) {
         throw new Error("User could not be found!");
     }
-    if (user.type == "regular") {
-        return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'moderator' });
+    if (user.type == "moderator") {
+        throw new Error("User is already a moderator!");
     };
-    throw new Error("User is already a moderator!");
+    try {
+        return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'moderator' });
+    } catch(error) {
+        throw new Error("There was an error setting this user as a moderator!");
+    }
 }
 
 /*
@@ -59,10 +63,14 @@ async function setAsRegular(desiredUsername) {
     if (!user) {
         throw new Error("User could not be found!");
     }
-    if (user.type == "moderator") {
-        return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'regular' });
+    if (user.type == "regular") {
+        throw new Error("User is not a moderator!");  
     };
-    throw new Error("User is not a moderator!");
+    try {
+        return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'regular' });
+    } catch(error) {
+        throw new Error("There was an error setting this user as regular!");
+    }
 }
 
 /*
@@ -83,7 +91,11 @@ async function editInformation(_desiredId, desiredAbout, desiredProfile) {
     if (desiredProfile === null || desiredProfile === undefined) {
         desiredProfile = user.profile;
     }
-    return userModel.findOne({ _id: _desiredId }).updateOne({ about: desiredAbout, profile: desiredProfile });
+    try {
+        return userModel.findOne({ _id: _desiredId }).updateOne({ about: desiredAbout, profile: desiredProfile });
+    } catch(error) {
+        throw new Error("There was an error updating the information for this user!");
+    }
 }
 
 /*
@@ -98,14 +110,18 @@ async function editUsername(_desiredId, desiredUsername) {
         throw new Error("Invalid username!");
     }
     const user = await userModel.findOne({ _id: _desiredId });
+    if (!user) {
+        throw new Error("User could not be found!");
+    }
     const dup = await userModel.findOne({ username: desiredUsername });
-    if (user) {
-        if (!dup) {
-            return userModel.updateOne({ _id: _desiredId }, { username: desiredUsername })
-        }
+    if (dup) {
         throw new Error("That username is taken!");
     }
-    throw new Error("User could not be found!");
+    try {
+        return userModel.updateOne({ _id: _desiredId }, { username: desiredUsername });
+    } catch(error) {
+        throw new Error("There was an error editing the username!");
+    }
 }
 
 /*
@@ -119,13 +135,16 @@ async function getUser(desiredUsername) {
     if (!(await userModel.findOne({ username: desiredUsername }))) {
         throw new Error("User could not be found!");
     }
-    return userModel.findOne({ username: desiredUsername });
+    try {
+        return userModel.findOne({ username: desiredUsername });
+    } catch(error) {
+        throw new Error("There was an error getting this user!");
+    }
 }
 
 /*
 Deletes a user from the database.
-** May alter this to redact their credentials so files can retain information.
-** May alter this to require an ID to check for authentication.
+** May alter this to redact their credentials instead so files can retain information.
 Returns a promise for the deleted user (one JSON).
 */
 async function deleteUser(userID, desiredUsername) {
@@ -146,7 +165,11 @@ async function deleteUser(userID, desiredUsername) {
     if ((!action._id.equals(user._id)) && (action.type != 'moderator')) {
         throw new Error("Unauthorized!");
     }
-    return userModel.deleteOne({ username: desiredUsername });
+    try {
+        return userModel.deleteOne({ username: desiredUsername });
+    } catch(error) {
+        throw new Error("There was an error deleting this user!");
+    }
 }
 
 export default {

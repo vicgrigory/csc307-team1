@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import fileModel from "./file.js";
-import userFunctions from "./user-services.js";
+import fileModel from "./file";
+import userFunctions from "./user-services";
 
 mongoose.set("debug", true);
 

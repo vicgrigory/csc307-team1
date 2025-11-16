@@ -1,10 +1,9 @@
-/*
 import fileStuff from './file-services';
 import file from './file';
 import user from './user';
 import userStuff from './user-services';
 
-/* Initialization 
+/* Initialization */
 beforeAll(async () => {
     await tearDownDB();
     await setupDB();
@@ -13,7 +12,7 @@ afterAll(async () => {
     await tearDownDB();
 });
 
-/* Functions 
+/* Functions */
 async function setupDB() {
     await user.insertMany([
         {
@@ -55,7 +54,7 @@ async function tearDownDB() {
     await file.deleteMany();
 }
 
-/* Tests 
+/* Tests */
 describe("myFiles", () => {
     describe("Success", () => {
         test("Validity Test - Basic", async () => {
@@ -423,4 +422,3 @@ describe("removeFavorite", () => {
         });
     });
 });
-*/

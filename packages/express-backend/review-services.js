@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import reviewModel from "./review.js";
-import fileFunctions from "./file-services.js";
-import userFunctions from "./user-services.js";
+import reviewModel from "./review";
+import fileFunctions from "./file-services";
+import userFunctions from "./user-services";
 
 mongoose.set("debug", true);
 
