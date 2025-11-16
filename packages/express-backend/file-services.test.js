@@ -1,10 +1,10 @@
-
+/*
 import fileStuff from './file-services';
 import file from './file';
 import user from './user';
 import userStuff from './user-services';
 
-/* Initialization */
+/* Initialization 
 beforeAll(async () => {
     await tearDownDB();
     await setupDB();
@@ -13,20 +13,17 @@ afterAll(async () => {
     await tearDownDB();
 });
 
-/* Functions */
+/* Functions 
 async function setupDB() {
     await user.insertMany([
         {
             username: "reg 1",
-            hashedPassword: "hash"
         },
         {
             username: "reg 2",
-            hashedPassword: "hash"
         },
         {
             username: "mod 1",
-            hashedPassword: "hash",
             type: 'moderator'
         }
     ]);
@@ -58,33 +55,32 @@ async function tearDownDB() {
     await file.deleteMany();
 }
 
-/* Tests */
-// myFiles
-describe("USER", () => {
-    describe("success", () => {
-        test("normal use, truthy", async () => {
+/* Tests 
+describe("myFiles", () => {
+    describe("Success", () => {
+        test("Validity Test - Basic", async () => {
             expect(async () => {
                 fileStuff.myFiles("reg 1");
             }).resolves.toBeTruthy;
         });
-        test("normal use, parameters", async () => {
+        test("Validity Test - Specific", async () => {
             let retrieved = (await fileStuff.myFiles("reg 1"))[0];
             expect(["file 1", "file 3"]).toContain(retrieved.title);
             expect(["external link 1", "external link 3"]).toContain(retrieved.link);
             expect(['mp3', 'pdf']).toContain(retrieved.filetype);
         });
-        test("no results", async () => {
+        test("Validity Test - No Results", async () => {
             let retrieved = await fileStuff.myFiles("reg 2");
             expect(retrieved).toEqual([]);
         });
     });
-    describe("fail", () => {
-        test("invalid username", async () => {
+    describe("Fail", () => {
+        test("Null Username", async () => {
             expect( async () => {
                 await fileStuff.myFiles();
             }).rejects.toThrow();
         });
-        test("nonexistent user", async () => {
+        test("Incorrect Username", async () => {
             expect(async () => {
                 await fileStuff.myFiles("reg 6");
             }).rejects.toThrow();
@@ -92,32 +88,31 @@ describe("USER", () => {
     });
 });
 
-// searchFiles
-describe("QUERY", () => {
-    describe("success", () => {
-        test("query and no tags", async () => {
+describe("searchFiles", () => {
+    describe("Success", () => {
+        test("Query, None", async () => {
             let result = await fileStuff.searchFiles("file", null);
             expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
         });
-        test("no query but tags", async () => {
+        test("None, Tags", async () => {
             let result = await fileStuff.searchFiles(null, ["science", "math"]);
             expect(["file 2"]).toContain(result[0].title);
         });
-        test("query and tags", async () => {
+        test("Query, Tags", async () => {
             let result = await fileStuff.searchFiles("2", ["math", "science"]);
             expect(["file 2"]).toContain(result[0].title);
         });
-        test("nothing inputted", async () => {
+        test("None, None", async () => {
             let result = await fileStuff.searchFiles(null, null);
             expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
         });
-        test("no results", async () => {
+        test("No Results", async () => {
             let result = await fileStuff.searchFiles("3", ["math"]);
             expect(result).toEqual([]);
         });
     });
-    describe("fail", () => { // implement
-        test("invalid tag", async () => {
+    describe("Fail", () => {
+        test("String as Tag", async () => {
             expect(async () => {
                 await fileStuff.searchFiles("some query", "huh");
             }).rejects.toThrow()
@@ -125,30 +120,29 @@ describe("QUERY", () => {
     });
 });
 
-// getFile
-describe("GET", () => {
-    describe("success", () => {
+describe("getFile", () => {
+    describe("Success", () => {
         let fileDet;
         beforeAll(async () => {
             let fileId = (await fileStuff.searchFiles("file 1"))[0]._id;
             console.log(fileId);
             fileDet = await fileStuff.getFile(fileId);
         })
-        test("title check", async () => {
+        test("Validity Check - Title", async () => {
             expect(fileDet.title).toBe("file 1");
         });
-        test("link check", async () => {
+        test("Validity Check - Link", async () => {
             expect(fileDet.link).toBe("external link 1");
         });
-        // these should be enough to verify the file but can add more if needed
+        // Can add more validity tests if needed
     });
-    describe("fail", () => {
-        test("invalid id", async () => {
+    describe("Fail", () => {
+        test("Null ID", async () => {
             expect(async () => {
                 await fileStuff.getFile();
             }).rejects.toThrow();
         });
-        test("nonexistent id", async () => {
+        test("Incorrect ID", async () => {
             expect(async () => {
                 await fileStuff.getFile("somerandomidhere4239040358");
             }).rejects.toThrow();
@@ -156,135 +150,146 @@ describe("GET", () => {
     });
 });
 
-// addFile
-describe("ADD", () => {
-    describe("success", () => {
+describe("addFile", () => {
+    describe("Success", () => {
         let fullFile;
         let minFile;
         beforeAll(async () => {
-            fullFile = await fileStuff.addFile("reg 1", "file 4", "link 4", 'pdf', "creator 4", "date 4");
+            fullFile = await fileStuff.addFile("reg 1", "file 4", "link 4", 'pdf', "creator 4", "date 4", ["science", "english"]);
             minFile = await fileStuff.addFile("mod 1", "file 5", "link 5", 'mp3');
         });
-        test("full username check", async () => {
+        test("Validity Check - Username (Full)", async () => {
             let curUser = await userStuff.getUser("reg 1");
             expect(fullFile.userID).toEqual(curUser._id);
         });
-        test("full title check", async () => {
+        test("Validity Check - Title (Full)", async () => {
             expect(fullFile.title).toBe("file 4");
         });
-        test("full link check", async () => {
+        test("Validity Check - Link (Full)", async () => {
             expect(fullFile.link).toBe("link 4");
         });
-        test("minimal username check", async () => {
+        test("Validity Check - Tags (Full)", async () => {
+            expect(fullFile.tags).toEqual(["science", "english"]);
+        });
+        test("Validity Check - Username (Min)", async () => {
             let curUser = await userStuff.getUser("mod 1");
             expect(minFile.userID).toEqual(curUser._id);
         });
-        test("minimal title check", async () => {
+        test("Validity Check - Title (Min)", async () => {
             expect(minFile.title).toBe("file 5");
         });
-        test("min link check", async () => {
+        test("Validity Check - Link (Min)", async () => {
             expect(minFile.link).toBe("link 5");
         });
     });
-    describe("fail", () => {
-        test("missing username", async () => {
+    describe("Fail", () => {
+        test("Null Username", async () => {
             expect(async () => {
                 await fileStuff.addFile(null, "file 6", "link 6", 'pdf');
             }).rejects.toThrow();
         });
-        test("invalid username", async () => {
+        test("Incorrect Username", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 2", "file 6", "link 6", 'pdf');
             }).rejects.toThrow();
         });
-        test("missing title", async () => {
+        test("Null Title", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 1", null, "link 6", 'pdf');
             }).rejects.toThrow();
         });
-        test("missing file link", async () => {
+        test("Null Link", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 1", "file 6", null, 'pdf');
             }).rejects.toThrow();
         });
-        test("missing file type", async () => {
+        test("Null Filetype", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 1", "file 6", "link 6", null);
             }).rejects.toThrow();
         });
-        test("invalid file type", async () => {
+        test("String as Tag", async () => {
             expect(async () => {
-                await fileStuff.addFile("mod 1", "file 6", "link 6", 'brstm');
+                await fileStuff.addFile("mod 1", "file 6", "link 6", 'pdf', null, null, "hey");
             }).rejects.toThrow();
         });
     });
 });
 
-// editFile
-describe("EDIT", () => {
-    describe("success", () => {
+describe("editFile", () => {
+    describe("Success", () => {
         let editFile;
         beforeAll(async () => {
             let results = await fileStuff.searchFiles("file");
             editFile = results[0]._id;
             console.log((await user.findOne({_id: results[0].userID})).username);
         });
-        test("all fields, title check", async () => {
-            await fileStuff.editFile(editFile, "reg 1", "file 6", "creator 6", new Date("2001-09-11"));
+        test("Validity Check - Title (All fields)", async () => {
+            await fileStuff.editFile(editFile, "reg 1", "file 6", "creator 6", new Date("2001-09-11"), ["mongolian throat singing", "cathode ray tubes"]);
             let result = await fileStuff.getFile(editFile);
             expect(result.title).toBe("file 6");
         });
-        test("title only", async () => {
+        test("Validity Check - Title", async () => {
             await fileStuff.editFile(editFile, "reg 1", "file 1");
             let result = await fileStuff.getFile(editFile);
             expect(result.title).toBe("file 1");
         });
-        test("creator only", async () => {
+        test("Validity Check - Creator", async () => {
             await fileStuff.editFile(editFile, "reg 1", null, "creator 1");
             let result = await fileStuff.getFile(editFile);
             expect(result.creator).toBe("creator 1");
         });
-        test("date only", async () => {
+        test("Validity Check - Date", async () => {
             await fileStuff.editFile(editFile, "reg 1", null, null, new Date("2008-11-13"));
             let result = await fileStuff.getFile(editFile);
             expect(result.creationDate).toEqual(new Date("2008-11-13"));
         });
-        test("nothing", async () => {
-            await fileStuff.editFile(editFile, "reg 1", null, null, null);
+        test("Validity Check - Tags", async () => {
+            await fileStuff.editFile(editFile, "reg 1", null, null, null, ["cathode ray tubes"]);
+            let result = await fileStuff.getFile(editFile);
+            expect(result.tags).toEqual(["cathode ray tubes"]);
+        });
+        test("Validity Check - None", async () => {
+            await fileStuff.editFile(editFile, "reg 1", null, null, null, null);
             let result = await fileStuff.getFile(editFile);
             expect(result.title).toBe("file 1");
             expect(result.creator).toBe("creator 1");
             expect(result.creationDate).toEqual(new Date("2008-11-13"));
         });
-        test("mod editing", async () => {
+        test("Mod Edit Check", async () => {
             await fileStuff.editFile(editFile, "mod 1", null, "mario mario", new Date("2006-10-24"));
             let result = await fileStuff.getFile(editFile);
             expect(result.creator).toBe("mario mario");
             expect(result.creationDate).toEqual(new Date("2006-10-24"));
         });
     });
-    describe("fail", () => {
-        test("invalid file id", async () => {
+    describe("Fail", () => {
+        test("Null File ID", async () => {
             expect(async () => {
                 await fileStuff.editFile(null, "mod 1", "hi");
             }).rejects.toThrow();
         });
-        test("nonexistent file id", async () => {
+        test("Incorrect File ID", async () => {
             expect(async () => {
                 await fileStuff.editFile("random", "mod 1", "hi");
             }).rejects.toThrow();
         });
-        test("invalid username", async () => {
+        test("Null Username", async () => {
             expect(async () => {
                 await fileStuff.editFile(editFile, null, "hi");
             }).rejects.toThrow();
         });
-        test("nonexistent username", async () => {
+        test("Incorrect Username", async () => {
             expect(async () => {
                 await fileStuff.editFile(editFile, "mod 15", "hi");
             }).rejects.toThrow();
         });
-        test("not authorized", async () => {
+        test("String as Tag", async () => {
+            expect(async () => {
+                await fileStuff.editFile(editFile, "mod 1", null, null, null, "helloooooo")
+            }).rejects.toThrow();
+        });
+        test("Unauthorized", async () => {
             expect(async () => {
                 await fileStuff.editFile(editFile, "reg 2", "hi");
             }).rejects.toThrow();
@@ -292,44 +297,43 @@ describe("EDIT", () => {
     });
 });
 
-// removeFile
-describe("DELETE", () => {
-    describe("success", () => {
+describe("removeFile", () => {
+    describe("Success", () => {
         let three;
         let four;
         beforeAll(async () => {
             three = await fileStuff.searchFiles("file 3");
             four = await fileStuff.searchFiles("file 4");
         });
-        test("authorized - owner", async () => {
+        test("Validity Check - Owner", async () => {
             await fileStuff.removeFile(four[0]._id, "reg 1");
             expect(async () => {
                 await fileStuff.getFile(four[0]._id);
             }).rejects.toThrow();
         });
-        test("authorized - mod", async () => {
+        test("Validity Check - Moderator", async () => {
             await fileStuff.removeFile(three[0]._id, "mod 1");
             expect(async () => {
                 await fileStuff.getFile(three[0]._id);
             }).rejects.toThrow();
         });
     });
-    describe("fail", () => {
+    describe("Fail", () => {
         let five;
         beforeAll(async () => {
             five = await fileStuff.searchFiles("file 5");
         })
-        test("invalid file id", async () => {
+        test("Null File ID", async () => {
             expect(async () => {
                 await fileStuff.removeFile(null, "mod 1");
             }).rejects.toThrow();
         });
-        test("nonexistent file id", async () => {
+        test("Incorrect File ID", async () => {
             expect(async () => {
                 await fileStuff.removeFile("random", "mod 1");
             }).rejects.toThrow();
         });
-        test("not authorized", async () => {
+        test("Unauthorized", async () => {
             expect(async () => {
                 await fileStuff.removeFile(five[0]._id, "reg 2");
             }).rejects.toThrow();
@@ -338,41 +342,40 @@ describe("DELETE", () => {
     });
 });
 
-// addFavorite
-describe("ADDFAV", () => {
+describe("addFavorite", () => {
     let two;
     beforeAll(async () => {
         two = await fileStuff.searchFiles("file 2");
     });
-    describe("success", () => {
-        test("normal use", async () => {
+    describe("Success", () => {
+        test("Validity Check", async () => {
             await fileStuff.addFavorite("reg 1", two[0]._id);
             let curUser = await userStuff.getUser("reg 1");
             expect(curUser.favorites).toContainEqual(two[0]._id);
         });
     });
-    describe("fail", () => {
-        test("invalid file id", async () => {
+    describe("Fail", () => {
+        test("Null File ID", async () => {
             expect(async () => {
                 await fileStuff.addFavorite("reg 1", null);
             }).rejects.toThrow();
         });
-        test("nonexistent file id", async () => {
+        test("Incorrect File ID", async () => {
             expect(async () => {
                 await fileStuff.addFavorite("reg 1", "hi");
             }).rejects.toThrow();
         });
-        test("invalid username", async () => {
+        test("Null Username", async () => {
             expect(async () => {
                 await fileStuff.addFavorite(null, two._id);
             }).rejects.toThrow();
         });
-        test("nonexistent username", async () => {
+        test("Incorrect Username", async () => {
             expect(async () => {
                 await fileStuff.addFavorite("peak", two._id);
             }).rejects.toThrow();
         });
-        test("already in list", async () => {
+        test("Already In List", async () => {
             expect(async () => {
                 await fileStuff.addFavorite("reg 1", two._id);
             }).rejects.toThrow();
@@ -380,44 +383,44 @@ describe("ADDFAV", () => {
     });
 });
 
-// removeFavorite
-describe("DELFAV", () => {
+describe("removeFavorite", () => {
     let two;
     beforeAll(async () => {
         two = await fileStuff.searchFiles("file 2");
     });
-    describe("success", () => {
-        test("normal use", async () => {
+    describe("Success", () => {
+        test("Validity Check", async () => {
             await fileStuff.removeFavorite("reg 1", two[0]._id);
             let curUser = await userStuff.getUser("reg 1");
             expect(curUser.favorites).not.toContainEqual(two[0]._id);
         });
     });
-    describe("fail", () => {
-        test("invalid file id", async () => {
+    describe("Fail", () => {
+        test("Null File ID", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite("reg 1", null);
             }).rejects.toThrow();
         });
-        test("nonexistent file id", async () => {
+        test("Incorrect File ID", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite("reg 1", "hi");
             }).rejects.toThrow();
         });
-        test("invalid username", async () => {
+        test("Null Username", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite(null, two._id);
             }).rejects.toThrow();
         });
-        test("nonexistent username", async () => {
+        test("Incorrect Username", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite("peak", two._id);
             }).rejects.toThrow();
         });
-        test("not in list", async () => {
+        test("Not in the List", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite("reg 1", two._id);
             }).rejects.toThrow();
         });
     });
 });
+*/

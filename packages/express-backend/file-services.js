@@ -31,6 +31,9 @@ async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreat
     if (!uploader) {
         throw new Error("Username is not valid!");
     }
+    if (fileTags && !Array.isArray(fileTags)) {
+        throw new Error("Tags must be in an array!");
+    }
     try {
         return fileModel.insertOne({
             title: fileTitle,
@@ -94,7 +97,7 @@ async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDat
     if (!fileTags) {
         fileTags = file.tags;
     }
-    if (Array.isArray(fileTags)) {
+    if (!Array.isArray(fileTags)) {
         throw new Error("Tags must be in an array!");
     }
     try {
@@ -144,7 +147,7 @@ function searchFiles(query, tag) {
     if (tag === undefined) {
         tag = null;
     }
-    if (!Array.isArray(tag)) {
+    if ((!!tag) && !Array.isArray(tag)) {
         throw new Error("Please use an array when searching tags!");
     }
     if (!query) {

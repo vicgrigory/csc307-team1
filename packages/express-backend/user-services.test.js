@@ -1,4 +1,3 @@
-
 import userStuff from './user-services.js';
 import users from './user.js';
 
@@ -51,103 +50,103 @@ async function teardownDB() {
 };
 
 /* Tests */
-// getUser
-describe("GET", () => {
-    describe("success", () => {
-        test("1: username check", async () => {
+describe("getUser", () => {
+    describe("Success", () => {
+        test("Validity Check - Username", async () => {
             expect((await userStuff.getUser("reg 1")).username).toBe("reg 1");
         });
-        test("1: about check", async () => {
+        test("Validity Check - About", async () => {
             expect((await userStuff.getUser("reg 1")).about).toBe("about 1");
         });
-        test("1: profile check", async () => {
+        test("Validity Check - Profile", async () => {
             expect((await userStuff.getUser("reg 1")).profile).toBe("profile 1");
         });
     });
-    describe("fail", () => {
-        test("nonexistent", async () => {
+    describe("Fail", () => {
+        test("Invalid Username", async () => {
             expect(async () => {
                 await userStuff.getUser("who is this bro");
             }).rejects.toThrow();
         });
-        test("empty", async () => {
+        test("Empty Username", async () => {
             expect(async () => {
                 await userStuff.getUser("");
             }).rejects.toThrow();
         });
+        test("Null Username", async () => {
+            expect(async () => {
+                await userStuff.getUser();
+            }).rejects.toThrow();
+        });
     });
 });
 
-// createUser
-describe("ADD", () => {
-    describe("success", () => {
-        test("normal", async () => {
-            let newUser = await userStuff.createUser("reg 5", "hash");
+describe("createUser", () => {
+    describe("Success", () => {
+        test("Validity Check", async () => {
+            let newUser = await userStuff.createUser("reg 5");
             expect(newUser.username).toBe("reg 5");
-            expect(newUser.hashedPassword).toBe("hash");
         });
     });
-    describe("fail", () => {
-        test("empty string username", async () => {
+    describe("Fail", () => {
+        test("Empty Username", async () => {
             expect(async () => {
-                await userStuff.createUser("", "hash");
+                await userStuff.createUser("");
             }).rejects.toThrow();
         });
-        test("no input username", async () => {
+        test("Null Username", async () => {
             expect(async () => {
-                await userStuff.createUser(null, "hash");
+                await userStuff.createUser(null);
             }).rejects.toThrow();
         });
-        test("no hash", async () => {
+        test("Duplicate Username", async () => {
             expect(async () => {
-                await userStuff.createUser("reg 6");
-            }).rejects.toThrow();
-        });
-        test("duplicate", async () => {
-            expect(async () => {
-                await userStuff.createUser("reg 1", "hash");
+                await userStuff.createUser("reg 1");
             }).rejects.toThrow();
         });
     });
 });
 
-// editInformation
-describe("EDIT PROFILE", () => {
-    describe("success", () => {
-        test("all fields", async () => {
+describe("editInformation", () => {
+    describe("Success", () => {
+        test("Validity Check - Change All", async () => {
             await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, "altered about", "altered profile");
             expect((await userStuff.getUser("reg 1")).about).toBe("altered about");
             expect((await userStuff.getUser("reg 1")).profile).toBe("altered profile");
         });
-        test("null fields", async () => {
+        test("Validity Check - No Change", async () => {
             await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, null, null);
             expect((await userStuff.getUser("reg 1")).about).toBe("altered about");
             expect((await userStuff.getUser("reg 1")).profile).toBe("altered profile");
         });
-        test("empty fields", async () => {
+        test("Validity Check - Empty Strings", async () => {
             await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, "", "");
             expect((await userStuff.getUser("reg 1")).about).toBe("");
             expect((await userStuff.getUser("reg 1")).profile).toBe("");
         });
     });
-    describe("fail", () => {
-        test("invalid id", async () => {
+    describe("Fail", () => {
+        test("Incorrect ID", async () => {
             expect(async () => {
                 await userStuff.editInformation("invalid id", "cool", "stuff");
             }).rejects.toThrow();
         });
-        test("empty id", async () => {
+        test("Empty ID", async () => {
             expect(async () => {
                 await userStuff.editInformation("", "scarce", "here");
             }).rejects.toThrow();
         });
+        test("Null ID", async () => {
+            expect(async () => {
+                await userStuff.editInformation(null, "linganguli", "wacha lingangu");
+            }).rejects.toThrow()
+        });
     });
 });
 
-// editUsername
-describe("EDIT USERNAME", () => {
-    describe("success", () => {
-        test("normal", async () => {
+describe("editUsername", () => {
+    describe("Success", () => {
+        test("Validity Check", async () => {
             let curUser = await userStuff.getUser("reg 2");
             await userStuff.editUsername(curUser._id, "reg 69");
             let result = await userStuff.getUser("reg 69");
@@ -155,18 +154,18 @@ describe("EDIT USERNAME", () => {
             expect(curUser._id).toEqual(result._id);
         });
     });
-    describe("fail", () => {
-        test("invalid id", async () => {
+    describe("Fail", () => {
+        test("Null ID", async () => {
             expect(async () => {
                 await userStuff.editUsername(null, "grug");
             }).rejects.toThrow();
         });
-        test("null id", async ()=> {
+        test("Incorrect ID", async ()=> {
             expect(async () => {
                 await userStuff.editUsername("jiafei", "grug");
             }).rejects.toThrow();
         });
-        test("duplicate", async () => {
+        test("Duplicate Username", async () => {
             let curUser = await userStuff.getUser("reg 69");
             expect(async () => {
                 await userStuff.editUsername(curUser._id, "reg 1");
@@ -175,37 +174,45 @@ describe("EDIT USERNAME", () => {
     });
 });
 
-// setAsModerator + setAsRegular
-describe("MOD", () => {
-    describe("success", () => {
-        test("set as a mod", async () => {
+describe("setAsModerator/ Regular", () => {
+    describe("Success", () => {
+        test("Validity Check - Set as Mod", async () => {
             await userStuff.setAsModerator("reg 4");
             expect((await userStuff.getUser("reg 4")).type).toBe("moderator");
         });
-        test("remove a mod", async () =>{
-            console.log(await userStuff.getUser("reg 4"));
+        test("Validity Check - Remove Mod", async () =>{
             await userStuff.setAsRegular("reg 4");
             expect((await userStuff.getUser("reg 4")).type).toBe("regular");
         });
     });
-    describe("fail", () => {
-        test("set nonexistent", async () => {
+    describe("Fail", () => {
+        test("Set Incorrect Username", async () => {
             expect(async () => {
                 await userStuff.setAsModerator("xue hua piao piao");
             }).rejects.toThrow();
         });
-        test("remove nonexistent", async () => {
+        test("Set Null Username", async () => {
+            expect(async () => {
+                await userStuff.setAsModerator(null);
+            }).rejects.toThrow();
+        });
+        test("Remove Incorrect Username", async () => {
             expect(async () => {
                 await userStuff.setAsRegular("bei feng xiao xiao");
             }).rejects.toThrow();
         });
-        test("set as mod again", async () => {
+        test("Remove Null Username", async () => {
+            expect(async () => {
+                await userStuff.setAsRegular(null);
+            }).rejects.toThrow();
+        });
+        test("Set Twice", async () => {
             await userStuff.setAsModerator("reg 4");
             expect(async () => {
                 await userStuff.setAsModerator("reg 4");
             }).rejects.toThrow();
         });
-        test("set as regular again", async () => {
+        test("Remove Twice", async () => {
             await userStuff.setAsRegular("reg 4");
             expect(async () => {
                 await userStuff.setAsRegular("reg 4");
@@ -214,30 +221,58 @@ describe("MOD", () => {
     });
 });
 
-// deleteMyUser
-describe("DEL", () => {
-    describe("success", () => {
-        test("Delete user by username: regular use", async () => {
-            await expect(userStuff.deleteUser("reg 1")).resolves.toBeTruthy();
+describe("deleteUser", () => {
+    describe("Success", () => {
+        let userIDOne;
+        let userIDTwo;
+        let userIDFour;
+        beforeAll(async () => {
+            userIDOne = await userStuff.getUser("reg 1");
+            userIDTwo = await userStuff.getUser("mod 1");
+            userIDFour = await userStuff.getUser("reg 3");
+        });
+        test("Validity Check - Regular", async () => {
+            await expect(userStuff.deleteUser(userIDOne._id, "reg 1")).resolves.toBeTruthy();
             expect(async () => {
                 await userStuff.getUser("reg 1");
             }).rejects.toThrow();
         });
+        test("Validity Check - Mod", async () => {
+            await expect(userStuff.deleteUser(userIDTwo._id, "reg 69")).resolves.toBeTruthy();
+            expect(async () => {
+                await userStuff.getUser("reg 69");
+            }).rejects.toThrow();
+        });
     });
-    describe("fail", () => {
-        test("empty string", async () => {
+    describe("Fail", () => {
+        test("Empty Username", async () => {
             expect(async () => {
-                await userStuff.deleteUser("");
+                await userStuff.deleteUser(userIDTwo._id, "");
             }).rejects.toThrow();
         });
-        test("no input", async () => {
+        test("Null Username", async () => {
             expect(async () => {
-                await userStuff.deleteUser();
+                await userStuff.deleteUser(userIDTwo._id, null);
             }).rejects.toThrow();
         });
-        test("nonexistent", async () => {
+        test("Incorrect Username", async () => {
             expect(async () => {
-                await userStuff.deleteUser("garbage");
+                await userStuff.deleteUser(userIDTwo._id, "garbage");
+            }).rejects.toThrow();
+        });
+        test("Null ID", async () => {
+            expect(async () => {
+                await userStuff.deleteUser(null, "reg 3");
+            }).rejects.toThrow();
+        });
+        test("Incorrect ID", async () => {
+            expect(async () => {
+                await userStuff.deleteUser("sunset at 4 sucks", "reg 3");
+            }).rejects.toThrow();
+        });
+        test("Not authorized", async () => {
+            expect(async () => {
+                await userStuff.deleteUser(userIDFour._id, "mod 1");
             }).rejects.toThrow();
         });
     });

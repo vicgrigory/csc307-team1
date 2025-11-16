@@ -125,15 +125,26 @@ async function getUser(desiredUsername) {
 /*
 Deletes a user from the database.
 ** May alter this to redact their credentials so files can retain information.
+** May alter this to require an ID to check for authentication.
 Returns a promise for the deleted user (one JSON).
 */
-async function deleteUser(desiredUsername) {
+async function deleteUser(userID, desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Invalid username!");
+    }
+    if (!userID) {
+        throw new Error("Please provide a user ID to perform this action!");
     }
     const user = await userModel.findOne({ username: desiredUsername });
     if (!user) {
         throw new Error("This user does not exist!")
+    }
+    const action = await userModel.findOne({ _id: userID });
+    if (!action) {
+        throw new Error("User ID provided does not correspond to a user!");
+    }
+    if ((!action._id.equals(user._id)) && (action.type != 'moderator')) {
+        throw new Error("Unauthorized!");
     }
     return userModel.deleteOne({ username: desiredUsername });
 }

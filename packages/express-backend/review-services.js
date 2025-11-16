@@ -112,14 +112,12 @@ async function editReview(desiredUsername, reviewId, reviewContent, reviewRating
     if (!(review.userID.equals(user._id)) && (user.type != 'moderator')) {
         throw new Error("Not authorized!");
     }
-    console.log(reviewContent, reviewRating);
     if (!reviewContent) {
         reviewContent = review.content;
     }
     if (reviewRating === null || reviewRating === undefined) {
         reviewRating = review.rating;
     }
-    console.log(reviewContent, reviewRating);
     try {
         return reviewModel.updateOne({ _id: reviewId }, { content: reviewContent, rating: reviewRating });
     } catch(error) {
