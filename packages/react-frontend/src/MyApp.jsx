@@ -4,6 +4,7 @@ import About from "./pages/About";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
+import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 
 function MyApp() {
@@ -52,6 +53,15 @@ function MyApp() {
             <>
               <NavBar />
               <AccountManagement />
+            </>
+          }
+        />
+	<Route
+          path="/login"         
+          element={
+            <>
+              <NavBar />
+              <Login />
             </>
           }
         />
