@@ -60,7 +60,7 @@ export default function Layout({ children }) {
         </nav>
       </header>
 
-      {/* Home page content */}
+      {/* Page content */}
       <main className="page-content">
         {children}
       </main>
