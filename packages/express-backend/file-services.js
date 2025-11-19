@@ -1,14 +1,7 @@
 import mongoose from "mongoose";
 import fileModel from "./file";
 import userFunctions from "./user-services";
-
-mongoose.set("debug", true);
-
-//process.env.MONGODB_URI <- use this in production
-await mongoose.connect("mongodb://localhost:27017/data", {
-//    useNewUrlParser: true,
-//    useUNifiedTopology: true
-}).catch((error) => console.log(error));
+import userModel from "./user";
 
 /*
 Add a file.
@@ -16,23 +9,23 @@ Returns a promise for that file (one JSON).
 */
 async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreator, fileDate, fileTags) {
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
+        throw new Error("Username: invalid!");
     }
     if (!fileTitle) {
-        throw new Error("Must define a file title!");
+        throw new Error("Title: invalid!");
     }
     if (!fileLink) {
-        throw new Error("Must define a file link!");
+        throw new Error("Link: invalid!");
     }
     if (!fileType) {
-        throw new Error("Must define a file type!");
+        throw new Error("Type: invalid!");
+    }
+    if (fileTags && !Array.isArray(fileTags)) {
+        throw new Error("Tags: not an array!");
     }
     const uploader = await userFunctions.getUser(desiredUsername);
     if (!uploader) {
-        throw new Error("Username is not valid!");
-    }
-    if (fileTags && !Array.isArray(fileTags)) {
-        throw new Error("Tags must be in an array!");
+        throw new Error("Username: 404!");
     }
     try {
         return fileModel.insertOne({
@@ -45,9 +38,8 @@ async function addFile(desiredUsername, fileTitle, fileLink, fileType, fileCreat
             tags: fileTags
         });
     } catch(error) {
-        throw new Error("An error occured while adding your file!");
+        throw new Error("Mongo: error!", error);
     }
-    
 }
 
 /*
@@ -56,16 +48,16 @@ Returns a promise for that file (one JSON).
 */
 async function getFile(fileId) {
     if (!fileId) {
-        throw new Error("Invalid file ID!");
+        throw new Error("FID: invalid!");
     }
-    const file = await fileModel.findOne({ _id: fileId});
-    if (!file) {
-        throw new Error("File does not exist!");
+    const f = await fileModel.findOne({ _id: fileId});
+    if (!f) {
+        throw new Error("FID: 404!");
     }
     try {
         return fileModel.findOne({ _id: fileId });
     } catch(error) {
-        throw new Error("An error occured while getting your file!");
+        throw new Error("Mongo: error!", error);
     }  
 }
 
@@ -75,35 +67,41 @@ Returns a promise for that file (one JSON).
 */
 async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDate, fileTags) {
     if (!fileId) {
-        throw new Error("Invalid file ID!");
+        throw new Error("FID: invalid!");
     }
-    const file = await fileModel.findOne({_id: fileId});
-    if (!file) {
-        throw new Error("File ID does not correspond to a valid file!");
+    if (!desiredUsername) {
+        throw new Error("Username: invalid!");
     }
-    const user = await userFunctions.getUser(desiredUsername);
-    if ((!user._id.equals(file.userID)) && (user.type != 'moderator')) {
-        throw new Error("Not authorized!");
+    if (fileTags && !Array.isArray(fileTags)) {
+        throw new Error("Tags: not an array!");
+    }
+    const f = await fileModel.findOne({_id: fileId});
+    if (!f) {
+        throw new Error("FID: 404!");
+    }
+    const u = await userFunctions.getUser(desiredUsername);
+    if (!u) {
+        throw new Error("Username: 404!");
+    }
+    if ((!u._id.equals(f.userID)) && (u.type != 'moderator')) {
+        throw new Error("Username: unauthorized!");
     }
     if (!fileTitle) {
-        fileTitle = file.title;
+        fileTitle = f.title;
     }
     if (fileCreator === null || fileCreator === undefined) {
-        fileCreator = file.creator;
+        fileCreator = f.creator; // Excludes ""
     }
     if (fileDate === null || fileDate === undefined) {
-        fileDate = file.creationDate;
+        fileDate = f.creationDate;
     }
-    if (!fileTags) {
-        fileTags = file.tags;
-    }
-    if (!Array.isArray(fileTags)) {
-        throw new Error("Tags must be in an array!");
+    if (fileTags === null || fileTags === undefined) {
+        fileTags = f.tags; // Can set to []
     }
     try {
         return fileModel.updateOne({ _id: fileId }, { title: fileTitle, creator: fileCreator, creationDate: fileDate, tags: fileTags });
     } catch(error) {
-        throw new Error("An error occured while editing your file!");
+        throw new Error("Mongo: error!", error);
     }
 }
 
@@ -113,26 +111,26 @@ Returns a promise for that file (one JSON).
 */
 async function removeFile(fileId, desiredUsername) {
     if (!fileId) {
-        throw new Error("Invalid file ID!");
+        throw new Error("FID: invalid!");
     }
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
+        throw new Error("Username: invalid!");
     }
-    const file = await fileModel.findOne({ _id: fileId });
-    const user = await userFunctions.getUser(desiredUsername);
-    if (!file) {
-        throw new Error("File could not be found!");
+    const f = await fileModel.findOne({ _id: fileId });
+    const u = await userFunctions.getUser(desiredUsername);
+    if (!f) {
+        throw new Error("FID: 404!");
     }
-    if (!user) {
-        throw new Error("User could not be found!");
+    if (!u) {
+        throw new Error("Username: 404!");
     }
-    if ((!user._id.equals(file.userID)) && (user.type != 'moderator')) {
-        throw new Error("User is unauthorized to perform this action!");
+    if ((!u._id.equals(f.userID)) && (u.type != 'moderator')) {
+        throw new Error("Username: unauthorized!");
     }
     try {
         return fileModel.findByIdAndDelete(fileId);
     } catch(error) {
-        throw new Error("An error occured while removing your file!");
+        throw new Error("Mongo: error!", error);
     }
 }
 
@@ -148,33 +146,33 @@ function searchFiles(query, tag) {
         tag = null;
     }
     if ((!!tag) && !Array.isArray(tag)) {
-        throw new Error("Please use an array when searching tags!");
+        throw new Error("Tags: not an array!");
     }
     if (!query) {
         if (tag===null || tag.length == 0) {
             try {
                 return fileModel.find();
             } catch(error) {
-                throw new Error("An error occured while searching for files [no input]!");
+                throw new Error("Mongo: error [none, none]!", error);
             }   
         }
         try {
             return fileModel.find({ tags: {$all: tag}});
         } catch(error) {
-            throw new Error("An error occured while searching for files [tags only]!");
+            throw new Error("Mongo: error [none, tags]!", error);
         }
     } else if (query) {
         if (tag===null || tag.length == 0) {
             try {
                 return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}] });
             } catch(error) {
-                throw new Error("An error occured while searching for files [query only]!");
+                throw new Error("Mongo: error [query, none]!", error);
             }
         }
         try {
             return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}], tags: {$all: tag}});
         } catch(error) {
-            throw new Error("An error occured while searching for files [query and tags]!");
+            throw new Error("Mongo: error [query, tags]!", error);
         }
     }
 }
@@ -185,16 +183,16 @@ Returns a promise of a list of files (array of JSONs).
 */
 async function myFiles(desiredUsername) {
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
+        throw new Error("Username: invalid!");
     }
     const uploader = await userFunctions.getUser(desiredUsername);
     if (!uploader) {
-        throw new Error("User could not be found!"); // If we delete users, keeping their ID in the database would be useful if we want to keep their files.
+        throw new Error("Username: 404!"); // If we delete users, keeping their ID in the database would be useful if we want to keep their files.
     }
     try {
         return fileModel.find({ userID: uploader._id });
     } catch(error) {
-        throw new Error("An error occured while getting this user's files!");
+        throw new Error("Mongo: error!", error);
     }
 }
 
@@ -204,27 +202,27 @@ Returns a promise for that user (one JSON).
 */
 async function addFavorite(desiredUsername, fileId) {
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
-    }
-    const user = await userFunctions.getUser(desiredUsername);
-    if (!user) {
-        throw new Error("Username does not correspond to a valid user!");
+        throw new Error("Username: invalid!");
     }
     if (!fileId) {
-        throw new Error("Invalid file ID!");
+        throw new Error("FID: invalid!");
     }
-    const file = await fileModel.findOne({ _id: fileId });
-    if (!file) {
-        throw new Error("File ID does not correspond to a valid file!");
+    const u = await userFunctions.getUser(desiredUsername);
+    if (!u) {
+        throw new Error("Username: 404!");
     }
-    if (user.favorites.includes(fileId)) {
-        throw new Error("This file is already in the list!");
+    const f = await fileModel.findOne({ _id: fileId });
+    if (!f) {
+        throw new Error("FID: 404!");
+    }
+    if (u.favorites.includes(fileId)) {
+        throw new Error("FID: already fav'd!");
     }
     try {
-        user.favorites.push(fileId);
-        return user.save();
+        u.favorites.push(fileId);
+        return u.save();
     } catch(error) {
-        throw new Error("An error occured while adding this file to favorites!", error);
+        throw new Error("Mongo: error!", error);
     }
 }
 
@@ -234,27 +232,27 @@ Returns a promise for that user (one JSON).
 */
 async function removeFavorite(desiredUsername, fileId) {
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
-    }
-    const user = await userFunctions.getUser(desiredUsername);
-    if (!user) {
-        throw new Error("Username does not correspond to valid user!");
+        throw new Error("Username: invalid!");
     }
     if (!fileId) {
-        throw new Error("Invalid file specified!");
+        throw new Error("FID: invalid!");
     }
-    const file = await fileModel.findOne({ _id: fileId });
+    const u = await userFunctions.getUser(desiredUsername);
+    if (!u) {
+        throw new Error("Username: 404!");
+    }
+    const file = await getFile(fileId);
     if (!file) {
-        throw new Error("File ID does not correspond to a valid file!");
+        throw new Error("FID: 404!");
     }
-    if (!user.favorites.includes(fileId)) {
-        throw new Error("This file is not in the list!");
+    if (!u.favorites.includes(fileId)) {
+        throw new Error("FID: not fav'd!");
     }
     try {
-        user.favorites.pull(fileId);
-        return user.save();
+        u.favorites.pull(fileId);
+        return u.save();
     } catch(error) {
-        throw new Error("An error occured while removing this file from favorites!");
+        throw new Error("Mongo: error!", error);
     }
 }
 

@@ -2,12 +2,18 @@ import fileStuff from './file-services';
 import file from './file';
 import user from './user';
 import userStuff from './user-services';
+import mongoose from "mongoose";
 
 /* Initialization */
 beforeAll(async () => {
+    await mongoose.connect("mongodb://localhost:27017/data", {
+            //useNewUrlParser: true,
+            //useUnifiedTopology: true
+        }).catch((error) => console.log(error));
     await tearDownDB();
     await setupDB();
 });
+
 afterAll(async () => {
     await tearDownDB();
 });
@@ -77,12 +83,17 @@ describe("myFiles", () => {
         test("Null Username", async () => {
             expect( async () => {
                 await fileStuff.myFiles();
+            }).rejects.toThrow("Username: invalid!");
+        });
+        test("Username Cast Failure", async () => {
+            expect(async () => {
+                await fileStuff.myFiles("reg 6");
             }).rejects.toThrow();
         });
         test("Incorrect Username", async () => {
             expect(async () => {
-                await fileStuff.myFiles("reg 6");
-            }).rejects.toThrow();
+                await fileStuff.myFiles(new mongoose.Types.ObjectId("4b8d64113250e4d58c86b63d"));
+            }).rejects.toThrow("Username: 404!");
         });
     });
 });
@@ -114,7 +125,7 @@ describe("searchFiles", () => {
         test("String as Tag", async () => {
             expect(async () => {
                 await fileStuff.searchFiles("some query", "huh");
-            }).rejects.toThrow()
+            }).rejects.toThrow("Tags: not an array!");
         });
     });
 });
@@ -124,7 +135,6 @@ describe("getFile", () => {
         let fileDet;
         beforeAll(async () => {
             let fileId = (await fileStuff.searchFiles("file 1"))[0]._id;
-            console.log(fileId);
             fileDet = await fileStuff.getFile(fileId);
         })
         test("Validity Check - Title", async () => {
@@ -139,12 +149,17 @@ describe("getFile", () => {
         test("Null ID", async () => {
             expect(async () => {
                 await fileStuff.getFile();
+            }).rejects.toThrow("FID: invalid!");
+        });
+        test("ID Cast Failure", async () => {
+            expect(async () => {
+                await fileStuff.getFile("somerandomidhere4239040358");
             }).rejects.toThrow();
         });
         test("Incorrect ID", async () => {
             expect(async () => {
-                await fileStuff.getFile("somerandomidhere4239040358");
-            }).rejects.toThrow();
+                await fileStuff.getFile(new mongoose.Types.ObjectId("d1535708abd6eccb5df13ea8"));
+            }).rejects.toThrow("FID: 404!");
         });
     });
 });
@@ -185,44 +200,43 @@ describe("addFile", () => {
         test("Null Username", async () => {
             expect(async () => {
                 await fileStuff.addFile(null, "file 6", "link 6", 'pdf');
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: invalid!");
         });
         test("Incorrect Username", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 2", "file 6", "link 6", 'pdf');
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: 404!");
         });
         test("Null Title", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 1", null, "link 6", 'pdf');
-            }).rejects.toThrow();
+            }).rejects.toThrow("Title: invalid!");
         });
         test("Null Link", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 1", "file 6", null, 'pdf');
-            }).rejects.toThrow();
+            }).rejects.toThrow("Link: invalid!");
         });
         test("Null Filetype", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 1", "file 6", "link 6", null);
-            }).rejects.toThrow();
+            }).rejects.toThrow("Type: invalid!");
         });
         test("String as Tag", async () => {
             expect(async () => {
                 await fileStuff.addFile("mod 1", "file 6", "link 6", 'pdf', null, null, "hey");
-            }).rejects.toThrow();
+            }).rejects.toThrow("Tags: not an array!");
         });
     });
 });
 
 describe("editFile", () => {
+    let editFile;
+    beforeAll(async () => {
+        let results = await fileStuff.searchFiles("file");
+        editFile = results[0]._id;
+    });
     describe("Success", () => {
-        let editFile;
-        beforeAll(async () => {
-            let results = await fileStuff.searchFiles("file");
-            editFile = results[0]._id;
-            console.log((await user.findOne({_id: results[0].userID})).username);
-        });
         test("Validity Check - Title (All fields)", async () => {
             await fileStuff.editFile(editFile, "reg 1", "file 6", "creator 6", new Date("2001-09-11"), ["mongolian throat singing", "cathode ray tubes"]);
             let result = await fileStuff.getFile(editFile);
@@ -256,7 +270,7 @@ describe("editFile", () => {
             expect(result.creationDate).toEqual(new Date("2008-11-13"));
         });
         test("Mod Edit Check", async () => {
-            await fileStuff.editFile(editFile, "mod 1", null, "mario mario", new Date("2006-10-24"));
+            await fileStuff.editFile(editFile, "mod 1", null, "mario mario", new Date("2006-10-24"), ["cathode ray tubes"]);
             let result = await fileStuff.getFile(editFile);
             expect(result.creator).toBe("mario mario");
             expect(result.creationDate).toEqual(new Date("2006-10-24"));
@@ -265,33 +279,38 @@ describe("editFile", () => {
     describe("Fail", () => {
         test("Null File ID", async () => {
             expect(async () => {
-                await fileStuff.editFile(null, "mod 1", "hi");
+                await fileStuff.editFile(null, "mod 1", "hi", null, null, ["peak"]);
+            }).rejects.toThrow("FID: invalid!");
+        });
+        test("ID Cast Failure", async () => {
+            expect(async () => {
+                await fileStuff.editFile("random", "mod 1", "hi", null, null, ["peak"]);
             }).rejects.toThrow();
         });
         test("Incorrect File ID", async () => {
             expect(async () => {
-                await fileStuff.editFile("random", "mod 1", "hi");
-            }).rejects.toThrow();
+                await fileStuff.editFile(new mongoose.Types.ObjectId("01df8c41f772eb80af8070ef"), "mod 1", "hi", null, null, ["peak"]);
+            }).rejects.toThrow("FID: 404!");
         });
         test("Null Username", async () => {
             expect(async () => {
-                await fileStuff.editFile(editFile, null, "hi");
-            }).rejects.toThrow();
+                await fileStuff.editFile(editFile, null, "hi", null, null, ["peak"]);
+            }).rejects.toThrow("Username: invalid!");
         });
         test("Incorrect Username", async () => {
             expect(async () => {
-                await fileStuff.editFile(editFile, "mod 15", "hi");
-            }).rejects.toThrow();
+                await fileStuff.editFile(editFile, "mod 15", "hi", null, null, ["peak"]);
+            }).rejects.toThrow("Username: 404!");
         });
         test("String as Tag", async () => {
             expect(async () => {
                 await fileStuff.editFile(editFile, "mod 1", null, null, null, "helloooooo")
-            }).rejects.toThrow();
+            }).rejects.toThrow("Tags: not an array!");
         });
         test("Unauthorized", async () => {
             expect(async () => {
-                await fileStuff.editFile(editFile, "reg 2", "hi");
-            }).rejects.toThrow();
+                await fileStuff.editFile(editFile, "reg 2", "hi", null, null, ["peak"]);
+            }).rejects.toThrow("Username: unauthorized!");
         });
     });
 });
@@ -308,13 +327,13 @@ describe("removeFile", () => {
             await fileStuff.removeFile(four[0]._id, "reg 1");
             expect(async () => {
                 await fileStuff.getFile(four[0]._id);
-            }).rejects.toThrow();
+            }).rejects.toThrow("FID: 404!");
         });
         test("Validity Check - Moderator", async () => {
             await fileStuff.removeFile(three[0]._id, "mod 1");
             expect(async () => {
                 await fileStuff.getFile(three[0]._id);
-            }).rejects.toThrow();
+            }).rejects.toThrow("FID: 404!");
         });
     });
     describe("Fail", () => {
@@ -325,17 +344,32 @@ describe("removeFile", () => {
         test("Null File ID", async () => {
             expect(async () => {
                 await fileStuff.removeFile(null, "mod 1");
-            }).rejects.toThrow();
+            }).rejects.toThrow("FID: invalid!");
         });
         test("Incorrect File ID", async () => {
+            expect(async () => {
+                await fileStuff.removeFile(new mongoose.Types.ObjectId("6936c08d615f091a8196f2f6"), "mod 1");
+            }).rejects.toThrow("FID: 404!");
+        });
+        test("ID Cast Failure", async () => {
             expect(async () => {
                 await fileStuff.removeFile("random", "mod 1");
             }).rejects.toThrow();
         });
+        test("Null Username", async () => {
+            expect(async () => {
+                await fileStuff.removeFile(five[0]._id, null);
+            }).rejects.toThrow("Username: invalid!");
+        });
+        test("Invalid Username", async () => {
+            expect(async () => {
+                await fileStuff.removeFile(five[0]._id, "bogus");
+            }).rejects.toThrow("Username: 404!");
+        });
         test("Unauthorized", async () => {
             expect(async () => {
                 await fileStuff.removeFile(five[0]._id, "reg 2");
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: unauthorized!");
         });
 
     });
@@ -353,33 +387,40 @@ describe("addFavorite", () => {
             expect(curUser.favorites).toContainEqual(two[0]._id);
         });
     });
+    
     describe("Fail", () => {
         test("Null File ID", async () => {
             expect(async () => {
                 await fileStuff.addFavorite("reg 1", null);
-            }).rejects.toThrow();
+            }).rejects.toThrow("FID: invalid!");
         });
-        test("Incorrect File ID", async () => {
+        test("ID Cast Failure", async () => {
             expect(async () => {
                 await fileStuff.addFavorite("reg 1", "hi");
             }).rejects.toThrow();
         });
+        test("Incorrect File ID", async () => {
+            expect(async () => {
+                await fileStuff.addFavorite("reg 1", new mongoose.Types.ObjectId("07a0b32ac87fe8b28738091c"));
+            }).rejects.toThrow("FID: 404!");
+        });
         test("Null Username", async () => {
             expect(async () => {
-                await fileStuff.addFavorite(null, two._id);
-            }).rejects.toThrow();
+                await fileStuff.addFavorite(null, two[0]._id);
+            }).rejects.toThrow("Username: invalid!");
         });
         test("Incorrect Username", async () => {
             expect(async () => {
-                await fileStuff.addFavorite("peak", two._id);
-            }).rejects.toThrow();
+                await fileStuff.addFavorite("peak", two[0]._id);
+            }).rejects.toThrow("Username: 404!");
         });
         test("Already In List", async () => {
             expect(async () => {
-                await fileStuff.addFavorite("reg 1", two._id);
-            }).rejects.toThrow();
+                await fileStuff.addFavorite("reg 1", two[0]._id);
+            }).rejects.toThrow("FID: already fav'd!");
         });
     });
+    
 });
 
 describe("removeFavorite", () => {
@@ -398,26 +439,31 @@ describe("removeFavorite", () => {
         test("Null File ID", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite("reg 1", null);
-            }).rejects.toThrow();
+            }).rejects.toThrow("FID: invalid!");
         });
-        test("Incorrect File ID", async () => {
+        test("ID Cast Failure", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite("reg 1", "hi");
             }).rejects.toThrow();
         });
+        test("Incorrect File ID", async () => { // Throws clone
+            expect(async () => {
+                await fileStuff.removeFavorite("reg 1", new mongoose.Types.ObjectId("b3a2943a38ca990765e789ba36d6c492"));
+            }).rejects.toThrow();
+        });
         test("Null Username", async () => {
             expect(async () => {
-                await fileStuff.removeFavorite(null, two._id);
+                await fileStuff.removeFavorite(null, two[0]._id);
+            }).rejects.toThrow("Username: invalid!");
+        });
+        test("Incorrect Username", async () => { // Throws clone
+            expect(async () => {
+                await fileStuff.removeFavorite("peak", two[0]._id);
             }).rejects.toThrow();
         });
-        test("Incorrect Username", async () => {
+        test("Not in the List", async () => { // Throws clone
             expect(async () => {
-                await fileStuff.removeFavorite("peak", two._id);
-            }).rejects.toThrow();
-        });
-        test("Not in the List", async () => {
-            expect(async () => {
-                await fileStuff.removeFavorite("reg 1", two._id);
+                await fileStuff.removeFavorite("reg 2", two[0]._id);
             }).rejects.toThrow();
         });
     });

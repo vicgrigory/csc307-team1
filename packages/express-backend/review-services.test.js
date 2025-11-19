@@ -3,9 +3,15 @@ import file from './file';
 import fileStuff from './file-services';
 import reviewStuff from './review-services';
 import review from './review';
+import mongoose from "mongoose";
 
 /* Initialization */
 beforeAll(async () => {
+    await mongoose.connect("mongodb://localhost:27017/data", {
+            //useNewUrlParser: true,
+            //useUnifiedTopology: true
+        }).catch((error) => console.log(error));
+        
     await tearDownDB();
     await setupDB();
 });
@@ -85,12 +91,12 @@ describe("getReviewsUser", () => {
         test("Null Username", async () => {
             expect(async () => {
                 await reviewStuff.getReviewsUser();
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: invalid!");
         });
         test("Incorrect Username", async () => {
             expect(async () => {
                 await reviewStuff.getReviewsUser("coca cola");
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: 404!");
         });
         
     });
@@ -122,22 +128,27 @@ describe("getReviewsMedia", () => {
         test("Null File ID", async () => {
             expect(async () => {
                 await reviewStuff.getReviewsMedia();
+            }).rejects.toThrow("FID: invalid!");
+        });
+        test("ID Cast Failure", async () => {
+            expect(async () => {
+                await reviewStuff.getReviewsMedia("peak");
             }).rejects.toThrow();
         });
         test("Incorrect File ID", async () => {
             expect(async () => {
-                await reviewStuff.getReviewsMedia("peak");
-            }).rejects.toThrow();
+                await reviewStuff.getReviewsMedia(new mongoose.Types.ObjectId("39224ad4a6e3a2e966cf15a2"));
+            }).rejects.toThrow("FID: 404!");
         });
     });
 });
 
 describe("addReview", () => {
+    let curFile;
+    beforeAll(async () => {
+        curFile = await fileStuff.searchFiles("file 1");
+    });
     describe("Success", () => {
-        let curFile;
-        beforeAll(async () => {
-            curFile = await fileStuff.searchFiles("file 1");
-        });
         test("Validity Check", async () => {
             await reviewStuff.addReview(curFile[0]._id, "reg 3", "review 3", "content 3", 5);
             let curReview = await reviewStuff.getReviewsUser("reg 3");
@@ -150,42 +161,57 @@ describe("addReview", () => {
         test("Null File ID", async () => {
             expect(async () => {
                 await reviewStuff.addReview(null, "reg 2", "review 4", "content 4", 2);
-            }).rejects.toThrow();
+            }).rejects.toThrow("FID: invalid!");
         });
-        test("Incorrect File ID", async () => {
+        test("ID Cast Failure", async () => {
             expect(async () => {
                 await reviewStuff.addReview("peak", "reg 2", "review 4", "content 4", 2);
             }).rejects.toThrow();
         });
+        test("Incorrect File ID", async () => {
+            expect(async () => {
+                await reviewStuff.addReview(new mongoose.Types.ObjectId("1afe85ef3da9476ecef010a0"), "reg 2", "review 4", "content 4", 2);
+            }).rejects.toThrow("FID: 404!");
+        });
         test("Null Username", async () => {
             expect(async () => {
-                await reviewStuff.addReview(curFile._id, null, "review 4", "content 4", 2);
-            }).rejects.toThrow();
+                await reviewStuff.addReview(curFile[0]._id, null, "review 4", "content 4", 2);
+            }).rejects.toThrow("Username: invalid!");
         });
         test("Incorrect Username", async () => {
             expect(async () => {
-                await reviewStuff.addReview(curFile._id, "peak", "review 4", "content 4", 2);
-            }).rejects.toThrow();
+                await reviewStuff.addReview(curFile[0]._id, "peak", "review 4", "content 4", 2);
+            }).rejects.toThrow("Username: 404!");
         });
         test("Empty Title", async () => {
             expect(async () => {
-                await reviewStuff.addReview(curFile._id, "reg 2", "", "content 4", 2);
-            }).rejects.toThrow();
+                await reviewStuff.addReview(curFile[0]._id, "reg 2", "", "content 4", 2);
+            }).rejects.toThrow("Title: invalid!");
         });
         test("Empty Content", async () => {
             expect(async () => {
-                await reviewStuff.addReview(curFile._id, "reg 2", "review 4", "", 2);
-            }).rejects.toThrow();
+                await reviewStuff.addReview(curFile[0]._id, "reg 2", "review 4", "", 2);
+            }).rejects.toThrow("Content: invalid!");
         });
         test("Null Rating", async () => {
             expect(async () => {
-                await reviewStuff.addReview(curFile._id, "reg 2", "review 4", "content 4", null);
-            }).rejects.toThrow();
+                await reviewStuff.addReview(curFile[0]._id, "reg 2", "review 4", "content 4", null);
+            }).rejects.toThrow("Rating: invalid!");
+        });
+        test("Invalid Rating", async () => {
+            expect(async () => {
+                await reviewStuff.addReview(curFile[0]._id, "reg 2", "review 4", "content 4", "peak");
+            }).rejects.toThrow("Rating: invalid!");
+        });
+        test("Bad Rating", async () => {
+            expect(async () => {
+                await reviewStuff.addReview(curFile[0]._id, "reg 2", "review 4", "content 4", -1);
+            }).rejects.toThrow("Rating: invalid!");
         });
         test("Duplicate Review", async () => {
             expect(async () => {
-                await reviewStuff.addReview(curFile._id, "reg 3", "review 4", "content 4", 2);
-            }).rejects.toThrow();
+                await reviewStuff.addReview(curFile[0]._id, "reg 3", "review 4", "content 4", 2);
+            }).rejects.toThrow("Review: duplicate!");
         });
     });
 });
@@ -225,31 +251,47 @@ describe("editReview", () => {
             expect(result[0].rating).toBe(4);
         });
     });
+    
     describe("Fail", () => {
         test("Null Review ID", async () => {
             expect(async () => {
                 await reviewStuff.editReview("mod 1", null);
-            }).rejects.toThrow();
+            }).rejects.toThrow("RID: invalid!");
         });
-        test("Incorrect Review ID", async () => {
+        test("RID Cast Failure", async () => {
             expect(async () => {
                 await reviewStuff.editReview("mod 1", "peak");
             }).rejects.toThrow();
         });
+        test("Incorrect Review ID", async () => {
+            expect(async () => {
+                await reviewStuff.editReview("mod 1", new mongoose.Types.ObjectId("79b235ad4cf8f8b17d0a6c0c"));
+            }).rejects.toThrow("RID: 404!");
+        });
         test("Null Username", async () => {
             expect(async () => {
                 await reviewStuff.editReview(null, "peak");
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: invalid!");
         });
         test("Incorrect Username", async () => {
             expect(async () => {
-                await reviewStuff.editReview("gruh", "peak");
-            }).rejects.toThrow();
+                await reviewStuff.editReview("gruh", curReview[0]._id);
+            }).rejects.toThrow("Username: 404!");
+        });
+        test("String Rating", async () => {
+            expect(async () => {
+                await reviewStuff.editReview("mod 1", curReview[0]._id, null, "abc");
+            }).rejects.toThrow("Rating: invalid!");
+        });
+        test("Bad Rating", async () => {
+            expect(async () => {
+                await reviewStuff.editReview("mod 1", curReview[0]._id, null, 6);
+            }).rejects.toThrow("Rating: invalid!");
         });
         test("Not Authorized", async () => {
             expect(async () => {
-                await reviewStuff.editReview("reg 2", curFile._id, "fhwebfbub", 2);
-            }).rejects.toThrow();
+                await reviewStuff.editReview("reg 2", curReview[0]._id, "fhwebfbub", 2);
+            }).rejects.toThrow("Username: unauthorized!");
         });
     });
 });
@@ -279,27 +321,32 @@ describe("deleteReview", () => {
         test("Null Review ID", async () => {
             expect(async () => {
                 await reviewStuff.deleteReview("mod 1", null);
-            }).rejects.toThrow();
+            }).rejects.toThrow("RID: invalid!");
         });
-        test("Incorrect Review ID", async () => {
+        test("RID Cast Failure", async () => {
             expect(async () => {
                 await reviewStuff.deleteReview("mod 1", "peak");
             }).rejects.toThrow();
         });
+        test("Incorrect Review ID", async () => {
+            expect(async () => {
+                await reviewStuff.deleteReview("mod 1", new mongoose.Types.ObjectId("855b115aef8a8f314f027675"));
+            }).rejects.toThrow("RID: 404!");
+        });
         test("Null Username", async () => {
             expect(async () => {
                 await reviewStuff.deleteReview(null, curFileThree[0]._id);
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: invalid!");
         });
         test("Incorrect Username", async () => {
             expect(async () => {
                 await reviewStuff.deleteReview("peak", curFileThree[0]._id);
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: 404!");
         });
         test("Not Authorized", async () => {
             expect(async () => {
                 await reviewStuff.deleteReview("reg 1", curFileThree[0]._id);
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: unauthorized!");
         });
     });
 });
