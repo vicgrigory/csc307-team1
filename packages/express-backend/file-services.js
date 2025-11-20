@@ -1,7 +1,6 @@
-import mongoose from "mongoose";
 import fileModel from "./file";
+import service from "./services";
 import userFunctions from "./user-services";
-import userModel from "./user";
 
 /*
 Add a file.
@@ -50,12 +49,18 @@ async function getFile(fileId) {
     if (!fileId) {
         throw new Error("FID: invalid!");
     }
-    const f = await fileModel.findOne({ _id: fileId});
+    let fileIdObj;
+    try {
+        fileIdObj = service.makeObjectId(fileId);
+    } catch(error) {
+        throw new Error("FID: Not a string!");
+    }
+    const f = await fileModel.findOne({ _id: fileIdObj });
     if (!f) {
         throw new Error("FID: 404!");
     }
     try {
-        return fileModel.findOne({ _id: fileId });
+        return fileModel.findOne({ _id: fileIdObj });
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }  
@@ -75,7 +80,13 @@ async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDat
     if (fileTags && !Array.isArray(fileTags)) {
         throw new Error("Tags: not an array!");
     }
-    const f = await fileModel.findOne({_id: fileId});
+    let fileIdObj;
+    try {
+        fileIdObj = service.makeObjectId(fileId);
+    } catch(error) {
+        throw new Error("FID: Not a string!");
+    }
+    const f = await getFile(fileId);
     if (!f) {
         throw new Error("FID: 404!");
     }
@@ -99,7 +110,7 @@ async function editFile(fileId, desiredUsername, fileTitle, fileCreator, fileDat
         fileTags = f.tags; // Can set to []
     }
     try {
-        return fileModel.updateOne({ _id: fileId }, { title: fileTitle, creator: fileCreator, creationDate: fileDate, tags: fileTags });
+        return fileModel.updateOne({ _id: fileIdObj }, { title: fileTitle, creator: fileCreator, creationDate: fileDate, tags: fileTags });
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }
@@ -116,11 +127,17 @@ async function removeFile(fileId, desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Username: invalid!");
     }
-    const f = await fileModel.findOne({ _id: fileId });
-    const u = await userFunctions.getUser(desiredUsername);
+    let fileIdObj;
+    try {
+        fileIdObj = service.makeObjectId(fileId);
+    } catch(error) {
+        throw new Error("FID: Not a string!");
+    }
+    const f = await getFile(fileId);
     if (!f) {
         throw new Error("FID: 404!");
     }
+    const u = await userFunctions.getUser(desiredUsername);
     if (!u) {
         throw new Error("Username: 404!");
     }
@@ -128,7 +145,7 @@ async function removeFile(fileId, desiredUsername) {
         throw new Error("Username: unauthorized!");
     }
     try {
-        return fileModel.findByIdAndDelete(fileId);
+        return fileModel.findByIdAndDelete(fileIdObj);
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }
@@ -138,42 +155,71 @@ async function removeFile(fileId, desiredUsername) {
 Search through files. Tags are custom, but must be in an array.
 Returns a promise of a list of files (array of JSONs).
 */
-function searchFiles(query, tag) {
+function searchFiles(query, type, tag) {
     if (query === undefined) {
         query = null;
     }
     if (tag === undefined) {
         tag = null;
     }
+    if (type === undefined) {
+        type = null;
+    }
     if ((!!tag) && !Array.isArray(tag)) {
         throw new Error("Tags: not an array!");
     }
-    if (!query) {
-        if (tag===null || tag.length == 0) {
+    if ((!!type) && !Array.isArray(type)) {
+        throw new Error("Type: not an array!");
+    }
+    switch(true) {
+        case !query && !tag && !type: // None
             try {
                 return fileModel.find();
             } catch(error) {
-                throw new Error("Mongo: error [none, none]!", error);
-            }   
-        }
-        try {
-            return fileModel.find({ tags: {$all: tag}});
-        } catch(error) {
-            throw new Error("Mongo: error [none, tags]!", error);
-        }
-    } else if (query) {
-        if (tag===null || tag.length == 0) {
+                throw new Error("Mongo: error [none, none, none]!", error);
+            }  
+        case !query && !tag: // Type only
+            try {
+                return fileModel.find({ filetype: {$in: type}});
+            } catch(error) {
+                throw new Error("Mongo: error [none, type, none]!", error);
+            }
+        case !query && !type: // Tag only
+            try {
+                return fileModel.find({ tags: {$all: tag}});
+            } catch(error) {
+                throw new Error("Mongo: error [none, none, tags]!", error);
+            }
+        case !tag && !type: // Query only
             try {
                 return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}] });
             } catch(error) {
-                throw new Error("Mongo: error [query, none]!", error);
+                throw new Error("Mongo: error [query, none, none]!", error);
             }
-        }
-        try {
-            return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}], tags: {$all: tag}});
-        } catch(error) {
-            throw new Error("Mongo: error [query, tags]!", error);
-        }
+        case !query: // Type and Tag
+            try {
+                return fileModel.find({ filetype: {$in: type}, tags: {$all: tag}});
+            } catch(error) {
+                throw new Error("Mongo: error [none, type, tags]!", error);
+            }
+        case !tag: // Query and Type
+            try {
+                return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}], filetype: {$in: type}});
+            } catch(error) {
+                throw new Error("Mongo: error [query, type, none]!", error);
+            }
+        case !type: // Query and Tag
+            try {
+                return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}], tags: {$all: tag}});
+            } catch(error) {
+                throw new Error("Mongo: error [query, none, tags]!", error);
+            }
+        default: // All three
+            try {
+                fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}], filetype: {$in: type}, tags: {$all: tag}});
+            } catch(error) {
+                throw new Error("Mongo: error [query, type, tags]!", error);
+            }
     }
 }
 
@@ -207,19 +253,25 @@ async function addFavorite(desiredUsername, fileId) {
     if (!fileId) {
         throw new Error("FID: invalid!");
     }
+    let fileIdObj;
+    try {
+        fileIdObj = service.makeObjectId(fileId);
+    } catch(error) {
+        throw new Error("FID: Not a string!");
+    }
     const u = await userFunctions.getUser(desiredUsername);
     if (!u) {
         throw new Error("Username: 404!");
     }
-    const f = await fileModel.findOne({ _id: fileId });
+    const f = await getFile(fileId);
     if (!f) {
         throw new Error("FID: 404!");
     }
-    if (u.favorites.includes(fileId)) {
+    if (u.favorites.includes(fileIdObj)) {
         throw new Error("FID: already fav'd!");
     }
     try {
-        u.favorites.push(fileId);
+        u.favorites.push(fileIdObj);
         return u.save();
     } catch(error) {
         throw new Error("Mongo: error!", error);
@@ -237,6 +289,12 @@ async function removeFavorite(desiredUsername, fileId) {
     if (!fileId) {
         throw new Error("FID: invalid!");
     }
+    let fileIdObj;
+    try {
+        fileIdObj = service.makeObjectId(fileId);
+    } catch(error) {
+        throw new Error("FID: Not a string!");
+    }
     const u = await userFunctions.getUser(desiredUsername);
     if (!u) {
         throw new Error("Username: 404!");
@@ -245,11 +303,11 @@ async function removeFavorite(desiredUsername, fileId) {
     if (!file) {
         throw new Error("FID: 404!");
     }
-    if (!u.favorites.includes(fileId)) {
+    if (!u.favorites.includes(fileIdObj)) {
         throw new Error("FID: not fav'd!");
     }
     try {
-        u.favorites.pull(fileId);
+        u.favorites.pull(fileIdObj);
         return u.save();
     } catch(error) {
         throw new Error("Mongo: error!", error);

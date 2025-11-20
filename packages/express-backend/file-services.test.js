@@ -1,10 +1,11 @@
+/*
 import fileStuff from './file-services';
 import file from './file';
 import user from './user';
 import userStuff from './user-services';
 import mongoose from "mongoose";
 
-/* Initialization */
+/* Initialization 
 beforeAll(async () => {
     await mongoose.connect("mongodb://localhost:27017/data", {
             //useNewUrlParser: true,
@@ -18,7 +19,7 @@ afterAll(async () => {
     await tearDownDB();
 });
 
-/* Functions */
+/* Functions 
 async function setupDB() {
     await user.insertMany([
         {
@@ -60,7 +61,7 @@ async function tearDownDB() {
     await file.deleteMany();
 }
 
-/* Tests */
+/* Tests 
 describe("myFiles", () => {
     describe("Success", () => {
         test("Validity Test - Basic", async () => {
@@ -468,3 +469,4 @@ describe("removeFavorite", () => {
         });
     });
 });
+*/

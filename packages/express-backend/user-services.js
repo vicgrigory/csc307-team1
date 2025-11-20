@@ -1,4 +1,5 @@
 import userModel from "./user";
+import service from "./services";
 
 /*
 Creates a new user in the database.
@@ -66,11 +67,17 @@ async function setAsRegular(desiredUsername) {
 Change nonessential user credentials.
 Returns a promise for the updated user (one JSON).
 */
-async function editInformation(_desiredId, desiredAbout, desiredProfile) {
-    if (!_desiredId) {
+async function editInformation(desiredId, desiredAbout, desiredProfile) {
+    if (!desiredId) {
         throw new Error("UID: invalid!");
     }
-    const user = await userModel.findOne({ _id: _desiredId });
+    let desiredIdObj;
+    try {
+        desiredIdObj = service.makeObjectId(desiredId);
+    } catch(error) {
+        throw new Error("UID: Not string!");
+    }
+    const user = await userModel.findOne({ _id: desiredIdObj });
     if (!user) {
         throw new Error("UID: 404!");
     }
@@ -81,7 +88,7 @@ async function editInformation(_desiredId, desiredAbout, desiredProfile) {
         desiredProfile = user.profile;
     }
     try {
-        return userModel.findOne({ _id: _desiredId }).updateOne({ about: desiredAbout, profile: desiredProfile });
+        return userModel.findOne({ _id: desiredIdObj }).updateOne({ about: desiredAbout, profile: desiredProfile });
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }
@@ -91,14 +98,20 @@ async function editInformation(_desiredId, desiredAbout, desiredProfile) {
 Change username.
 Returns a promise for the updated user (one JSON).
 */
-async function editUsername(_desiredId, desiredUsername) {
-    if (!_desiredId) {
+async function editUsername(desiredId, desiredUsername) {
+    if (!desiredId) {
         throw new Error("UID: invalid!");
     }
     if (!desiredUsername) {
         throw new Error("Username: invalid!");
     }
-    const user = await userModel.findOne({ _id: _desiredId });
+    let desiredIdObj;
+    try {
+        desiredIdObj = service.makeObjectId(desiredId);
+    } catch(error) {
+        throw new Error("UID: Not string!");
+    }
+    const user = await userModel.findOne({ _id: desiredObjId });
     if (!user) {
         throw new Error("UID: 404!");
     }
@@ -107,7 +120,7 @@ async function editUsername(_desiredId, desiredUsername) {
         throw new Error("Username: duplicate!");
     }
     try {
-        return userModel.updateOne({ _id: _desiredId }, { username: desiredUsername });
+        return userModel.updateOne({ _id: desiredObjId }, { username: desiredUsername });
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }
@@ -145,11 +158,17 @@ async function deleteUser(userID, desiredUsername) {
     if (!userID) {
         throw new Error("UID: invalid!");
     }
+    let userIDObj;
+    try {
+        userIDObj = service.makeObjectId(userID);
+    } catch(error) {
+        throw new Error("UID: Not string!");
+    }
     const u = await userModel.findOne({ username: desiredUsername });
     if (!u) {
         throw new Error("Username: 404!")
     }
-    const action = await userModel.findOne({ _id: userID });
+    const action = await userModel.findOne({ _id: userIDObj });
     if (!action) {
         throw new Error("UID: 404!");
     }

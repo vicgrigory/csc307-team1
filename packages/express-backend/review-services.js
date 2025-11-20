@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
 import reviewModel from "./review";
 import fileFunctions from "./file-services";
 import userFunctions from "./user-services";
+import service from "./services";
 
 /*
 Adds a review for a user under a media.
@@ -38,7 +38,7 @@ async function addReview(fileId, desiredUsername, reviewTitle, reviewContent, re
     }
     try {
         return reviewModel.insertOne({
-            mediaID: fileId,
+            mediaID: f._id,
             userID: u._id,
             title: reviewTitle,
             content: reviewContent,
@@ -62,7 +62,7 @@ async function getReviewsMedia(fileId) {
         throw new Error("FID: 404!");
     }
     try {
-        return reviewModel.find({ mediaID: fileId });
+        return reviewModel.find({ mediaID: f._id });
     } catch (error) {
         throw new Error("Mongo: error!", error);
     }
@@ -101,7 +101,13 @@ async function editReview(desiredUsername, reviewId, reviewContent, reviewRating
     if (reviewRating && (!(Number.isInteger(reviewRating)) || !(0<=reviewRating&&reviewRating<=5))) {
         throw new Error("Rating: invalid!");
     }
-    const r = await reviewModel.findOne({ _id: reviewId });
+    let reviewIdObj;
+    try {
+        reviewIdObj = service.makeObjectId(reviewId);
+    } catch(error) {
+        throw new Error("RID: Not a string!");
+    }
+    const r = await reviewModel.findOne({ _id: reviewIdObj });
     if (!r) {
         throw new Error("RID: 404!");
     }
@@ -119,7 +125,7 @@ async function editReview(desiredUsername, reviewId, reviewContent, reviewRating
         reviewRating = r.rating; // Allows 0
     }
     try {
-        return reviewModel.updateOne({ _id: reviewId }, { content: reviewContent, rating: reviewRating });
+        return reviewModel.updateOne({ _id: r._id }, { content: reviewContent, rating: reviewRating });
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }
@@ -136,7 +142,13 @@ async function deleteReview(desiredUsername, reviewId) {
     if (!desiredUsername) {
         throw new Error("Username: invalid!");
     }
-    const r = await reviewModel.findOne({ _id: reviewId });
+    let reviewIdObj;
+    try {
+        reviewIdObj = service.makeObjectId(reviewId);
+    } catch(error) {
+        throw new Error("RID: Not a string!");
+    }
+    const r = await reviewModel.findOne({ _id: reviewIdObj });
     if (!r) {
         throw new Error("RID: 404!");
     }
@@ -148,7 +160,7 @@ async function deleteReview(desiredUsername, reviewId) {
         throw new Error("Username: unauthorized!");
     }
     try {
-        return reviewModel.deleteOne({ _id: reviewId });
+        return reviewModel.deleteOne({ _id: r._id });
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }

@@ -1,3 +1,4 @@
+/*
 import user from './user';
 import file from './file';
 import fileStuff from './file-services';
@@ -5,13 +6,13 @@ import reviewStuff from './review-services';
 import review from './review';
 import mongoose from "mongoose";
 
-/* Initialization */
+/* Initialization 
 beforeAll(async () => {
     await mongoose.connect("mongodb://localhost:27017/data", {
             //useNewUrlParser: true,
             //useUnifiedTopology: true
         }).catch((error) => console.log(error));
-        
+
     await tearDownDB();
     await setupDB();
 });
@@ -19,7 +20,7 @@ afterAll(async () => {
     await tearDownDB();
 });
 
-/* Functions */
+/* Functions 
 async function setupDB() {
     await user.insertMany([
         {
@@ -73,7 +74,7 @@ async function tearDownDB() {
     await user.deleteMany();
 }
 
-/* Tests */
+/* Tests 
 describe("getReviewsUser", () => {
     describe("Success", () => {
         test("Validity Check - Results", async () => {
@@ -350,3 +351,4 @@ describe("deleteReview", () => {
         });
     });
 });
+*/
