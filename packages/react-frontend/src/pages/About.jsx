@@ -1,9 +1,5 @@
-// About.jsx
-
 import "./About.css";
-
 import { Link } from "react-router-dom";
-
 import logo from "../assets/OpenShelf-Logo.png";
 import logo_blue from "../assets/OpenShelf-Logo-BlueBack.png";
 import profile_pic from "../assets/Profile-Picture.png";
@@ -11,11 +7,8 @@ import profile_pic from "../assets/Profile-Picture.png";
 export default function About() {
   return (
     <div className="page-container">
-      {/* About Page Layout */}
       <main className="page-content">
         <div className="about-layout">
-
-          {/* About Us text */}
           <div className="about-page-content">
             <section>
               <h1>About Us</h1>
@@ -33,7 +26,6 @@ export default function About() {
                 where information flows freely and is supported by its own community.
               </p>
             </section>
-
             <section>
               <h2>Our Mission</h2>
               <p>
@@ -48,7 +40,6 @@ export default function About() {
                 so that learners can focus on what matters — the content itself.
               </p>
             </section>
-
             <section>
               <h2>Our Values</h2>
               <p>
@@ -57,7 +48,6 @@ export default function About() {
                 content that upholds the principles of respect and educational legitimacy.
               </p>
             </section>
-
             <section>
               <h2>Who We Serve</h2>
               <p>
@@ -67,15 +57,12 @@ export default function About() {
                 student-curated resources.
               </p>
             </section>
-
             <section>
               <h2>Contact Us</h2>
               <p>Email: support@openshelf.com</p>
-              <p>Phone Number: (805) 123-4567</p>
+              <p>Phone Number: (248) 434-5508</p>
             </section>
           </div>
-
-          {/* Big logo */}
           <div className="about-logo-right-wrapper">
             <img
               src={logo_blue}
@@ -83,10 +70,8 @@ export default function About() {
               className="about-logo-right"
             />
           </div>
-
         </div>
       </main>
-
     </div>
   );
 }
