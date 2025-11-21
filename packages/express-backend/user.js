@@ -8,6 +8,11 @@ const WebUserSchema = new mongoose.Schema(
         unique: true,
         immutable: false // Change to true if we want to lock usernames
     },
+    hashedPassword: {
+        type: String,
+        required: [true, "Password required."],
+        immutable: true // Set to true until password reset is implemented
+    },
     type: {
         type: String,
         enum: ['regular', 'moderator'],
