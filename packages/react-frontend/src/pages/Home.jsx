@@ -4,9 +4,6 @@ import "./Home.css";
 
 import { Link } from "react-router-dom";
 
-import logo from "../assets/OpenShelf-Logo.png";
-import profile_pic from "../assets/Profile-Picture.png";
-
 export default function Home() {
   // Example "Today's Pick" data (replace with dynamic content later)
   const todaysPick = {
