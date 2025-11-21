@@ -1,16 +1,23 @@
 import userModel from "./user";
 import service from "./services";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({
+    path: path.join(__dirname, ".env"),
+    override: false,
+    // quiet: true // Silences dot.env logs.
+});
+if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI is undefined at runtime!");
+}
+
+mongoose.set("debug", true);
 await mongoose.connect(process.env.MONGODB_URI, {
             //useNewUrlParser: true,
             //useUnifiedTopology: true
         }).catch((error) => console.log(error));
-
-export async function disconnectDB() {
-  await mongoose.connection.close(true);
-}
 
 /*
 Creates a new user in the database.
