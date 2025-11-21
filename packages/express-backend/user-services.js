@@ -8,6 +8,10 @@ await mongoose.connect(process.env.MONGODB_URI, {
             //useUnifiedTopology: true
         }).catch((error) => console.log(error));
 
+export async function disconnectDB() {
+  await mongoose.connection.close(true);
+}
+
 /*
 Creates a new user in the database.
 Returns a promise for the new user (one JSON).

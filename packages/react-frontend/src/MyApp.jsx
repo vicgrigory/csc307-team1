@@ -2,6 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Profile from "./pages/Profile";
+import Search from "./pages/Search";
+import AccountManagement from "./pages/AccountManagement";
+import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
 
 function MyApp() {
@@ -12,7 +15,7 @@ function MyApp() {
           path="/"
           element={
             <>
-              <NavBar current="home" />
+              <NavBar />
               <Home />
             </>
           }
@@ -21,8 +24,17 @@ function MyApp() {
           path="/about"
           element={
             <>
-              <NavBar current="about" />
+              <NavBar />
               <About />
+            </>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <>
+              <NavBar />
+              <Search />
             </>
           }
         />
@@ -30,8 +42,26 @@ function MyApp() {
           path="/profile"
           element={
             <>
-              <NavBar current="profile" />
+              <NavBar />
               <Profile />
+            </>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <>
+              <NavBar />
+              <AccountManagement />
+            </>
+          }
+        />
+	<Route
+          path="/login"         
+          element={
+            <>
+              <NavBar />
+              <Login />
             </>
           }
         />

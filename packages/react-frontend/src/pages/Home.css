@@ -1,0 +1,32 @@
+/* Home.css */
+
+/* Welcome section (hero text) */
+.home-hero {
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Big, bold welcome */
+.home-hero h1 {
+  font-size: 3.5rem;     
+  font-weight: 1000;
+  margin-bottom: 1rem;
+}
+
+/* Centers the paragraph */
+.home-hero p {
+  font-size: 1.3rem;
+  line-height: 1.65;
+  max-width: 850px;
+  margin: 0 auto;       
+  color: #444;
+}
+
+
+
+
+
+
+
+
