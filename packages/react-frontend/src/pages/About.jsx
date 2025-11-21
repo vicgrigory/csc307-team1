@@ -4,9 +4,7 @@ import "./About.css";
 
 import { Link } from "react-router-dom";
 
-import logo from "../assets/OpenShelf-Logo.png";
 import logo_blue from "../assets/OpenShelf-Logo-BlueBack.png";
-import profile_pic from "../assets/Profile-Picture.png";
 
 export default function About() {
   return (
