@@ -134,8 +134,7 @@ async function getUser(desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Username: invalid!");
     }
-    const u = await userModel.findOne({ username: desiredUsername }); // Clone error here.
-    
+    const u = await userModel.findOne({ username: desiredUsername });
     if (!u) {
         throw new Error("Username: 404!");
     }

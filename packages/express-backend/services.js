@@ -7,7 +7,7 @@ function makeObjectId(key) {
     try {
         return new mongoose.Types.ObjectId(key);
     } catch(error) {
-        throw new Error("Key: failed to create ID!", error);
+        throw new Error("Key: failed to create ID!");
     }
 };
 

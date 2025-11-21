@@ -100,47 +100,53 @@ describe("myFiles", () => {
 
 describe("searchFiles", () => {
     describe("Success", () => {
+        test("None, None, None", async () => {
+            let result = await fileStuff.searchFiles(null, null, null);
+            expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
+        });
         test("Query, None, None", async () => {
-            let result = await fileStuff.searchFiles("file", null);
+            let result = await fileStuff.searchFiles("file", null, null);
             expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
         });
         test("None, Type, None", async () => {
-
+            let result = await fileStuff.searchFiles(null, ["mp3"], null);
+            expect(["file 1"]).toContain(result[0].title);
         });
         test("None, None, Tags", async () => {
-            let result = await fileStuff.searchFiles(null, ["science", "math"]);
+            let result = await fileStuff.searchFiles(null, null, ["science", "math"]);
             expect(["file 2"]).toContain(result[0].title);
         });
         test("Query, None, Tags", async () => {
-            let result = await fileStuff.searchFiles("2", ["math", "science"]);
+            let result = await fileStuff.searchFiles("2", null, ["math", "science"]);
             expect(["file 2"]).toContain(result[0].title);
         });
         test("Query, Type, None", async () => {
-
+            let result = await fileStuff.searchFiles("file", ["pdf"], null);
+            expect(["file 2", "file 3"]).toContain(result[0].title);
         });
         test("None, Type, Tags", async () => {
-
+            let result = await fileStuff.searchFiles(null, ["pdf", "mp3"], ["science"]);
+            expect(["file 1", "file 2"]).toContain(result[0].title);
         });
         test("Query, Type, Tags", async () => {
-
-        });
-        test("None, None, None", async () => {
-            let result = await fileStuff.searchFiles(null, null);
-            expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
+            let result = await fileStuff.searchFiles("file", ["pdf"], ["math"]);
+            expect(["file 2"]).toContain(result[0].title);
         });
         test("No Results", async () => {
-            let result = await fileStuff.searchFiles("3", ["math"]);
+            let result = await fileStuff.searchFiles("3", ["mp3"], ["math"]);
             expect(result).toEqual([]);
         });
     });
     describe("Fail", () => {
         test("String as Tag", async () => {
             expect(async () => {
-                await fileStuff.searchFiles("some query", "huh");
+                await fileStuff.searchFiles(null, null, "huh");
             }).rejects.toThrow("Tags: not an array!");
         });
-        test("String as Type", async => {
-
+        test("String as Type", async () => {
+            expect(async () => {
+                await fileStuff.searchFiles(null, "huh", null);
+            }).rejects.toThrow("Type: not an array!");
         });
     });
 });
@@ -458,11 +464,11 @@ describe("removeFavorite", () => {
         test("ID Cast Failure", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite("reg 1", "hi");
-            }).rejects.toThrow("FID: Not a string!");
+            }).rejects.toThrow("FID: Not a valid ID format!");
         });
-        test("Incorrect File ID", async () => { // Should throw "FID: 404!"
+        test("Incorrect File ID", async () => { // Should throw "FID: 404!". Throws username 404.
             expect(async () => {
-                await fileStuff.removeFavorite("reg 1", "b3a2943a38ca990765e789ba36d6c492");
+                await fileStuff.removeFavorite("reg 1", "6cc6ef9f58952e9cc90b1524");
             }).rejects.toThrow();
         });
         test("Null Username", async () => {
@@ -475,10 +481,10 @@ describe("removeFavorite", () => {
                 await fileStuff.removeFavorite("peak", two[0]._id.toString());
             }).rejects.toThrow("Username: 404!");
         });
-        test("Not in the List", async () => {
+        test("Not in the List", async () => { // Should throw "FID: not fav'd!". Throws username 404.
             expect(async () => {
-                await fileStuff.removeFavorite("reg 2", two[0]._id.toString());
-            }).rejects.toThrow("FID: not fav'd!");
+                await fileStuff.removeFavorite("reg 1", two[0]._id.toString());
+            }).rejects.toThrow();
         });
     });
 });

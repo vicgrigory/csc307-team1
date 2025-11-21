@@ -216,7 +216,7 @@ function searchFiles(query, type, tag) {
             }
         default: // All three
             try {
-                fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}], filetype: {$in: type}, tags: {$all: tag}});
+                return fileModel.find({ $or: [{ title: { $regex: query, $options:'i' }}, { creator: { $regex: query, $options: 'i'}}], filetype: {$in: type}, tags: {$all: tag}});
             } catch(error) {
                 throw new Error("Mongo: error [query, type, tags]!", error);
             }
@@ -293,7 +293,7 @@ async function removeFavorite(desiredUsername, fileId) {
     try {
         fileIdObj = service.makeObjectId(fileId);
     } catch(error) {
-        throw new Error("FID: Not a string!");
+        throw new Error("FID: Not a valid ID format!");
     }
     const u = await userFunctions.getUser(desiredUsername);
     if (!u) {
