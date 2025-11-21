@@ -111,7 +111,7 @@ async function editUsername(desiredId, desiredUsername) {
     } catch(error) {
         throw new Error("UID: Not string!");
     }
-    const user = await userModel.findOne({ _id: desiredObjId });
+    const user = await userModel.findOne({ _id: desiredIdObj });
     if (!user) {
         throw new Error("UID: 404!");
     }
@@ -120,7 +120,7 @@ async function editUsername(desiredId, desiredUsername) {
         throw new Error("Username: duplicate!");
     }
     try {
-        return userModel.updateOne({ _id: desiredObjId }, { username: desiredUsername });
+        return userModel.updateOne({ _id: desiredIdObj }, { username: desiredUsername });
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }

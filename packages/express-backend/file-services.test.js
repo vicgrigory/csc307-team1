@@ -1,11 +1,10 @@
-/*
 import fileStuff from './file-services';
 import file from './file';
 import user from './user';
 import userStuff from './user-services';
 import mongoose from "mongoose";
 
-/* Initialization 
+/* Initialization */
 beforeAll(async () => {
     await mongoose.connect("mongodb://localhost:27017/data", {
             //useNewUrlParser: true,
@@ -19,7 +18,7 @@ afterAll(async () => {
     await tearDownDB();
 });
 
-/* Functions 
+/* Functions */
 async function setupDB() {
     await user.insertMany([
         {
@@ -61,7 +60,7 @@ async function tearDownDB() {
     await file.deleteMany();
 }
 
-/* Tests 
+/* Tests */
 describe("myFiles", () => {
     describe("Success", () => {
         test("Validity Test - Basic", async () => {
@@ -101,19 +100,31 @@ describe("myFiles", () => {
 
 describe("searchFiles", () => {
     describe("Success", () => {
-        test("Query, None", async () => {
+        test("Query, None, None", async () => {
             let result = await fileStuff.searchFiles("file", null);
             expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
         });
-        test("None, Tags", async () => {
+        test("None, Type, None", async () => {
+
+        });
+        test("None, None, Tags", async () => {
             let result = await fileStuff.searchFiles(null, ["science", "math"]);
             expect(["file 2"]).toContain(result[0].title);
         });
-        test("Query, Tags", async () => {
+        test("Query, None, Tags", async () => {
             let result = await fileStuff.searchFiles("2", ["math", "science"]);
             expect(["file 2"]).toContain(result[0].title);
         });
-        test("None, None", async () => {
+        test("Query, Type, None", async () => {
+
+        });
+        test("None, Type, Tags", async () => {
+
+        });
+        test("Query, Type, Tags", async () => {
+
+        });
+        test("None, None, None", async () => {
             let result = await fileStuff.searchFiles(null, null);
             expect(["file 1", "file 2", "file 3"]).toContain(result[0].title);
         });
@@ -128,6 +139,9 @@ describe("searchFiles", () => {
                 await fileStuff.searchFiles("some query", "huh");
             }).rejects.toThrow("Tags: not an array!");
         });
+        test("String as Type", async => {
+
+        });
     });
 });
 
@@ -135,7 +149,7 @@ describe("getFile", () => {
     describe("Success", () => {
         let fileDet;
         beforeAll(async () => {
-            let fileId = (await fileStuff.searchFiles("file 1"))[0]._id;
+            let fileId = (await fileStuff.searchFiles("file 1"))[0]._id.toString();
             fileDet = await fileStuff.getFile(fileId);
         })
         test("Validity Check - Title", async () => {
@@ -154,12 +168,12 @@ describe("getFile", () => {
         });
         test("ID Cast Failure", async () => {
             expect(async () => {
-                await fileStuff.getFile("somerandomidhere4239040358");
-            }).rejects.toThrow();
+                await fileStuff.getFile(42);
+            }).rejects.toThrow("FID: Not a string!");
         });
         test("Incorrect ID", async () => {
             expect(async () => {
-                await fileStuff.getFile(new mongoose.Types.ObjectId("d1535708abd6eccb5df13ea8"));
+                await fileStuff.getFile("d1535708abd6eccb5df13ea8");
             }).rejects.toThrow("FID: 404!");
         });
     });
@@ -235,7 +249,7 @@ describe("editFile", () => {
     let editFile;
     beforeAll(async () => {
         let results = await fileStuff.searchFiles("file");
-        editFile = results[0]._id;
+        editFile = results[0]._id.toString();
     });
     describe("Success", () => {
         test("Validity Check - Title (All fields)", async () => {
@@ -285,12 +299,12 @@ describe("editFile", () => {
         });
         test("ID Cast Failure", async () => {
             expect(async () => {
-                await fileStuff.editFile("random", "mod 1", "hi", null, null, ["peak"]);
-            }).rejects.toThrow();
+                await fileStuff.editFile(6, "mod 1", "hi", null, null, ["peak"]);
+            }).rejects.toThrow("FID: Not a string!");
         });
         test("Incorrect File ID", async () => {
             expect(async () => {
-                await fileStuff.editFile(new mongoose.Types.ObjectId("01df8c41f772eb80af8070ef"), "mod 1", "hi", null, null, ["peak"]);
+                await fileStuff.editFile("01df8c41f772eb80af8070ef", "mod 1", "hi", null, null, ["peak"]);
             }).rejects.toThrow("FID: 404!");
         });
         test("Null Username", async () => {
@@ -325,15 +339,15 @@ describe("removeFile", () => {
             four = await fileStuff.searchFiles("file 4");
         });
         test("Validity Check - Owner", async () => {
-            await fileStuff.removeFile(four[0]._id, "reg 1");
+            await fileStuff.removeFile(four[0]._id.toString(), "reg 1");
             expect(async () => {
-                await fileStuff.getFile(four[0]._id);
+                await fileStuff.getFile(four[0]._id.toString());
             }).rejects.toThrow("FID: 404!");
         });
         test("Validity Check - Moderator", async () => {
-            await fileStuff.removeFile(three[0]._id, "mod 1");
+            await fileStuff.removeFile(three[0]._id.toString(), "mod 1");
             expect(async () => {
-                await fileStuff.getFile(three[0]._id);
+                await fileStuff.getFile(three[0]._id.toString());
             }).rejects.toThrow("FID: 404!");
         });
     });
@@ -349,30 +363,29 @@ describe("removeFile", () => {
         });
         test("Incorrect File ID", async () => {
             expect(async () => {
-                await fileStuff.removeFile(new mongoose.Types.ObjectId("6936c08d615f091a8196f2f6"), "mod 1");
+                await fileStuff.removeFile("6936c08d615f091a8196f2f6", "mod 1");
             }).rejects.toThrow("FID: 404!");
         });
         test("ID Cast Failure", async () => {
             expect(async () => {
-                await fileStuff.removeFile("random", "mod 1");
-            }).rejects.toThrow();
+                await fileStuff.removeFile(5, "mod 1");
+            }).rejects.toThrow("FID: Not a string!");
         });
         test("Null Username", async () => {
             expect(async () => {
-                await fileStuff.removeFile(five[0]._id, null);
+                await fileStuff.removeFile(five[0]._id.toString(), null);
             }).rejects.toThrow("Username: invalid!");
         });
         test("Invalid Username", async () => {
             expect(async () => {
-                await fileStuff.removeFile(five[0]._id, "bogus");
+                await fileStuff.removeFile(five[0]._id.toString(), "bogus");
             }).rejects.toThrow("Username: 404!");
         });
-        test("Unauthorized", async () => {
+        test("Unauthorized", async () => { // Should throw "Username: unauthorized!"
             expect(async () => {
-                await fileStuff.removeFile(five[0]._id, "reg 2");
-            }).rejects.toThrow("Username: unauthorized!");
+                await fileStuff.removeFile(five[0]._id.toString(), "reg 2");
+            }).rejects.toThrow();
         });
-
     });
 });
 
@@ -383,7 +396,7 @@ describe("addFavorite", () => {
     });
     describe("Success", () => {
         test("Validity Check", async () => {
-            await fileStuff.addFavorite("reg 1", two[0]._id);
+            await fileStuff.addFavorite("reg 1", two[0]._id.toString());
             let curUser = await userStuff.getUser("reg 1");
             expect(curUser.favorites).toContainEqual(two[0]._id);
         });
@@ -397,27 +410,27 @@ describe("addFavorite", () => {
         });
         test("ID Cast Failure", async () => {
             expect(async () => {
-                await fileStuff.addFavorite("reg 1", "hi");
-            }).rejects.toThrow();
+                await fileStuff.addFavorite("reg 1", 4);
+            }).rejects.toThrow("FID: Not a string!");
         });
         test("Incorrect File ID", async () => {
             expect(async () => {
-                await fileStuff.addFavorite("reg 1", new mongoose.Types.ObjectId("07a0b32ac87fe8b28738091c"));
+                await fileStuff.addFavorite("reg 1", "07a0b32ac87fe8b28738091c");
             }).rejects.toThrow("FID: 404!");
         });
         test("Null Username", async () => {
             expect(async () => {
-                await fileStuff.addFavorite(null, two[0]._id);
+                await fileStuff.addFavorite(null, two[0]._id.toString());
             }).rejects.toThrow("Username: invalid!");
         });
         test("Incorrect Username", async () => {
             expect(async () => {
-                await fileStuff.addFavorite("peak", two[0]._id);
+                await fileStuff.addFavorite("peak", two[0]._id.toString());
             }).rejects.toThrow("Username: 404!");
         });
         test("Already In List", async () => {
             expect(async () => {
-                await fileStuff.addFavorite("reg 1", two[0]._id);
+                await fileStuff.addFavorite("reg 1", two[0]._id.toString());
             }).rejects.toThrow("FID: already fav'd!");
         });
     });
@@ -431,7 +444,7 @@ describe("removeFavorite", () => {
     });
     describe("Success", () => {
         test("Validity Check", async () => {
-            await fileStuff.removeFavorite("reg 1", two[0]._id);
+            await fileStuff.removeFavorite("reg 1", two[0]._id.toString());
             let curUser = await userStuff.getUser("reg 1");
             expect(curUser.favorites).not.toContainEqual(two[0]._id);
         });
@@ -445,28 +458,27 @@ describe("removeFavorite", () => {
         test("ID Cast Failure", async () => {
             expect(async () => {
                 await fileStuff.removeFavorite("reg 1", "hi");
-            }).rejects.toThrow();
+            }).rejects.toThrow("FID: Not a string!");
         });
-        test("Incorrect File ID", async () => { // Throws clone
+        test("Incorrect File ID", async () => { // Should throw "FID: 404!"
             expect(async () => {
-                await fileStuff.removeFavorite("reg 1", new mongoose.Types.ObjectId("b3a2943a38ca990765e789ba36d6c492"));
+                await fileStuff.removeFavorite("reg 1", "b3a2943a38ca990765e789ba36d6c492");
             }).rejects.toThrow();
         });
         test("Null Username", async () => {
             expect(async () => {
-                await fileStuff.removeFavorite(null, two[0]._id);
+                await fileStuff.removeFavorite(null, two[0]._id.toString());
             }).rejects.toThrow("Username: invalid!");
         });
-        test("Incorrect Username", async () => { // Throws clone
+        test("Incorrect Username", async () => {
             expect(async () => {
-                await fileStuff.removeFavorite("peak", two[0]._id);
-            }).rejects.toThrow();
+                await fileStuff.removeFavorite("peak", two[0]._id.toString());
+            }).rejects.toThrow("Username: 404!");
         });
-        test("Not in the List", async () => { // Throws clone
+        test("Not in the List", async () => {
             expect(async () => {
-                await fileStuff.removeFavorite("reg 2", two[0]._id);
-            }).rejects.toThrow();
+                await fileStuff.removeFavorite("reg 2", two[0]._id.toString());
+            }).rejects.toThrow("FID: not fav'd!");
         });
     });
 });
-*/

@@ -113,17 +113,17 @@ describe("createUser", () => {
 describe("editInformation", () => {
     describe("Success", () => {
         test("Validity Check - Change All", async () => {
-            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, "altered about", "altered profile");
+            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id.toString(), "altered about", "altered profile");
             expect((await userStuff.getUser("reg 1")).about).toBe("altered about");
             expect((await userStuff.getUser("reg 1")).profile).toBe("altered profile");
         });
         test("Validity Check - No Change", async () => {
-            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, null, null);
+            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id.toString(), null, null);
             expect((await userStuff.getUser("reg 1")).about).toBe("altered about");
             expect((await userStuff.getUser("reg 1")).profile).toBe("altered profile");
         });
         test("Validity Check - Empty Strings", async () => {
-            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id, "", "");
+            await userStuff.editInformation((await userStuff.getUser("reg 1"))._id.toString(), "", "");
             expect((await userStuff.getUser("reg 1")).about).toBe("");
             expect((await userStuff.getUser("reg 1")).profile).toBe("");
         });
@@ -131,12 +131,12 @@ describe("editInformation", () => {
     describe("Fail", () => {
         test("Incorrect ID", async () => {
             expect(async () => {
-                await userStuff.editInformation(new mongoose.Types.ObjectId("4c3292686ea90899e0fbb16e"), "cool", "stuff");
+                await userStuff.editInformation("4c3292686ea90899e0fbb16e", "cool", "stuff");
             }).rejects.toThrow("UID: 404!");
         });
         test("Cast Failure", async () => {
             expect(async () => {
-                await userStuff.editInformation("bruh", "hi", "sup");
+                await userStuff.editInformation(4, "hi", "sup");
             }).rejects.toThrow();
         });
         test("Empty ID", async () => {
@@ -156,7 +156,7 @@ describe("editUsername", () => {
     describe("Success", () => {
         test("Validity Check", async () => {
             let curUser = await userStuff.getUser("reg 2");
-            await userStuff.editUsername(curUser._id, "reg 69");
+            await userStuff.editUsername(curUser._id.toString(), "reg 69");
             let result = await userStuff.getUser("reg 69");
             expect(result.username).toBe("reg 69");
             expect(curUser._id).toEqual(result._id);
@@ -174,22 +174,22 @@ describe("editUsername", () => {
         });
         test("Incorrect ID", async ()=> {
             expect(async () => {
-                await userStuff.editUsername(new mongoose.Types.ObjectId("adbe7b36e8fe25cb3f85c6b4"), "grug");
+                await userStuff.editUsername("adbe7b36e8fe25cb3f85c6b4", "grug");
             }).rejects.toThrow("UID: 404!");
         });
         test("Cast Failure", async ()=> {
             expect(async () => {
-                await userStuff.editUsername("jiafei", "grug");
-            }).rejects.toThrow();
+                await userStuff.editUsername(3, "grug");
+            }).rejects.toThrow("UID: Not string!");
         });
         test("Null Username", async () => {
             expect(async () => {
-                await userStuff.editUsername(curUser._id, "");
+                await userStuff.editUsername(curUser._id.toString(), "");
             }).rejects.toThrow("Username: invalid!");
         });
         test("Duplicate Username", async () => {
             expect(async () => {
-                await userStuff.editUsername(curUser._id, "reg 1");
+                await userStuff.editUsername(curUser._id.toString(), "reg 1");
             }).rejects.toThrow("Username: duplicate!");
         });
     });
@@ -263,38 +263,33 @@ describe("deleteUser", () => {
     });
     describe("Success", () => {
         test("Validity Check - Regular", async () => {
-            await expect(userStuff.deleteUser(userIDOne._id, "reg 1")).resolves.toBeTruthy();
+            await expect(userStuff.deleteUser(userIDOne._id.toString(), "reg 1")).resolves.toBeTruthy();
             expect(async () => {
                 await userStuff.getUser("reg 1");
             }).rejects.toThrow("Username: 404!");
         });
-        test("Validity Check - Mod", async () => { // Throws clone
-            await expect(userStuff.deleteUser(userIDTwo._id, "reg 69")).resolves.toBeTruthy();
+        test("Validity Check - Mod", async () => {
+            await expect(userStuff.deleteUser(userIDTwo._id.toString(), "reg 69")).resolves.toBeTruthy();
             expect(async () => {
                 await userStuff.getUser("reg 69");
-            }).rejects.toThrow();
+            }).rejects.toThrow("Username: 404!");
         });
     });
     describe("Fail", () => {
         test("Empty Username", async () => {
             expect(async () => {
-                await userStuff.deleteUser(userIDTwo._id, "");
+                await userStuff.deleteUser(userIDTwo._id.toString(), "");
             }).rejects.toThrow("Username: invalid!");
         });
         test("Null Username", async () => {
             expect(async () => {
-                await userStuff.deleteUser(userIDTwo._id, null);
+                await userStuff.deleteUser(userIDTwo._id.toString(), null);
             }).rejects.toThrow("Username: invalid!");
         });
-        test("Username Cast Failure", async () => {
+        test("Incorrect Username", async () => {
             expect(async () => {
-                await userStuff.deleteUser(userIDTwo._id, "garbage");
-            }).rejects.toThrow();
-        });
-        test("Incorrect Username", async () => { // Throws clone
-            expect(async () => {
-                await userStuff.deleteUser(userIDTwo._id, new mongoose.Types.ObjectId("84c645fd3eaee3aa9d0b4876"));
-            }).rejects.toThrow();
+                await userStuff.deleteUser(userIDTwo._id.toString(), "bozo");
+            }).rejects.toThrow("Username: 404!");
         });
         test("Null ID", async () => {
             expect(async () => {
@@ -303,18 +298,18 @@ describe("deleteUser", () => {
         });
         test("ID Cast Failure", async () => {
             expect(async () => {
-                await userStuff.deleteUser("sunset at 4 sucks", "reg 3");
-            }).rejects.toThrow();
+                await userStuff.deleteUser(21, "reg 3");
+            }).rejects.toThrow("UID: Not string!");
         });
-        test("Incorrect ID", async () => { // Throws clone
+        test("Incorrect ID", async () => {
             expect(async () => {
-                await userStuff.deleteUser(new mongoose.Types.ObjectId("1517f97c1720f93073bdbf4a"), "reg 3");
-            }).rejects.toThrow();
+                await userStuff.deleteUser("1517f97c1720f93073bdbf4a", "reg 3");
+            }).rejects.toThrow("UID: 404!");
         });
-        test("Not authorized", async () => { // Throws clone
+        test("Not authorized", async () => {
             expect(async () => {
-                await userStuff.deleteUser(userIDFour._id, "mod 2");
-            }).rejects.toThrow();
+                await userStuff.deleteUser(userIDFour._id.toString(), "mod 2");
+            }).rejects.toThrow("UID: unauthorized!");
         });
     });
 });
