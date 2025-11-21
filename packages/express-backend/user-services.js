@@ -1,5 +1,12 @@
 import userModel from "./user";
 import service from "./services";
+import dotenv from "dotenv";
+
+dotenv.config();
+await mongoose.connect(process.env.MONGODB_URI, {
+            //useNewUrlParser: true,
+            //useUnifiedTopology: true
+        }).catch((error) => console.log(error));
 
 /*
 Creates a new user in the database.

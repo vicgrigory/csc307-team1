@@ -3,6 +3,12 @@ import fileFunctions from "./file-services";
 import userFunctions from "./user-services";
 import service from "./services";
 
+dotenv.config();
+await mongoose.connect(process.env.MONGODB_URI, {
+            //useNewUrlParser: true,
+            //useUnifiedTopology: true
+        }).catch((error) => console.log(error));
+
 /*
 Adds a review for a user under a media.
 Returns a promise for that review (one JSON).

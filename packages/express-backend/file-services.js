@@ -1,6 +1,13 @@
 import fileModel from "./file";
 import service from "./services";
 import userFunctions from "./user-services";
+import dotenv from "dotenv";
+
+dotenv.config();
+await mongoose.connect(process.env.MONGODB_URI, {
+            //useNewUrlParser: true,
+            //useUnifiedTopology: true
+        }).catch((error) => console.log(error));
 
 /*
 Add a file.
