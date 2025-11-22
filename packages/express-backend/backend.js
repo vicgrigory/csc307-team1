@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import userServices from "./user-services.js";
+import fileServices from "./file-services.js";
 
 const app = express();
 const port = 8000;
@@ -16,6 +17,8 @@ const getUsers = (name, job) => userServices.getUsers(name, job);
 const findUserByName = (name) => userServices.findUserByName(name);
 
 const deleteByID = (_id) => userServices.deleteByID(_id);
+
+const findFiles = (query, mediaTypes) => fileServices.findFiles(query, mediaTypes);
 
 app.get("/users/:id", (req, res) => {
   const _id = req.params["_id"];
@@ -61,4 +64,17 @@ app.get("/users", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
+});
+
+app.get("/search", (req, res) => {
+  const query = req.query.q;
+  // Expecting mediaTypes as a comma-separated string (e.g., "Book,Music") or array
+  let mediaTypes = req.query.mediaTypes;
+  if (typeof mediaTypes === "string") {
+    mediaTypes = mediaTypes.split(",");
+  }
+
+  findFiles(query, mediaTypes)
+    .then((files) => res.status(200).send(files))
+    .catch((err) => res.status(500).send("Internal Server Error: " + err));
 });
