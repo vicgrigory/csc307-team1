@@ -23,10 +23,148 @@
   color: #444;
 }
 
+/* Wrapper for section containing content */
+.home-section {
+  margin-bottom: 2.5rem;
+}
 
+/* Header for each row */
+.home-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
 
+/* Title of section (Most Popular, Continue Reading, etc) */
+.home-section-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin: 0;            
+  padding-left: 0.5rem;
+}
 
+/* "View more" link */
+.home-section-viewmore {
+  font-size: 0.9rem;
+  color: #1a4f7a;
+  text-decoration: none;
+  padding-right: 0.5rem;
+}
 
+.home-section-viewmore:hover {
+  text-decoration: underline;
+}
 
+/* Positions arrows and row items */
+.home-row-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;       
+}
 
+/* Horizontal Scrolling */
+.home-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 0.5rem 0;
+  flex: 1;           
+}
 
+/* (Horizontal) Scrollbar Styling */
+.home-row::-webkit-scrollbar {
+  height: 8px;
+}
+
+/* (Horizontal) Scrollbar Styling */
+.home-row::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+}
+
+/* Individual Content Card */
+.home-card {
+  min-width: 180px;
+  max-width: 180px;
+  background-color: #f5e6d3;      
+  padding: 0.75rem;               
+  border-radius: 8px;           
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Card Hover Effect*/
+.home-card:hover {
+  transform: scale(1.04);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Thumbnail Image */
+.home-card-thumb {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+/* Card Text Container */
+.home-card-text {
+  text-align: left;
+}
+
+/* Media Title */
+.home-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+/* (Type + Author) */
+.home-card-meta {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* Scroll Arrows */
+.row-arrow {
+  border: none;
+  background: rgba(0, 0, 0, 0.18);
+  color: white;
+  width: 30px;
+  height: 60px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, transform 0.25s ease;
+  flex: 0 0 auto;     
+}
+
+/* Scroll Arrow Hover Effect */
+.row-arrow:hover {
+  background: rgba(0, 0, 0, 0.45);
+  transform: scale(1.05);
+}
+
+/* Hide arrows and shrink cards) */
+@media (max-width: 768px) {
+  .row-arrow {
+    display: none;
+  }
+
+  .home-card {
+    min-width: 140px;
+    max-width: 140px;
+  }
+
+  .home-card-thumb {
+    height: 200px;
+  }
+}
