@@ -9,7 +9,9 @@ export default function Profile() {
   // Example user data (can come from backend later)
   const username = "Briggs";
   const accountType = "Moderator";
-  const [showFavorites, setShowFavorites] = useState(false);
+
+  const isCurrentUser = true;
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const [bio, setBio] = useState("All about me!");
   const [isEditing, setIsEditing] = useState(false);
@@ -57,6 +59,22 @@ export default function Profile() {
     { id: 3, title: "CS1 Study Guide", author: "Ayaan Kazerouni", type: "Notes", review: "Could use better audio quality, but great find.", rating: 3, image: "https://via.placeholder.com/200x280?text=CS1" }
   ];
 
+  if (isPrivate && !isCurrentUser) {
+    return (
+      <div className="page-container">
+        <div className="profile-private-message">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png"
+            alt="Locked Icon"
+            className="locked-icon"
+          />
+          <p className="private-text">This profile is currently private</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 👤 Normal render (owner, or public profile)
   return (
     <div className="page-container">
       {/* Profile Header */}
@@ -82,9 +100,7 @@ export default function Profile() {
 
         {/* MIDDLE: name, buttons, about me, bio */}
         <div className="profile-info">
-          <h1 className="profile-username">
-            {username}
-          </h1>
+          <h1 className="profile-username">{username}</h1>
 
           <div className="profile-settings-tabs">
             <button className="settings-tab" onClick={handleChangePasscode}>
@@ -94,11 +110,11 @@ export default function Profile() {
               Change Email
             </button>
             <button
-                className="settings-tab"
-                onClick={() => setShowFavorites(!showFavorites)}
-              >
-                {showFavorites ? "Hide Favorite Media" : "Make Favorite Media Public"}
-              </button>
+              className="settings-tab"
+              onClick={() => setIsPrivate((prev) => !prev)}
+            >
+              {isPrivate ? "Make Profile Public" : "Make Profile Private"}
+            </button>
           </div>
 
           <h2 className="about-me">About Me</h2>
@@ -128,7 +144,7 @@ export default function Profile() {
           <h3>Profile Overview</h3>
           <p><strong>Member since:</strong> Jan 2025</p>
           <p><strong>Account Type:</strong> {accountType}</p>
-          <p><strong> Uploaded media:</strong> {uploaded.length}</p>
+          <p><strong>Uploaded media:</strong> {uploaded.length}</p>
           <p><strong>Favorites:</strong> {favoriteMedia.length}</p>
           <p><strong>Reviews:</strong> {reviews.length}</p>
           <p><strong>Followers:</strong> {followers.length}</p>
@@ -137,40 +153,57 @@ export default function Profile() {
 
       <hr className="divider" />
 
+      {/* Bottom columns */}
       <div className="profile-bottom-columns">
         {/* Favorite Media */}
-        {showFavorites && (
-          <div className="content-column">
-            <h2>Favorite Media</h2>
-            <div className="profile-media-card-wrapper">
-              {favoriteMedia.slice(0, 5).map((item) => (
-                <div key={item.id} className="profile-media-card media-horizontal-card">
-                  <img src={item.image} alt={item.title} className="media-card-image" />
-                  <div>
-                    <h4>{item.title}</h4>
-                    <p>{item.type} • {item.author}</p>
-                  </div>
+        <div className="content-column">
+          <h2>Favorite Media</h2>
+          <div className="profile-media-card-wrapper">
+            {favoriteMedia.slice(0, 5).map((item) => (
+              <div
+                key={item.id}
+                className="profile-media-card media-horizontal-card"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="media-card-image"
+                />
+                <div>
+                  <h4>{item.title}</h4>
+                  <p>
+                    {item.type} • {item.author}
+                  </p>
                 </div>
-              ))}
-            </div>
-
-            {favoriteMedia.length > 5 && (
-              <Link to="/favorites" className="view-more-button">
-                View More →
-              </Link>
-            )}
+              </div>
+            ))}
           </div>
-        )}
+
+          {favoriteMedia.length > 5 && (
+            <Link to="/favorites" className="view-more-button">
+              View More →
+            </Link>
+          )}
+        </div>
 
         {/* Uploaded Media */}
         <div className="content-column">
           <h2>Uploaded Media</h2>
           <div className="profile-media-card-wrapper">
             {uploaded.slice(0, 5).map((item) => (
-              <div key={item.id} className="profile-media-card media-horizontal-card">
-                <img src={item.image} alt={item.title} className="media-card-image" />
+              <div
+                key={item.id}
+                className="profile-media-card media-horizontal-card"
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="media-card-image"
+                />
                 <h4>{item.title}</h4>
-                <p>{item.type} • {item.author}</p>
+                <p>
+                  {item.type} • {item.author}
+                </p>
               </div>
             ))}
           </div>
@@ -188,7 +221,9 @@ export default function Profile() {
           <div className="profile-media-card-wrapper">
             {reviews.slice(0, 5).map((item) => (
               <div key={item.id} className="profile-media-card">
-                <h4>{item.title} • {item.type}</h4>
+                <h4>
+                  {item.title} • {item.type}
+                </h4>
                 <p>{item.review}</p>
                 <p>Rating: {item.rating} / 5 ⭐</p>
               </div>
