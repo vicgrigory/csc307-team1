@@ -59,6 +59,7 @@ export default function Profile() {
     { id: 3, title: "CS1 Study Guide", author: "Ayaan Kazerouni", type: "Notes", review: "Could use better audio quality, but great find.", rating: 3, image: "https://via.placeholder.com/200x280?text=CS1" }
   ];
 
+  // Render to others if profile is private
   if (isPrivate && !isCurrentUser) {
     return (
       <div className="page-container">
@@ -74,7 +75,7 @@ export default function Profile() {
     );
   }
 
-  // 👤 Normal render (owner, or public profile)
+  // Normal render (owner, or public profile)
   return (
     <div className="page-container">
       {/* Profile Header */}
