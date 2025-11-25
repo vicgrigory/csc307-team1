@@ -10,7 +10,7 @@ export default function Profile() {
   const username = "Briggs";
   const accountType = "Moderator";
 
-  const isCurrentUser = false;
+  const isCurrentUser = true;
   const [isPrivate, setIsPrivate] = useState(false);
 
   const [bio, setBio] = useState("All about me!");
