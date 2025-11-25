@@ -120,7 +120,7 @@ export default function Home() {
         <Row title="Most Popular" items={mostPopular} viewMoreTo="/popular"/>
         <Row title="Continue Reading" items={continueReading} viewMoreTo="/continue"/>
         <Row title="Recommended for You" items={recommendedForYou} viewMoreTo="/recommended"/>
-        <Row title="Today’s Top Picks" items={todaysTopPicks} viewMoreTo="/toppicks"/>
+        <Row title="Today’s Top Picks" items={todaysTopPicks} />
         <Row title="Recently Uploaded" items={recentlyUploaded} viewMoreTo="/recentposted" />
       </main>
     </div>
