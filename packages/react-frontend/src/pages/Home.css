@@ -71,7 +71,7 @@
     overflow-x: auto;
     scroll-behavior: smooth;
     padding: 0.5rem 0;
-    flex: 1;           
+    flex: nowrap;           
 }
 
 /* (Horizontal) Scrollbar Styling */
@@ -89,6 +89,7 @@
 .home-card {
     width: 250px;
     height: 400px;  
+    flex: 0 0 auto;
     background-color: #f5deb3;
     padding: 0.75rem;
     border-radius: 8px;

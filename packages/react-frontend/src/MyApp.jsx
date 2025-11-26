@@ -9,7 +9,6 @@ import RecentlyPosted from "./pages/RecentlyPosted";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
-import Login from "./pages/Login";
 
 import NavBar from "./components/NavBar";
 import ScrollToTop from "./components/ScrollToTop";
@@ -79,15 +78,6 @@ function MyApp() {
             <>
               <NavBar />
               <AccountManagement />
-            </>
-          }
-        />
-	      <Route
-          path="/login"         
-          element={
-            <>
-              <NavBar />
-              <Login />
             </>
           }
         />

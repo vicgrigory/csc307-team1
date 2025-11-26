@@ -97,7 +97,7 @@ export default function Home() {
     { id: 14, title: "Distributed Systems 101", type: "Slides", author: "Dev Sisodia", image: "https://via.placeholder.com/200x280?text=Distributed+Systems" },
   ];
 
-  const recentlyPosted = [
+  const recentlyUploaded = [
     { id: 10, title: "Probability for CS", type: "Textbook", author: "Bret Holladay", image: "https://via.placeholder.com/200x280?text=Probability", views: 720, uploadedAt: "2025-01-19T14:45:00Z" },
     { id: 9, title: "Neural Networks Explained", type: "Video", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Neural+Nets", views: 990, uploadedAt: "2025-01-18T08:00:00Z" },
     { id: 7, title: "Deep Learning Notes", type: "Notes", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Deep+Learning", views: 780, uploadedAt: "2025-01-17T11:30:00Z" },
