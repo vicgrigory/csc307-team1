@@ -7,11 +7,6 @@ import RecentlyPosted from "./pages/RecentlyPosted";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
-<<<<<<< Updated upstream
-=======
-import Login from "./pages/Login";
-
->>>>>>> Stashed changes
 import NavBar from "./components/NavBar";
 
 function MyApp() {
