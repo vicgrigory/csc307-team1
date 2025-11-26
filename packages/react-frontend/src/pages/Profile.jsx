@@ -165,14 +165,17 @@ export default function Profile() {
                 key={item.id}
                 className="profile-media-card media-horizontal-card"
               >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="media-card-image"
-                />
-                <div>
-                  <h4>{item.title}</h4>
-                  <p>
+                <div className="media-card-image-wrapper">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="media-card-image"
+                  />
+                </div>
+
+                <div className="media-card-content">
+                  <h4 className="media-card-title">{item.title}</h4>
+                  <p className="media-card-meta">
                     {item.type} • {item.author}
                   </p>
                 </div>
@@ -196,15 +199,20 @@ export default function Profile() {
                 key={item.id}
                 className="profile-media-card media-horizontal-card"
               >
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="media-card-image"
-                />
-                <h4>{item.title}</h4>
-                <p>
-                  {item.type} • {item.author}
-                </p>
+                <div className="media-card-image-wrapper">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="media-card-image"
+                  />
+                </div>
+
+                <div className="media-card-content">
+                  <h4 className="media-card-title">{item.title}</h4>
+                  <p className="media-card-meta">
+                    {item.type} • {item.author}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
