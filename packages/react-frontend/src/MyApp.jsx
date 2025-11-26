@@ -2,6 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Profile from "./pages/Profile";
+import MostPopular from "./pages/MostPopular";
+import RecentlyPosted from "./pages/RecentlyPosted";
+
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
 import Login from "./pages/Login";
@@ -30,20 +33,38 @@ function MyApp() {
           }
         />
         <Route
-          path="/search"
-          element={
-            <>
-              <NavBar />
-              <Search />
-            </>
-          }
-        />
-        <Route
           path="/profile"
           element={
             <>
               <NavBar />
               <Profile />
+            </>
+          }
+        />
+        <Route 
+          path="/popular"
+          element={
+            <>
+              <NavBar />
+              <MostPopular />
+            </>
+          }
+        />
+        <Route
+          path="/recentposted"
+          element={
+            <>
+              <NavBar />
+              <RecentlyPosted />
+            </>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <>
+              <NavBar />
+              <Search />
             </>
           }
         />

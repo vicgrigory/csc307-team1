@@ -37,7 +37,7 @@
   background-color: #fefefe !important;
 }
 
-/* Light grey bar under top header containing links*/
+/* Light grey bar under top header containing links */
 .links-bar {
     width: 100%;
     background-color: #9c9c9c;   
@@ -58,7 +58,7 @@
   border-right: none;
 }
 
-/* Formatting the links in the light grey top bar*/
+/* Formatting the links in the light grey top bar */
 .links-nav {
   display: flex;
   justify-content: center;                  

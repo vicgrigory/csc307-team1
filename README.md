@@ -1,3 +1,6 @@
+Continuous integration/cloud location:
+https://black-plant-00efa480f.3.azurestaticapps.net
+
 Project Requirements
 
 - Need to be able to sign in.
