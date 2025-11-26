@@ -125,12 +125,13 @@
     max-width: 2000px;
     margin-left: auto;
     margin-right: auto;   
+    cursor: pointer;
 }
 
 /* Adds a box each for the columns*/
 .content-column {
     flex: 3;
-    background-color: #f5deb3;
+    background-color: #c5c5c5;
     padding: 15px 20px;
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -152,18 +153,19 @@
     margin-top: 10px;
 }
 
-/* Adds a white box around each piece of media to separate them*/
+/* Adds a tan box around each review to separate them*/
 .profile-media-card {
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
     border: 2px solid black;      
     border-radius: 8px;         
-    background-color: white;
+    background-color: #f5deb3;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);  
     width: 100%;           
     box-sizing: border-box;
     margin-top: 5px;
+    cursor: pointer
 }
 
 .profile-media-card:hover {
@@ -175,14 +177,57 @@
 .media-horizontal-card {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 12px 16px;
+    gap: 14px;
+    padding: 14px 16px;
     border: 2px solid black;
-    border-radius: 8px;
-    background-color: white;
+    border-radius: 10px;
+    background-color: #f5deb3;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     width: 100%;
     box-sizing: border-box;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Tan boxes behind images */
+.media-card-image-wrapper {
+    display: flex;
+    justify-content: center;   
+    align-items: center;      
+    padding: 10px;
+    background-color: #f5e6d3;
+    height: 190px;
+    width: 140px;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+/* Actual image inside each card */
+.media-card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;       
+    border-radius: 6px;
+}
+
+/* Content next to image */
+.media-card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+}
+
+/* Title + metadata formatting */
+.media-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.media-card-meta {
+    font-size: 0.85rem;
+    color: #555;
 }
 
 /* Change the position of the private profile message and lock picture */
