@@ -9,10 +9,12 @@ import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
+import ScrollToTop from "./components/scrollToTop";
 
 function MyApp() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
