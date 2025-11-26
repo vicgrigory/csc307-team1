@@ -10,7 +10,7 @@ import AccountManagement from "./pages/AccountManagement";
 import Login from "./pages/Login";
 
 import NavBar from "./components/NavBar";
-import ScrollToTop from "./components/scrollToTop";
+import ScrollToTop from "./components/ScrollToTop";
 
 function MyApp() {
   return (
