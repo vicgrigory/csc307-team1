@@ -7,11 +7,14 @@ import RecentlyPosted from "./pages/RecentlyPosted";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
+
 import NavBar from "./components/NavBar";
+import ScrollToTop from "./components/scrollToTop";
 
 function MyApp() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
