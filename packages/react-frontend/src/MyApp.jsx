@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Profile from "./pages/Profile";
 import MostPopular from "./pages/MostPopular";
+import ContinueReading from "./pages/ContinueReading";
+import Recommended from "./pages/Recommended";
 import RecentlyPosted from "./pages/RecentlyPosted";
 
 import Search from "./pages/Search";
@@ -51,6 +53,24 @@ function MyApp() {
             <>
               <NavBar />
               <MostPopular />
+            </>
+          }
+        />
+        <Route
+          path="/continue"
+          element={
+            <>
+              <NavBar />
+              <ContinueReading />
+            </>
+          }
+        />
+        <Route
+          path="/recommended"
+          element={
+            <>
+              <NavBar />
+              <Recommended />
             </>
           }
         />
