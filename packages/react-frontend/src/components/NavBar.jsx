@@ -54,6 +54,8 @@ export default function Layout({ children }) {
           <Link to="/about" className="links-link">About</Link>
           <Link to="/post" className="links-link">Upload</Link>
           <Link to="/popular" className="links-link">Most Popular</Link>
+          <Link to="/continue" className="links-link">Continue Reading</Link>
+          <Link to="/recommended" className="links-link">Recommended for You</Link>
           <Link to="/recentposted" className="links-link">Recently Posted</Link>
           <Link to="/categories" className="links-link">Categories</Link>
           <Link to="/help" className="links-link">Help</Link>

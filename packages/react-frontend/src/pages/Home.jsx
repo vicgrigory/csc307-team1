@@ -107,6 +107,8 @@ export default function Home() {
     { id: 3, title: "Operating Systems Overview", type: "Slides", author: "Zach Peterson", image: "https://via.placeholder.com/200x280?text=OS+Overview", views: 1104, uploadedAt: "2025-01-10T08:45:00Z" },
     { id: 2, title: "Linear Algebra Made Easy", type: "Notes", author: "Steven Arata", image: "https://via.placeholder.com/200x280?text=Linear+Algebra", views: 1320, uploadedAt: "2025-01-08T14:30:00Z" },
     { id: 1, title: "Introduction to Algorithms", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=Algorithms", views: 1542, uploadedAt: "2025-01-05T10:00:00Z" },
+    { id: 22, title: "Last thing", type: "Notes", author: "Steven Arata", image: "https://via.placeholder.com/200x280?text=Linear+Algebra", views: 1320, uploadedAt: "2025-01-08T14:30:00Z" },
+    { id: 22, title: "shouldnt show up", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=Algorithms", views: 1542, uploadedAt: "2025-01-05T10:00:00Z" },
   ];
 
   return (
@@ -127,11 +129,11 @@ export default function Home() {
         </section>
 
         {/* Sections */}
-        <Row title="Most Popular" items={mostPopular} viewMoreTo="/popular"/>
-        <Row title="Continue Reading" items={continueReading} viewMoreTo="/continue"/>
-        <Row title="Recommended for You" items={recommendedForYou} viewMoreTo="/recommended"/>
-        <Row title="Today’s Top Picks" items={todaysTopPicks} />
-        <Row title="Recently Uploaded" items={recentlyUploaded} viewMoreTo="/recentposted" />
+        <Row title="Most Popular" items={mostPopular.slice(0, 10)} viewMoreTo="/popular" />
+        <Row title="Continue Reading" items={continueReading.slice(0, 10)} viewMoreTo="/continue" />
+        <Row title="Recommended for You" items={recommendedForYou.slice(0, 10)} viewMoreTo="/recommended" />
+        <Row title="Today’s Top Picks" items={todaysTopPicks.slice(0, 10)} />
+        <Row title="Recently Uploaded" items={recentlyUploaded.slice(0, 10)} viewMoreTo="/recentposted" />
       </main>
     </div>
   );
