@@ -4,11 +4,16 @@ import About from "./pages/About";
 import Profile from "./pages/Profile";
 import MostPopular from "./pages/MostPopular";
 import RecentlyPosted from "./pages/RecentlyPosted";
-
+import Help from "./pages/Help";
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
 import Login from "./pages/Login";
 import NavBar from "./components/NavBar";
+import Categories from "./pages/Categories";
+import Continue from "./pages/Continue";
+import Recommended from "./pages/Recommended";
+import Favorites from "./pages/Favorites";
+import Upload from "./pages/Upload";
 
 function MyApp() {
   return (
@@ -41,6 +46,69 @@ function MyApp() {
             </>
           }
         />
+	<Route
+          path="/help"
+          element={
+            <>
+              <NavBar />
+              <Help />
+    	    </>
+  	  }
+	/>
+
+	<Route
+	  path="/post"
+	  element={
+	    <>
+	      <NavBar />
+	      <Upload />
+	    </>
+	  }
+	/>
+
+	<Route
+  	  path="/favorites"
+  	  element={
+    	    <>
+      	      <NavBar />
+      	      <Favorites />
+    	    </>
+  	  }
+	/>
+
+	<Route
+  	  path="/categories"
+  	  element={
+    	    <>
+      	      <NavBar />
+      	      <Categories />
+    	    </>
+  	  }
+	/>
+
+	<Route
+  	  path="/recommended"
+  	  element={
+    	    <>
+      	      <NavBar />
+      	      <Recommended />
+    	    </>
+  	  }
+	/>
+
+
+	<Route
+  	  path="/continue"
+  	  element={
+    	    <>
+      	      <NavBar />
+      	      <Continue />
+    	    </>
+  	  }
+	/>
+
+
+
         <Route 
           path="/popular"
           element={

@@ -96,7 +96,6 @@ export default function Home() {
     { id: 17, title: "Signals & Systems Cheatsheet", type: "PDF", author: "Gavin Reakseaker", image: "https://via.placeholder.com/200x280?text=Signals" },
   ];
 
->>>>>>> main
   return (
     <div className="page-container">
       <main className="home-page-content">
