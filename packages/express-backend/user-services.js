@@ -110,8 +110,7 @@ async function getUser(desiredUsername) {
         throw new Error("Invalid username!");
     }
     if ((await userModel.findOne({ username: desiredUsername })) == undefined) { // probably a better way to do this
-        //throw new Error("User could not be found!");
-        return null;
+        throw new Error("User could not be found!");
     }
     return userModel.findOne({ username: desiredUsername });
 }
