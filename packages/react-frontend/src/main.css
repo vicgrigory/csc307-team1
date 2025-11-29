@@ -383,10 +383,11 @@ html {
 }
 
 body {
-  color: #404040;
-  background: white;
-  font-size: 1rem;
+  background: #c4edf2;
+  margin: 0;
+  padding: 0;
 }
+
 
 p,
 ol,

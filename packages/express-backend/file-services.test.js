@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
 import files from './file-services';
 import file from './file';
-dotenv.config();
+dotenv.config({
+  override: false
+});
 
 // Initialization
 /*

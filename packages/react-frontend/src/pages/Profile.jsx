@@ -1,3 +1,7 @@
+// Profile.jsx
+
+import "./Profile.css"
+
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -6,20 +10,16 @@ export default function Profile() {
   const username = "Briggs";
   const accountType = "Moderator";
 
-  const [bio, setBio] = useState("This is where your bio will appear.");
+  const isCurrentUser = true;
+  const [isPrivate, setIsPrivate] = useState(false);
+
+  const [bio, setBio] = useState("All about me!");
   const [isEditing, setIsEditing] = useState(false);
 
   // Profile picture state
-  const [profilePic, setProfilePic] = useState("https://via.placeholder.com/150");
+  const [profilePic, setProfilePic] = useState("https://media.newyorker.com/photos/59095bb86552fa0be682d9d0/master/w_2240,c_limit/Monkey-Selfie.jpg");
 
-  // Example lists
-  const favoriteMedia = ["Pride and Prejudice", "The Beatles Anthology", "Metropolis (1927)"];
-  const uploadedMedia = ["My Original Short Film", "Nature Sound Pack", "Public Domain Poem Reading"];
-  const reviews = [
-    "Loved this piece — beautifully restored!",
-    "Interesting remix concept.",
-    "Could use better audio quality, but great find."
-  ];
+  const followers = ["Matthew", "Tobin", "Vic", "Briggs", "Matthew"]
 
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
@@ -36,18 +36,57 @@ export default function Profile() {
     }
   };
 
+// Dummy data (replace with actual content later)
+  const favoriteMedia = [
+    { id: 2, title: "Linear Algebra Made Easy", type: "Notes", author: "Steven Arata", image: "https://via.placeholder.com/200x280?text=Linear+Algebra" },
+    { id: 5, title: "Data Structures in C++", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=C++" },
+    { id: 7, title: "Deep Learning Notes", type: "Notes", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Deep+Learning" },
+    { id: 10, title: "Probability for CS", type: "Textbook", author: "Bret Holladay", image: "https://via.placeholder.com/200x280?text=Probability" },
+    { id: 13, title: "Ethics in AI", type: "Article", author: "Jane Lehr", image: "https://via.placeholder.com/200x280?text=AI+Ethics" },
+    { id: 15, title: "Graph Theory Homework", type: "PDF", author: "Damon Lin", image: "https://via.placeholder.com/200x280?text=Graph+Theory" },
+    { id: 16, title: "CS1 Study Guide", type: "Notes", author: "Ayaan Kazerouni", image: "https://via.placeholder.com/200x280?text=CS1" }
+  ];
+
+  const uploaded = [
+    { id: 11, title: "Database Systems Summary", type: "Notes", author: "Andrew Migler", image: "https://via.placeholder.com/200x280?text=Databases" },
+    { id: 15, title: "Graph Theory Homework", type: "PDF", author: "Damon Lin", image: "https://via.placeholder.com/200x280?text=Graph+Theory" }
+
+  ];
+
+  const reviews = [
+    { id: 1, title: "Graph Theory Homework", author: "Damon Lin", type: "PDF", review: "Loved this piece — beautifully restored!", rating: 5, image: "https://via.placeholder.com/200x280?text=Graph+Theory" },
+    { id: 2, title: "Deep Learning Notes", author: "Paul Anderson", type: "Notes", review: "Interesting remix concept.", rating: 4, image: "https://via.placeholder.com/200x280?text=Deep+Learning" },
+    { id: 3, title: "CS1 Study Guide", author: "Ayaan Kazerouni", type: "Notes", review: "Could use better audio quality, but great find.", rating: 3, image: "https://via.placeholder.com/200x280?text=CS1" }
+  ];
+
+  // Render to others if profile is private
+  if (isPrivate && !isCurrentUser) {
+    return (
+      <div className="page-container">
+        <div className="profile-private-message">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png"
+            alt="Locked Icon"
+            className="locked-icon"
+          />
+          <p className="private-text">This profile is currently private</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Normal render (owner, or public profile)
   return (
     <div className="page-container">
       {/* Profile Header */}
       <div className="profile-header">
-        <img
-          src={profilePic}
-          alt={`${username}'s profile`}
-          className="profile-picture"
-        />
-        <div className="profile-info">
-          <h1>{username}'s Profile</h1>
-          <p className="account-type">{accountType} Account</p>
+        {/* LEFT: picture */}
+        <div className="profile-picture-wrapper">
+          <img
+            src={profilePic}
+            alt={`${username}'s profile`}
+            className="profile-pic"
+          />
           <label htmlFor="profilePicUpload" className="upload-button">
             Change Picture
           </label>
@@ -59,76 +98,154 @@ export default function Profile() {
             style={{ display: "none" }}
           />
         </div>
+
+        {/* MIDDLE: name, buttons, about me, bio */}
+        <div className="profile-info">
+          <h1 className="profile-username">{username}</h1>
+
+          <div className="profile-settings-tabs">
+            <button className="settings-tab" onClick={handleChangePasscode}>
+              Change Passcode
+            </button>
+            <button className="settings-tab" onClick={handleChangeEmail}>
+              Change Email
+            </button>
+            <button
+              className="settings-tab"
+              onClick={() => setIsPrivate((prev) => !prev)}
+            >
+              {isPrivate ? "Make Profile Public" : "Make Profile Private"}
+            </button>
+          </div>
+
+          <h2 className="about-me">About Me</h2>
+
+          <div className="profile-bio-inline">
+            {isEditing ? (
+              <>
+                <textarea
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  rows="3"
+                />
+                <br />
+                <button onClick={handleSave}>Save</button>
+              </>
+            ) : (
+              <>
+                <p>{bio}</p>
+                <button onClick={handleEdit}>Edit Bio</button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT: info card next to the name */}
+        <aside className="profile-info-card">
+          <h3>Profile Overview</h3>
+          <p><strong>Member since:</strong> Jan 2025</p>
+          <p><strong>Account Type:</strong> {accountType}</p>
+          <p><strong>Uploaded media:</strong> {uploaded.length}</p>
+          <p><strong>Favorites:</strong> {favoriteMedia.length}</p>
+          <p><strong>Reviews:</strong> {reviews.length}</p>
+          <p><strong>Followers:</strong> {followers.length}</p>
+        </aside>
       </div>
 
-      {/* Bio Section */}
-      <section>
-        <h2>About Me</h2>
-        {isEditing ? (
-          <div>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows="4"
-              cols="50"
-            />
-            <br />
-            <button onClick={handleSave}>Save</button>
+      <hr className="divider" />
+
+      {/* Bottom columns */}
+      <div className="profile-bottom-columns">
+        {/* Favorite Media */}
+        <div className="content-column">
+          <h2>Favorite Media</h2>
+          <div className="profile-media-card-wrapper">
+            {favoriteMedia.slice(0, 5).map((item) => (
+              <div
+                key={item.id}
+                className="profile-media-card media-horizontal-card"
+              >
+                <div className="media-card-image-wrapper">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="media-card-image"
+                  />
+                </div>
+
+                <div className="media-card-content">
+                  <h4 className="media-card-title">{item.title}</h4>
+                  <p className="media-card-meta">
+                    {item.type} • {item.author}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ) : (
-          <div>
-            <p>{bio}</p>
-            <button onClick={handleEdit}>Edit Bio</button>
+
+          {favoriteMedia.length > 5 && (
+            <Link to="/favorites" className="view-more-button">
+              View More →
+            </Link>
+          )}
+        </div>
+
+        {/* Uploaded Media */}
+        <div className="content-column">
+          <h2>Uploaded Media</h2>
+          <div className="profile-media-card-wrapper">
+            {uploaded.slice(0, 5).map((item) => (
+              <div
+                key={item.id}
+                className="profile-media-card media-horizontal-card"
+              >
+                <div className="media-card-image-wrapper">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="media-card-image"
+                  />
+                </div>
+
+                <div className="media-card-content">
+                  <h4 className="media-card-title">{item.title}</h4>
+                  <p className="media-card-meta">
+                    {item.type} • {item.author}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        )}
-      </section>
 
-      {/* Account Info */}
-      <section>
-        <h2>Account Info</h2>
-        <ul>
-          <li>Email: user@example.com</li>
-          <li>Member since: Jan 2025</li>
-        </ul>
-      </section>
+          {uploaded.length > 5 && (
+            <Link to="/uploads" className="view-more-button">
+              View More →
+            </Link>
+          )}
+        </div>
 
-      {/* Favorite Media */}
-      <section>
-        <h2>Favorite Media</h2>
-        <ul>
-          {favoriteMedia.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </section>
+        {/* Reviews */}
+        <div className="content-column">
+          <h2>Reviews</h2>
+          <div className="profile-media-card-wrapper">
+            {reviews.slice(0, 5).map((item) => (
+              <div key={item.id} className="profile-media-card">
+                <h4>
+                  {item.title} • {item.type}
+                </h4>
+                <p>{item.review}</p>
+                <p>Rating: {item.rating} / 5 ⭐</p>
+              </div>
+            ))}
+          </div>
 
-      {/* Uploaded Media */}
-      <section>
-        <h2>Uploaded Media</h2>
-        <ul>
-          {uploadedMedia.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Reviews */}
-      <section>
-        <h2>Reviews</h2>
-        <ul>
-          {reviews.map((review, index) => (
-            <li key={index}>{review}</li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Settings */}
-      <section>
-        <h2>Settings</h2>
-        <p>Manage your account preferences:</p>
-        <button onClick={handleChangePasscode}>Change Passcode</button>
-        <button onClick={handleChangeEmail}>Change Email</button>
-      </section>
+          {reviews.length > 5 && (
+            <Link to="/reviews" className="view-more-button">
+              View More →
+            </Link>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

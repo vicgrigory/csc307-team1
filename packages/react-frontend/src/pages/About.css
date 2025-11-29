@@ -1,0 +1,40 @@
+/* About.css */
+
+/* Flex row: text on left, logo on right */
+.about-layout {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 3rem;
+    margin-top: 2.5rem;
+}
+
+/* Right column: logo */
+.about-logo-right-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Right logo size */
+.about-logo-right {
+    max-width: 600px; 
+    height: auto;
+}
+
+/* Size of text on left side */
+.about-page-content {
+    flex: 2;
+    text-align: left;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    padding-left: 2rem; 
+}
+
+/* Left column: text */
+.about-text {
+    flex: 2;
+    text-align: left;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
