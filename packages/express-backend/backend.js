@@ -52,12 +52,6 @@ app.delete("/users", authenticateUser, (req, res) => {
     });
 });
 
-app.post("/users", authenticateUser, (req, res) => {
-  const userToAdd = req.body;
-  addUser(userToAdd)
-    .then((user) => res.status(201).send(user))
-    .catch((err) => res.status(500).send("Internal Server Error: " + err));
-});
 
 app.get("/users", authenticateUser, (req, res) => {
   getUsers(req.query.name, req.query.job)
@@ -65,6 +59,7 @@ app.get("/users", authenticateUser, (req, res) => {
     .catch((err) => res.status(500).send("Internal Server Error: " + err));
 });
 
+
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log("REST API is listening.");
 });

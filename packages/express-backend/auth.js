@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import backend from "backend.js";
 import userServices from "./user-services.js";
 import dotenv from 'dotenv';
 
@@ -10,7 +9,8 @@ export function registerUser(req, res) {
 
   if (!username || !pwd) {
     res.status(400).send("Bad request: Invalid input data.");
-  } else if (backend.findUserByName((c) => c.username === username)) {
+  } else if (userServices.getUser(username) !== null) {
+    console.log(userServices.getUser(username));
     res.status(409).send("Username already taken");
   } else {
     bcrypt
@@ -52,13 +52,13 @@ export function authenticateUser(req, res, next) {
 
 export function loginUser(req, res) {
   const { username, pwd } = req.body; // from form
-  const retrievedUser = backend.findUserByName(
+  const retrievedUser = userServices.getUser(
     (c) => c.username === username
   );
 
   if (!retrievedUser) {
     // invalid username
-    res.status(401).send("Unauthorized");
+    res.status(401).send("Unauthorized invalid username");
   } else {
     bcrypt
       .compare(pwd, retrievedUser.hashedPassword)
