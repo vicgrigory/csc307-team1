@@ -18,27 +18,33 @@ async function setupDB() {
         {
             username: "help",
             about: "i am cool",
-            profile: "heehee"
+            profile: "heehee",
+            hashedPassword: "hashedpwd1"
         },
         {
             username: "criminal",
-            about: "hackermans"
+            about: "hackermans",
+            hashedPassword: "hashedpwd2"
         },
         {
             username: "peak",
-            about: "mega peak"
+            about: "mega peak",
+            hashedPassword: "hashedpwd3"
         },
         {
             username: "why does this take so long",
-            about: "dark falz"
+            about: "dark falz",
+            hashedPassword: "hashedpwd4"
         },
         {
             username: "mod 1",
-            type: 'moderator'
+            type: 'moderator',
+            hashedPassword: "hashedpwd5"
         },
         {
             username: "mod 2",
-            type: 'moderator'
+            type: 'moderator',
+            hashedPassword: "hashedpwd6"
         }
     ]);
 };
@@ -51,13 +57,18 @@ async function teardownDB() {
 describe("ADD", () => {
     describe("success", () => {
         test("normal", async () => {
-            await expect((userStuff.createUser("having fun"))).resolves.toBeTruthy();
+            await expect((userStuff.createUser("having fun", "funhaverhshpwd"))).resolves.toBeTruthy();
         });
     });
     describe("fail", () => {
         test("empty string username", async () => {
             expect(async () => {
-                await userStuff.createUser("");
+                await userStuff.createUser("", "hshpwdempty");
+            }).rejects.toThrow();
+        });
+        test("no password", async () => {
+            expect(async () => {
+                await userStuff.createUser("i have no password");
             }).rejects.toThrow();
         });
         test("no input username", async () => {
@@ -67,7 +78,7 @@ describe("ADD", () => {
         })
         test("duplicate", async () => {
             expect(async () => {
-                await userStuff.createUser("criminal");
+                await userStuff.createUser("criminal", "hshpwdcrmnl");
             }).rejects.toThrow();
         });
     });
@@ -78,6 +89,9 @@ describe("GET", () => {
     describe("success", () => {
         test("1: username check", async () => {
             expect((await userStuff.getUser("help")).username).toBe("help");
+        });
+        test("2: password check", async () => {
+            expect((await userStuff.getUser("help")).hashedPassword).toBe("hashedpwd1");
         });
         test("1: about check", async () => {
             expect((await userStuff.getUser("help")).about).toBe("i am cool");
