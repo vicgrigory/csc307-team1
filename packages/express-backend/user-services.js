@@ -23,15 +23,15 @@ await mongoose.connect(process.env.MONGODB_URI, {
 Creates a new user in the database.
 Returns a promise for the new user (one JSON).
 */
-async function createUser(desiredUsername) {
+async function createUser(desiredUsername, hashedPassword) { // if we add a password, it should be hashed by this point
     if (!desiredUsername) {
         throw new Error("Username: invalid!");
-    };
+    }
     if (await userModel.findOne({ username: desiredUsername })) {
-        throw new Error(`Username: duplicate!`);
+        throw new Error("Username: duplicate!");
     };
     try {
-        return userModel.insertOne({ username: desiredUsername });
+        return userModel.insertOne({ username: desiredUsername, hashedPassword: hashedPassword});
     } catch(error) {
         throw new Error("Mongo: error!", error);
     }

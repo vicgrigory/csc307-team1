@@ -24,27 +24,33 @@ async function setupDB() {
         {
             username: "reg 1",
             about: "about 1",
-            profile: "profile 1"
+            profile: "profile 1",
+            hashedPassword: "hashedpwd1"
         },
         {
             username: "reg 2",
-            about: "about 2"
+            about: "about 2",
+            hashedPassword: "hashedpwd2"
         },
         {
             username: "reg 3",
-            about: "about 3"
+            about: "about 3",
+            hashedPassword: "hashedpwd3"
         },
         {
             username: "reg 4",
-            about: "about 4"
+            about: "about 4",
+            hashedPassword: "hashedpwd4"
         },
         {
             username: "mod 1",
-            type: 'moderator'
+            type: 'moderator',
+            hashedPassword: "hashedpwd5"
         },
         {
             username: "mod 2",
-            type: 'moderator'
+            type: 'moderator',
+            hashedPassword: "hashedpwd6"
         }
     ]);
 };
@@ -63,6 +69,9 @@ describe("getUser", () => {
         });
         test("Validity Check - Profile", async () => {
             expect((await userStuff.getUser("reg 1")).profile).toBe("profile 1");
+        });
+        test("Validity Check - Password", async () => {
+            expect((await userStuff.getUser("reg 1")).hashedPassword).toBe("hashedpwd1");
         });
     });
     describe("Fail", () => {
@@ -87,24 +96,24 @@ describe("getUser", () => {
 describe("createUser", () => {
     describe("Success", () => {
         test("Validity Check", async () => {
-            let newUser = await userStuff.createUser("reg 5");
+            let newUser = await userStuff.createUser("reg 5", "hashedpwd7");
             expect(newUser.username).toBe("reg 5");
         });
     });
     describe("Fail", () => {
         test("Empty Username", async () => {
             expect(async () => {
-                await userStuff.createUser("");
+                await userStuff.createUser("", "hashedpwd8");
             }).rejects.toThrow("Username: invalid!");
         });
         test("Null Username", async () => {
             expect(async () => {
-                await userStuff.createUser(null);
+                await userStuff.createUser(null, "hashedpwd8");
             }).rejects.toThrow("Username: invalid!");
         });
         test("Duplicate Username", async () => {
             expect(async () => {
-                await userStuff.createUser("reg 1");
+                await userStuff.createUser("reg 1", "hashedpwd8");
             }).rejects.toThrow("Username: duplicate!");
         });
     });
