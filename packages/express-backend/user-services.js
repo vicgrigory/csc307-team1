@@ -1,205 +1,204 @@
-import path from "path";
+import userModel from "./user";
+import service from "./services";
+import dotenv from "dotenv";
 import { fileURLToPath } from "url";
-import mongoose from "mongoose";
-import dotenv from 'dotenv';
-import userModel from "./user.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 dotenv.config({
-  path: path.join(__dirname, ".env"),
-  override: false,
-  // quiet: true,  // uncomment to silence dotenv logs
+    path: path.join(__dirname, ".env"),
+    override: false,
+    // quiet: true // Silences dot.env logs.
 });
-
 if (!process.env.MONGODB_URI) {
-  throw new Error("MONGODB_URI is undefined at runtime");
+    throw new Error("MONGODB_URI is undefined at runtime!");
 }
 
 mongoose.set("debug", true);
-
-mongoose.connect(process.env.MONGODB_URI, {
-    //useNewUrlParser: true,
-    //useUnifiedTopology: true
-}).catch((error) => console.log(error));
-
-export async function disconnectDB() {
-  await mongoose.connection.close(true);
-}
+await mongoose.connect(process.env.MONGODB_URI, {
+            //useNewUrlParser: true,
+            //useUnifiedTopology: true
+        }).catch((error) => console.log(error));
 
 /*
-Creates a new user in the database with a desired username, setting the about and profile to empty strings and sets the user as a non moderator.
-desiredUsername: String. Currently no limit as to what it can be, can add that in if needed.
+Creates a new user in the database.
+Returns a promise for the new user (one JSON).
 */
 async function createUser(desiredUsername, hashedPassword) { // if we add a password, it should be hashed by this point
     if (!desiredUsername) {
-        throw new Error("Username cannot be empty!");
+        throw new Error("Username: invalid!");
     }
-    if (( await userModel.findOne({ username: desiredUsername }) ) === null) {
-        return userModel.insertOne({ username: desiredUsername, hashedPassword: hashedPassword});
+    if (await userModel.findOne({ username: desiredUsername })) {
+        throw new Error("Username: duplicate!");
     };
-    throw new Error(`The username ${desiredUsername} is taken!`);
+    try {
+        return userModel.insertOne({ username: desiredUsername, hashedPassword: hashedPassword});
+    } catch(error) {
+        throw new Error("Mongo: error!", error);
+    }
 }
 
 /*
-Sets an existing user as a moderator. Checks for a valid username and that the user is not already a moderator before performing the action.
-desiredUsername: String. Function will return an error if it cannot find that user in the database, or if that user is already a moderator. Can set this to _id if needed.
+Sets a user in the database as a moderator.
+Returns a promise for the updated user (one JSON).
 */
 async function setAsModerator(desiredUsername) {
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
+        throw new Error("Username: invalid!");
     }
-    const user = await userModel.findOne({ username: desiredUsername });
-    if (!user) {
-        throw new Error("User could not be found!");
+    const u = await userModel.findOne({ username: desiredUsername });
+    if (!u) {
+        throw new Error("Username: 404!");
     }
-    console.log(user);
-    console.log(`username: ${desiredUsername}, status: ${user.type}, mod?: ${user.type == "moderator"}`);
-    if (user.type == "regular") {
-        return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'moderator' });
+    if (u.type == "moderator") {
+        throw new Error("Type: already a mod!");
     };
-    throw new Error("User is already a moderator!");
+    try {
+        return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'moderator' });
+    } catch(error) {
+        throw new Error("Mongo: error!", error);
+    }
 }
 
 /*
-Sets an existing user as a regular user. Checks for a valid username and that the user is a moderator before performing the action.
-desiredUsername: String. Function will return an error if it cannot find that user in the database, or if that user is already not a moderator. Can set this to _id if needed.
+Sets a user in the database as a regular user.
+Returns a promise for the updated user (one JSON).
 */
 async function setAsRegular(desiredUsername) {
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
+        throw new Error("Username: invalid!");
     }
-    const user = await userModel.findOne({ username: desiredUsername });
-    if (!user) {
-        throw new Error("User could not be found!");
+    const u = await userModel.findOne({ username: desiredUsername });
+    if (!u) {
+        throw new Error("Username: 404!");
     }
-    if (user.type == "moderator") {
-        return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'regular' });
+    if (u.type == "regular") {
+        throw new Error("Type: already regular!");  
     };
-    throw new Error("User is not a moderator!");
-}
-
-/* -------- WILL BE EDITING
-Edits user credentials by replacing the current ones with what is entered. Checks for a valid id, since the username is able to be changed.
-**** Will probably change this to only change values when they are not null for ease of use. Let me know.
-_desiredID: ID of the user to be changing details for. Can use getUser("username")._id to retrieve this.
-desiredUsername: Username to set for this user.
-desiredAbout: About section to set for this user.
-desiredProfile: Profile picture to set for this user.
-*/
-async function editUser(_desiredID, desiredUsername, desiredAbout, desiredProfile) {
-    if (!_desiredID) {
-        throw new Error("Invalid ID!");
+    try {
+        return userModel.findOne({ username: desiredUsername }).updateOne({ type: 'regular' });
+    } catch(error) {
+        throw new Error("Mongo: error!", error);
     }
-    if (!desiredUsername) {
-        throw new Error("Cannot set username to empty!");
-    }
-    const user = await userModel.findOne({ _id: _desiredID });
-    if (!user) {
-        throw new Error("User could not be found!");
-    }
-    return userModel.findOne({ _id: _desiredID }).updateOne({ username: desiredUsername, about: desiredAbout, profile: desiredProfile });
 }
 
 /*
-Retrieves user information based on their current username. This will return all the values of the user (see user.js). Checks for a valid username.
-desiredUsername: Username of the user to retrieve information for.
+Change nonessential user credentials.
+Returns a promise for the updated user (one JSON).
+*/
+async function editInformation(desiredId, desiredAbout, desiredProfile) {
+    if (!desiredId) {
+        throw new Error("UID: invalid!");
+    }
+    let desiredIdObj;
+    try {
+        desiredIdObj = service.makeObjectId(desiredId);
+    } catch(error) {
+        throw new Error("UID: Not string!");
+    }
+    const user = await userModel.findOne({ _id: desiredIdObj });
+    if (!user) {
+        throw new Error("UID: 404!");
+    }
+    if (desiredAbout === null || desiredAbout === undefined) {
+        desiredAbout = user.about; // Excludes ""
+    }
+    if (desiredProfile === null || desiredProfile === undefined) {
+        desiredProfile = user.profile;
+    }
+    try {
+        return userModel.findOne({ _id: desiredIdObj }).updateOne({ about: desiredAbout, profile: desiredProfile });
+    } catch(error) {
+        throw new Error("Mongo: error!", error);
+    }
+}
+
+/*
+Change username.
+Returns a promise for the updated user (one JSON).
+*/
+async function editUsername(desiredId, desiredUsername) {
+    if (!desiredId) {
+        throw new Error("UID: invalid!");
+    }
+    if (!desiredUsername) {
+        throw new Error("Username: invalid!");
+    }
+    let desiredIdObj;
+    try {
+        desiredIdObj = service.makeObjectId(desiredId);
+    } catch(error) {
+        throw new Error("UID: Not string!");
+    }
+    const user = await userModel.findOne({ _id: desiredIdObj });
+    if (!user) {
+        throw new Error("UID: 404!");
+    }
+    const dup = await userModel.findOne({ username: desiredUsername });
+    if (dup) {
+        throw new Error("Username: duplicate!");
+    }
+    try {
+        return userModel.updateOne({ _id: desiredIdObj }, { username: desiredUsername });
+    } catch(error) {
+        throw new Error("Mongo: error!", error);
+    }
+}
+
+/*
+Retrieves a user from the database from their username.
+Returns a promise with desired user details (one JSON).
 */
 async function getUser(desiredUsername) {
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
+        throw new Error("Username: invalid!");
     }
-    if ((await userModel.findOne({ username: desiredUsername })) == undefined) { // probably a better way to do this
-        throw new Error("User could not be found!");
+    const u = await userModel.findOne({ username: desiredUsername });
+    if (!u) {
+        throw new Error("Username: 404!");
     }
-    return userModel.findOne({ username: desiredUsername });
-}
-
-/* -------- NOT TESTED YET
-Adds a file to a list of favorites. Checks whether that file exists and is already in the list before modifying.
-desiredUsername: Username of the user adding the file to their favorites.
-fileID: File ID of the file to be added to the list.
-list: [WILL BE REMOVING] List of the user's current favorites.
-*/
-function addFavorite(desiredUsername, fileID, ...list) {
-    if (!desiredUsername) {
-        throw new Error("Invalid username!");
+    try {
+        return userModel.findOne({ username: desiredUsername });
+    } catch(error) {
+        throw new Error("Mongo: error!", error);
     }
-    if (!fileID) { // Add file check in here. Refer to getFile in its services.
-        throw new Error("Invalid file specified!");
-    }
-    if (!list.includes(fileID)) {
-        listAdded = list.concat(fileID);
-        return userModel.findOne({ username: desiredUsername }).updateOne({ favorites: listAdded });
-    }
-    throw new Error("This file is already in the list!");
-}
-
-/* -------- NOT TESTED YET
-Removes a file from a list of favorites. Checks whether that file exists and is in the list before modifying.
-desiredUsername: Username of the user to be added to the list.
-fileID: File ID of the file to be added to the list.
-list: [WILL BE REMOVING] List of the user's current favorites.
-*/
-function removeFavorite(desiredUsername, fileID, ...list) {
-    if (!desiredUsername) {
-        throw new Error("Invalid username!");
-    }
-    if (!fileID) { // Add file check.
-        throw new Error("Invalid file specified!");
-    }
-    const index = list.indexOf(fileID);
-    if (index > -1) {
-        // id like to do this w/o modifying the original array at some point
-        list.splice(index, 1);
-        return userModel.findOne({ username: desiredUsername }).updateOne({ favorites: list });
-    }
-    throw new Error("This file is not in the list!");
 }
 
 /*
-Deletes a user from the database. Checks whether that user exists before modifying.
-desiredUsername: Username of the user to be deleted. Can switch for _id if needed.
+Deletes a user from the database.
+** May alter this to redact their credentials instead so files can retain information.
+Returns a promise for the deleted user (one JSON).
 */
-async function deleteMyUser(desiredUsername) { // how to handle things made by removed users? can we null their data so theyre not technically removed from the db?
-    //log out user as well on frontish end
+async function deleteUser(userID, desiredUsername) {
     if (!desiredUsername) {
-        throw new Error("Invalid username!");
+        throw new Error("Username: invalid!");
     }
-    const user = await userModel.findOne({ username: desiredUsername });
-    console.log(`user: ${user}`)
-    if (!user) {
-        throw new Error("This user does not exist!")
+    if (!userID) {
+        throw new Error("UID: invalid!");
     }
-    return userModel.deleteOne({ username: desiredUsername }); //want to change to use user for less db queries
-}
-
-/*
-Allows a moderator to delete another, regular user from the database. Checks whether both user IDs exist, and if they are of the correct privileges before modifying.
-_modId: ID of the moderator performing the action. Must be a moderator for this function to work.
-_deletId: ID of the user to be deleted. Cannot be a moderator user, in that case must use the setAsRegular function on the desired user before removing them.
-*/
-async function deleteOtherUser(_modId, _deleteId) {
-    if (!_modId || !_deleteId) {
-        throw new Error("An ID is invalid!");
+    let userIDObj;
+    try {
+        userIDObj = service.makeObjectId(userID);
+    } catch(error) {
+        throw new Error("UID: Not string!");
     }
-    const mod = await userModel.findOne({ _id: _modId });
-    const user = await userModel.findOne({ _id: _deleteId});
-    if (!mod) {
-        throw new Error("Mod user does not exist!");
+    const u = await userModel.findOne({ username: desiredUsername });
+    if (!u) {
+        throw new Error("Username: 404!")
     }
-    if (!user) {
-        throw new Error("User to be deleted does not exist!");
+    const action = await userModel.findOne({ _id: userIDObj });
+    if (!action) {
+        throw new Error("UID: 404!");
     }
-    if (mod.type == 'moderator') {
-        if (user.type == 'regular') {
-            return userModel.findByIdAndDelete(_deleteId);
-        }
-        throw new Error("User to be deleted is currently a moderator, demote them first!");
+    if ((!action._id.equals(u._id)) && (action.type != 'moderator')) {
+        throw new Error("UID: unauthorized!");
     }
-    throw new Error("Mod ID does not correspond to a moderator!");
+    try {
+        return userModel.deleteOne({ username: desiredUsername });
+    } catch(error) {
+        throw new Error("Mongo: error!", error);
+    }
 }
 
 export default {
-    createUser, editUser, deleteMyUser, deleteOtherUser, getUser, addFavorite, removeFavorite, setAsModerator, setAsRegular
+    createUser, editInformation, editUsername, deleteUser, getUser, setAsModerator, setAsRegular
 };
