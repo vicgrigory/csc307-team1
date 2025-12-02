@@ -24,16 +24,20 @@ async function setupDB() {
     await user.insertMany([
         {
             username: "reg 1",
+            hashedPassword: "hashedpwd1"
         },
         {
             username: "reg 2",
+            hashedPassword: "hashedpwd2"
         },
         {
             username: "reg 3",
+            hashedPassword: "hashedpwd3"
         },
         {
             username: "mod 1",
-            type: 'moderator'
+            type: 'moderator',
+            hashedPassword: "hashedpwd4"
         }
     ])
     await file.insertMany([
