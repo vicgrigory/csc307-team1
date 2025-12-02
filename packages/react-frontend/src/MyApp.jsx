@@ -2,8 +2,9 @@
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import About from "./pages/About";
 import Profile from "./pages/Profile";
+import About from "./pages/About";
+import Upload from "./pages/Upload";
 import MostPopular from "./pages/MostPopular";
 import ContinueReading from "./pages/ContinueReading";
 import Recommended from "./pages/Recommended";
@@ -39,6 +40,15 @@ function MyApp() {
             <>
               <NavBar />
               <About />
+            </>
+          }
+        />
+        <Route
+          path="/post"
+          element={
+            <>
+              <NavBar />
+              <Upload />
             </>
           }
         />
