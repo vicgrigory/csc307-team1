@@ -2,12 +2,17 @@
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import About from "./pages/About";
 import Profile from "./pages/Profile";
+import About from "./pages/About";
+import Upload from "./pages/Upload";
 import MostPopular from "./pages/MostPopular";
 import ContinueReading from "./pages/ContinueReading";
 import Recommended from "./pages/Recommended";
 import RecentlyPosted from "./pages/RecentlyPosted";
+import Categories from "./pages/Categories";
+import Help from "./pages/Help";
+import UserFavorites from "./pages/UserFavorites";
+import UserUploads from "./pages/UserUploaded";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
@@ -35,6 +40,15 @@ function MyApp() {
             <>
               <NavBar />
               <About />
+            </>
+          }
+        />
+        <Route
+          path="/post"
+          element={
+            <>
+              <NavBar />
+              <Upload />
             </>
           }
         />
@@ -84,6 +98,24 @@ function MyApp() {
           }
         />
         <Route
+          path="/categories"
+          element={
+            <>
+              <NavBar />
+              <Categories />
+            </>
+          }
+        />
+        <Route
+          path="/help"
+          element={
+            <>
+              <NavBar />
+              <Help />
+            </>
+          }
+        />
+        <Route
           path="/search"
           element={
             <>
@@ -98,6 +130,24 @@ function MyApp() {
             <>
               <NavBar />
               <AccountManagement />
+            </>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <>
+              <NavBar />
+              <UserFavorites />
+            </>
+          }
+        />
+        <Route
+          path="/uploads"
+          element={
+            <>
+              <NavBar />
+              <UserUploads />
             </>
           }
         />
