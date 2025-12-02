@@ -3,6 +3,7 @@
 /* Changes the size and position of the main header */
 .pdf-list-page h1 {
     font-size: 6rem;
+    font-weight: 800;
     text-align: center;
 }
 

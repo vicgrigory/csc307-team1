@@ -10,6 +10,7 @@ import Recommended from "./pages/Recommended";
 import RecentlyPosted from "./pages/RecentlyPosted";
 import UserFavorites from "./pages/UserFavorites";
 import UserUploads from "./pages/UserUploaded";
+import Help from "./pages/Help";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
@@ -82,6 +83,15 @@ function MyApp() {
             <>
               <NavBar />
               <RecentlyPosted />
+            </>
+          }
+        />
+        <Route
+          path="/help"
+          element={
+            <>
+              <NavBar />
+              <Help />
             </>
           }
         />
