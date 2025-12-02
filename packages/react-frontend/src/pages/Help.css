@@ -16,12 +16,10 @@
     text-align: center;
 }
 
-/* Intro paragraph */
+/* Subheader */
 .help-page > .page-content > p:first-of-type {
+    font-size: 1.5rem;
     text-align: center;
-    max-width: 700px;
-    margin: 0 auto 2rem auto;
-    font-size: 1.3rem;
 }
 
 /* Add boxes around sections */
