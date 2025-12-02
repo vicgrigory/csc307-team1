@@ -8,6 +8,8 @@ import MostPopular from "./pages/MostPopular";
 import ContinueReading from "./pages/ContinueReading";
 import Recommended from "./pages/Recommended";
 import RecentlyPosted from "./pages/RecentlyPosted";
+import UserFavorites from "./pages/UserFavorites";
+import UserUploads from "./pages/UserUploaded";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
@@ -98,6 +100,24 @@ function MyApp() {
             <>
               <NavBar />
               <AccountManagement />
+            </>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <>
+              <NavBar />
+              <UserFavorites />
+            </>
+          }
+        />
+        <Route
+          path="/uploads"
+          element={
+            <>
+              <NavBar />
+              <UserUploads />
             </>
           }
         />

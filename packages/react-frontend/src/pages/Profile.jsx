@@ -48,9 +48,13 @@ export default function Profile() {
   ];
 
   const uploaded = [
-    { id: 11, title: "Database Systems Summary", type: "Notes", author: "Andrew Migler", image: "https://via.placeholder.com/200x280?text=Databases" },
-    { id: 15, title: "Graph Theory Homework", type: "PDF", author: "Damon Lin", image: "https://via.placeholder.com/200x280?text=Graph+Theory" }
-
+    { id: 2, title: "Linear Algebra Made Easy", type: "Notes", author: "Steven Arata", image: "https://via.placeholder.com/200x280?text=Linear+Algebra" },
+    { id: 5, title: "Data Structures in C++", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=C++" },
+    { id: 7, title: "Deep Learning Notes", type: "Notes", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Deep+Learning" },
+    { id: 10, title: "Probability for CS", type: "Textbook", author: "Bret Holladay", image: "https://via.placeholder.com/200x280?text=Probability" },
+    { id: 13, title: "Ethics in AI", type: "Article", author: "Jane Lehr", image: "https://via.placeholder.com/200x280?text=AI+Ethics" },
+    { id: 15, title: "Graph Theory Homework", type: "PDF", author: "Damon Lin", image: "https://via.placeholder.com/200x280?text=Graph+Theory" },
+    { id: 16, title: "CS1 Study Guide", type: "Notes", author: "Ayaan Kazerouni", image: "https://via.placeholder.com/200x280?text=CS1" }
   ];
 
   const reviews = [
