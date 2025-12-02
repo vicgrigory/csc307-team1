@@ -5,14 +5,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import userServices from "./user-services.js";
-import fileServices from "./file-services.js";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-dotenv.config({
-  path: path.join(__dirname, ".env"),
-  override: false,
-});
+import { authenticateUser, registerUser, loginUser } from "./auth.js";
 
 const app = express();
 const port = 8000;
@@ -42,10 +35,12 @@ const findUserByName = (name) => userServices.findUserByName(name);
 
 const deleteByID = (_id) => userServices.deleteByID(_id);
 
-const findFiles = (query, mediaTypes) =>
-  fileServices.findFiles(query, mediaTypes);
+app.post("/login", loginUser);
 
-app.get("/users/:id", (req, res) => {
+app.post("/signup", registerUser);
+
+
+app.get("/users/:id", authenticateUser, (req, res) => {
   const _id = req.params["_id"];
   findUserById(_id)
     .then((result) => {
@@ -60,7 +55,7 @@ app.get("/users/:id", (req, res) => {
     });
 });
 
-app.delete("/users", (req, res) => {
+app.delete("/users", authenticateUser, (req, res) => {
   deleteByID(req.body._id)
     .then((result) => {
       if (result === null) {
@@ -74,31 +69,14 @@ app.delete("/users", (req, res) => {
     });
 });
 
-app.post("/users", (req, res) => {
-  const userToAdd = req.body;
-  addUser(userToAdd)
-    .then((user) => res.status(201).send(user))
-    .catch((err) => res.status(500).send("Internal Server Error: " + err));
-});
 
-app.get("/users", (req, res) => {
+app.get("/users", authenticateUser, (req, res) => {
   getUsers(req.query.name, req.query.job)
     .then((users) => res.status(200).send(users))
     .catch((err) => res.status(500).send("Internal Server Error: " + err));
 });
 
-app.get("/search", (req, res) => {
-  const query = req.query.q;
-  let mediaTypes = req.query.mediaTypes;
-  if (typeof mediaTypes === "string") {
-    mediaTypes = mediaTypes.split(",");
-  }
-
-  findFiles(query, mediaTypes)
-    .then((files) => res.status(200).send(files))
-    .catch((err) => res.status(500).send("Internal Server Error: " + err));
-});
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log("REST API is listening.");
 });

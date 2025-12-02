@@ -2,31 +2,176 @@
 
 /* Welcome section (hero text) */
 .home-hero {
-  text-align: center;
-  margin-top: 2rem;
-  margin-bottom: 3rem;
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
 }
 
 /* Big, bold welcome */
 .home-hero h1 {
-  font-size: 3.5rem;     
-  font-weight: 1000;
-  margin-bottom: 1rem;
+    font-size: 3.5rem;     
+    font-weight: 1000;
+    margin-bottom: 1rem;
 }
 
 /* Centers the paragraph */
 .home-hero p {
-  font-size: 1.3rem;
-  line-height: 1.65;
-  max-width: 850px;
-  margin: 0 auto;       
-  color: #444;
+    font-size: 1.3rem;
+    line-height: 1.65;
+    max-width: 850px;
+    margin: 0 auto;       
+    color: #444;
+}
+
+/* Wrapper for section containing content */
+.home-section {
+    margin-bottom: 2.5rem;
+}
+
+/* Header for each row */
+.home-section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Title of section (Most Popular, Continue Reading, etc) */
+.home-section-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 0;            
+    padding-left: 0.5rem;
+}
+
+/* "View more" link */
+.home-section-viewmore {
+    font-size: 0.9rem;
+    color: #1a4f7a;
+    text-decoration: none;
+    padding-right: 0.5rem;
+}
+
+.home-section-viewmore:hover {
+    text-decoration: underline;
+}
+
+/* Positions arrows and row items */
+.home-row-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;       
+}
+
+/* Horizontal Scrolling */
+.home-row {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0.5rem 0;
+    flex: nowrap;           
+}
+
+/* (Horizontal) Scrollbar Styling */
+.home-row::-webkit-scrollbar {
+    height: 8px;
+}
+
+/* (Horizontal) Scrollbar Styling */
+.home-row::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.25);
+    border-radius: 4px;
+}
+
+/* Individual Content Card */
+.home-card {
+    width: 250px;
+    height: 400px;  
+    flex: 0 0 auto;
+    background-color: #f5deb3;
+    padding: 0.75rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 2px solid black;
+    display: flex;             
+    flex-direction: column;
+}
+
+/* Card Hover Effect*/
+.home-card:hover {
+    transform: translateY(-3px); 
+    transition: 0.2s ease-in-out;
+}
+
+/* Card Thumbnail Image */
+.home-card-thumb {
+    padding: 10px;
+    background-color: #f5e6d3;
+    margin-bottom: 10px;
+    height: 230px;            
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;      
+    border-radius: 6px;
+}
+
+/* The actual image inside the thumb */
+.home-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;         
+    border-radius: 6px;
 }
 
 
+/* Card Text Container */
+.home-card-text {
+    text-align: left;
+    flex: 1;                
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
+}
 
+/* Media Title */
+.home-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
 
+/* (Type + Author) */
+.home-card-meta {
+    font-size: 0.85rem;
+    color: #555;
+}
 
+/* Scroll Arrows */
+.row-arrow {
+    border: none;
+    background: rgba(0, 0, 0, 0.18);
+    color: white;
+    width: 30px;
+    height: 60px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s ease, transform 0.25s ease;
+    flex: 0 0 auto;     
+}
 
+/* Scroll Arrow Hover Effect */
+.row-arrow:hover {
+    background: rgba(0, 0, 0, 0.45);
+    transform: scale(1.05);
+}
 

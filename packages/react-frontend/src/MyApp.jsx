@@ -1,15 +1,29 @@
+// MyApp.jsx
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import About from "./pages/About";
 import Profile from "./pages/Profile";
+import About from "./pages/About";
+import Upload from "./pages/Upload";
+import MostPopular from "./pages/MostPopular";
+import ContinueReading from "./pages/ContinueReading";
+import Recommended from "./pages/Recommended";
+import RecentlyPosted from "./pages/RecentlyPosted";
+import Categories from "./pages/Categories";
+import Help from "./pages/Help";
+import UserFavorites from "./pages/UserFavorites";
+import UserUploads from "./pages/UserUploaded";
+
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
-import Login from "./pages/Login";
+
 import NavBar from "./components/NavBar";
+import ScrollToTop from "./components/ScrollToTop";
 
 function MyApp() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
@@ -30,11 +44,11 @@ function MyApp() {
           }
         />
         <Route
-          path="/search"
+          path="/post"
           element={
             <>
               <NavBar />
-              <Search />
+              <Upload />
             </>
           }
         />
@@ -47,6 +61,69 @@ function MyApp() {
             </>
           }
         />
+        <Route 
+          path="/popular"
+          element={
+            <>
+              <NavBar />
+              <MostPopular />
+            </>
+          }
+        />
+        <Route
+          path="/continue"
+          element={
+            <>
+              <NavBar />
+              <ContinueReading />
+            </>
+          }
+        />
+        <Route
+          path="/recommended"
+          element={
+            <>
+              <NavBar />
+              <Recommended />
+            </>
+          }
+        />
+        <Route
+          path="/recentposted"
+          element={
+            <>
+              <NavBar />
+              <RecentlyPosted />
+            </>
+          }
+        />
+        <Route
+          path="/categories"
+          element={
+            <>
+              <NavBar />
+              <Categories />
+            </>
+          }
+        />
+        <Route
+          path="/help"
+          element={
+            <>
+              <NavBar />
+              <Help />
+            </>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <>
+              <NavBar />
+              <Search />
+            </>
+          }
+        />
         <Route
           path="/account"
           element={
@@ -56,12 +133,21 @@ function MyApp() {
             </>
           }
         />
-	<Route
-          path="/login"         
+        <Route
+          path="/favorites"
           element={
             <>
               <NavBar />
-              <Login />
+              <UserFavorites />
+            </>
+          }
+        />
+        <Route
+          path="/uploads"
+          element={
+            <>
+              <NavBar />
+              <UserUploads />
             </>
           }
         />
@@ -71,4 +157,3 @@ function MyApp() {
 }
 
 export default MyApp;
-
