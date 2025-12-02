@@ -1,29 +1,6 @@
 import fileModel from "./file.js";
 import service from "./services.js";
 import userFunctions from "./user-services.js";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({
-  path: path.join(__dirname, ".env"),
-  override: false,
-  // quiet: true // Silences dot.env logs.
-});
-if (!process.env.MONGODB_URI) {
-  throw new Error("MONGODB_URI is undefined at runtime!");
-}
-
-mongoose.set("debug", true);
-await mongoose
-  .connect(process.env.MONGODB_URI, {
-    //useNewUrlParser: true,
-    //useUnifiedTopology: true
-  })
-  .catch((error) => console.log(error));
-
 /*
 Add a file.
 Returns a promise for that file (one JSON).
