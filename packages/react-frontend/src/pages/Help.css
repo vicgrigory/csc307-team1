@@ -1,0 +1,85 @@
+/* Help.css */
+
+/* Centers the text */
+.help-page {
+    padding: 1rem;
+    max-width: 850px;
+    margin: 0 auto;
+    color: #333;
+}
+
+/* Main header */
+.help-page h1 {
+    font-size: 6rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Subheader */
+.help-page > .page-content > p:first-of-type {
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+/* Add boxes around sections */
+.help-page section {
+    background: #f5e6d3;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+}
+
+/* Section titles */
+.help-page h2 {
+    margin-top: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #222;
+}
+
+/* Questions */
+.help-page h3 {
+    font-size: 1.15rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.25rem;
+    color: #444;
+}
+
+
+/* Formatting spacing on lists */
+.help-page ul {
+    padding-left: 1.25rem;
+    margin: 0.75rem 0;
+}
+
+/* Table of contents */
+.help-toc ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.help-toc ul li {
+    margin-bottom: 0.5rem;
+}
+
+.help-toc a {
+    color: #4a68ff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.help-toc a:hover {
+    text-decoration: underline;
+}
+
+/* Footer text */
+.help-footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 0.95rem;
+    color: #666;
+}

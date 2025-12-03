@@ -39,6 +39,6 @@ const WebUserSchema = new mongoose.Schema(
     }
 );
 
-const WebUser = mongoose.model("WebUser", WebUserSchema, 'data');
+const WebUser = mongoose.model("WebUser", WebUserSchema);
 
 export default WebUser;

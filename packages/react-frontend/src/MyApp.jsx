@@ -2,8 +2,9 @@
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import About from "./pages/About";
 import Profile from "./pages/Profile";
+import About from "./pages/About";
+import Upload from "./pages/Upload";
 import MostPopular from "./pages/MostPopular";
 import ContinueReading from "./pages/ContinueReading";
 import Recommended from "./pages/Recommended";
@@ -11,6 +12,10 @@ import RecentlyPosted from "./pages/RecentlyPosted";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import Categories from "./pages/Categories";
+import Help from "./pages/Help";
+import UserFavorites from "./pages/UserFavorites";
+import UserUploads from "./pages/UserUploaded";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
@@ -47,6 +52,17 @@ function MyApp() {
               <NavBar />
               <About />
             </>
+          }
+        />
+        <Route
+          path="/post"
+          element={
+            <ProtectedRoute>
+            <>
+              <NavBar />
+              <Upload />
+            </>
+            </ProtectedRoute>
           }
         />
         <Route 
@@ -86,12 +102,32 @@ function MyApp() {
           }
         />
         <Route
+          path="/categories"
+          element={
+            <>
+              <NavBar />
+              <Categories />
+            </>
+          }
+        />
+        <Route
+          path="/help"
+          element={
+            <>
+              <NavBar />
+              <Help />
+            </>
+          }
+        />
+        <Route
           path="/search"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <Search />
             </>
+            </ProtectedRoute>
           }
         />
        <Route
@@ -117,6 +153,29 @@ function MyApp() {
            </ProtectedRoute>
          }
        />
+        
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+            <>
+              <NavBar />
+              <UserFavorites />
+            </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/uploads"
+          element={
+            <ProtectedRoute>
+            <>
+              <NavBar />
+              <UserUploads />
+            </>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

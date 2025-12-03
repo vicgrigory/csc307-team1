@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export default function Search() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -11,56 +11,54 @@ export default function Search() {
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedMediaTypes, setSelectedMediaTypes] = useState([]);
 
-  const mockResults = [
-    { id: 1, title: "Pride and Prejudice", author: "Jane Austen", type: "Book", year: 1813, description: "A classic novel of manners", subject: "English", genre: "Romance" },
-    { id: 2, title: "The Beatles Anthology", author: "The Beatles", type: "Music", year: 1995, description: "Comprehensive collection of Beatles music", subject: "Music", genre: "Rock" },
-    { id: 3, title: "Metropolis", author: "Fritz Lang", type: "Film", year: 1927, description: "Influential science fiction film", subject: "Film", genre: "Sci-Fi" },
-    { id: 4, title: "A Tale of Two Cities", author: "Charles Dickens", type: "Book", year: 1859, description: "Historical novel set in London and Paris", subject: "English", genre: "Historical" },
-    { id: 5, title: "Mozart Symphony No. 40", author: "Wolfgang Amadeus Mozart", type: "Music", year: 1788, description: "One of Mozart's most famous symphonies", subject: "Music", genre: "Classical" },
-    { id: 6, title: "The Cabinet of Dr. Caligari", author: "Robert Wiene", type: "Film", year: 1920, description: "German expressionist horror film", subject: "Film", genre: "Horror" },
-    { id: 7, title: "Introduction to Computer Science", author: "Various", type: "Book", year: 2020, description: "Computer science fundamentals", subject: "Computer Science", genre: "Educational" },
-    { id: 8, title: "Economic Principles", author: "Various", type: "Book", year: 2018, description: "Basic economics concepts", subject: "Economics", genre: "Educational" }
-  ];
+  // Unified search function with backend integration
+  const fetchSearchResults = async (query, mediaTypes) => {
+    try {
+      const params = new URLSearchParams();
+      if (query) params.append("q", query);
+      if (mediaTypes && mediaTypes.length > 0) {
+        params.append("mediaTypes", mediaTypes.join(","));
+      }
+      // note: subject and genre filters are stored in state but the backend file schema does not currently support them. 
+
+      const response = await fetch(`http://localhost:8000/search?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error("Search failed");
+      }
+      const data = await response.json();
+
+      // Map backend data to frontend display format
+      const formattedResults = data.map((item) => ({
+        id: item._id,
+        title: item.title,
+        author: item.creator || "Unknown",
+        type: item.filetype === "pdf" ? "Book" : item.filetype === "mp3" ? "Music" : item.filetype,
+        year: item.creationDate ? new Date(item.creationDate).getFullYear() : "N/A",
+        description: item.description || "No description available.",
+        subject: "General", // Placeholder until Schema update
+        genre: "General"    // Placeholder until Schema update
+      }));
+
+      setSearchResults(formattedResults);
+      setHasSearched(true);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setSearchResults([]);
+    }
+  };
 
   useEffect(() => {
     const queryParam = searchParams.get('q');
     if (queryParam) {
       setSearchQuery(queryParam);
-      setHasSearched(true);
-
-      const filtered = mockResults.filter((item) => {
-        const matchesQuery =
-          item.title.toLowerCase().includes(queryParam.toLowerCase()) ||
-          item.author.toLowerCase().includes(queryParam.toLowerCase());
-
-        const matchesSubject = selectedSubjects.length === 0 || selectedSubjects.includes(item.subject);
-        const matchesGenre = selectedGenres.length === 0 || selectedGenres.includes(item.genre);
-        const matchesMediaType = selectedMediaTypes.length === 0 || selectedMediaTypes.includes(item.type);
-
-        return matchesQuery && matchesSubject && matchesGenre && matchesMediaType;
-      });
-
-      setSearchResults(filtered);
+      fetchSearchResults(queryParam, []); //note, the empty array is just an assumption that url searches won't have any extra filters
     }
   }, [searchParams]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setHasSearched(true);
-
-    const filtered = mockResults.filter((item) => {
-      const matchesQuery = !searchQuery.trim() ||
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.author.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesSubject = selectedSubjects.length === 0 || selectedSubjects.includes(item.subject);
-      const matchesGenre = selectedGenres.length === 0 || selectedGenres.includes(item.genre);
-      const matchesMediaType = selectedMediaTypes.length === 0 || selectedMediaTypes.includes(item.type);
-
-      return matchesQuery && matchesSubject && matchesGenre && matchesMediaType;
-    });
-
-    setSearchResults(filtered);
+    setSearchParams({ q: searchQuery }); 
+    fetchSearchResults(searchQuery, selectedMediaTypes);
   };
 
   const handleClear = () => {
@@ -70,6 +68,7 @@ export default function Search() {
     setSelectedSubjects([]);
     setSelectedGenres([]);
     setSelectedMediaTypes([]);
+    setSearchParams({});
   };
 
   const toggleFilter = (filterArray, setFilterArray, value) => {
