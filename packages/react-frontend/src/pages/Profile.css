@@ -226,8 +226,13 @@
 }
 
 .media-card-meta {
-    font-size: 0.85rem;
-    color: #555;
+    font-size: 1rem;
+    color: #444;
+}
+
+.review-metadata {
+    font-size: 1rem;
+    color: #444;
 }
 
 /* Change the position of the private profile message and lock picture */

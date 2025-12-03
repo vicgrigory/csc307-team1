@@ -16,6 +16,7 @@ import Categories from "./pages/Categories";
 import Help from "./pages/Help";
 import UserFavorites from "./pages/UserFavorites";
 import UserUploads from "./pages/UserUploaded";
+import Reviews from "./pages/Reviews";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
@@ -174,6 +175,15 @@ function MyApp() {
               <UserUploads />
             </>
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reviews"
+          element={
+            <>
+              <NavBar />
+              <Reviews />
+            </>
           }
         />
       </Routes>
