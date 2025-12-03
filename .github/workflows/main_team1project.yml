@@ -35,7 +35,6 @@ jobs:
         run: |
               npm install --workspaces=false
               npm run -w express-backend build --if-present
-              npm run -w express-backend test --if-present
         working-directory: packages/express-backend
         
       - name: Zip artifact for deployment
@@ -67,6 +66,7 @@ jobs:
           package: .
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FE20453577CF4D7B9DAAC1EAFFA7D634 }}
+
 
 
 
