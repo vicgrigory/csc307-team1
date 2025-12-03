@@ -53,10 +53,11 @@ export default function Upload() {
           <select value={type} onChange={(e) => setType(e.target.value)}>
             <option value="Book">Book</option>
             <option value="Notes">Notes</option>
-            <option value="PDF">PDF</option>
+            <option value="Audio">Audio</option>
             <option value="Video">Video</option>
             <option value="Slides">Slides</option>
             <option value="Paper">Paper</option>
+	    <option value="Other">Other</option>
           </select>
         </label>
 

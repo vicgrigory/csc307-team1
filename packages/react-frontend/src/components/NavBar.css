@@ -1,9 +1,9 @@
 /* NavBar.css */
 
-/* Top grey bar */
+/* Top header bar (matches bookshelf) */
 .home-header {
     width: 100%;
-    background-color: #242424;  
+    background-color: #603a20;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -33,25 +33,26 @@
   padding: 0.6rem 1rem;
   font-size: 1rem;
   border-radius: 999px;   
-  border: 1px solid #bbb;
-  background-color: #fefefe !important;
+  border: 1px solid #ccc;
+  background-color: #faecd7 !important; /* cream */
+  color: #603a20;                        /* dark brown text */
 }
 
-/* Light grey bar under top header containing links */
+/* Secondary links bar */
 .links-bar {
     width: 100%;
-    background-color: #9c9c9c;   
+    background-color: #7d4b26;
     padding: 0.6rem 0;         
 }
 
-/* Style each link */
+/* Links */
 .links-link {
   text-decoration: none;
-  color: #333;
+  color: #faecd7;
   font-size: 1.1rem;
   font-weight: 500;
   padding: 0 1.5rem;            
-  border-right: 2px solid #6d6d6d;
+  border-right: 2px solid #faecd7;
 }
 
 .links-link:last-child {
@@ -71,4 +72,9 @@
     height: auto;
     cursor: pointer;
     display: block;
+}
+
+/* Optional hover for links */
+.links-link:hover {
+  color: #fff5e1;
 }

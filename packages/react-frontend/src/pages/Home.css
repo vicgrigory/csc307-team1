@@ -48,7 +48,7 @@
 /* "View more" link */
 .home-section-viewmore {
     font-size: 0.9rem;
-    color: #1a4f7a;
+    color: #444444;
     text-decoration: none;
     padding-right: 0.5rem;
 }
@@ -89,7 +89,7 @@
 .home-card {
     width: 250px;
     height: 400px;  
-    background-color: #f5deb3;
+    background-color: #633b20;
     padding: 0.75rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -142,20 +142,21 @@
 .home-card-title {
     font-size: 1rem;
     font-weight: 600;
+    color: #fbecd6;
     margin-bottom: 0.2rem;
 }
 
 /* (Type + Author) */
 .home-card-meta {
     font-size: 0.85rem;
-    color: #555;
+    color: #fbecd6;
 }
 
 /* Scroll Arrows */
 .row-arrow {
     border: none;
-    background: rgba(0, 0, 0, 0.18);
-    color: white;
+    background: #603b20 !important;
+    color: #faecd7 !important;
     width: 30px;
     height: 60px;
     border-radius: 4px;
@@ -170,7 +171,7 @@
 
 /* Scroll Arrow Hover Effect */
 .row-arrow:hover {
-    background: rgba(0, 0, 0, 0.45);
+    background: #7d4b26 !important;
     transform: scale(1.05);
 }
 
