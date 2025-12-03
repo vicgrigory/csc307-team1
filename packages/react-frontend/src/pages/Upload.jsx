@@ -1,5 +1,7 @@
 // Upload.jsx
 
+import "./Upload.css";
+
 import { useState } from "react";
 
 export default function Upload() {
