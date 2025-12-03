@@ -8,6 +8,9 @@ import MostPopular from "./pages/MostPopular";
 import ContinueReading from "./pages/ContinueReading";
 import Recommended from "./pages/Recommended";
 import RecentlyPosted from "./pages/RecentlyPosted";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
@@ -20,6 +23,14 @@ function MyApp() {
     <Router>
       <ScrollToTop />
       <Routes>
+        <Route
+          path="/login"
+          element={<Login />} 
+          />
+          <Route 
+            path="/register" 
+            element={<Register 
+          />} />
         <Route
           path="/"
           element={
@@ -35,15 +46,6 @@ function MyApp() {
             <>
               <NavBar />
               <About />
-            </>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <>
-              <NavBar />
-              <Profile />
             </>
           }
         />
@@ -92,15 +94,29 @@ function MyApp() {
             </>
           }
         />
-        <Route
-          path="/account"
-          element={
-            <>
-              <NavBar />
-              <AccountManagement />
-            </>
-          }
-        />
+       <Route
+         path="/profile"
+         element={
+           <ProtectedRoute>
+             <>
+               <NavBar />
+               <Profile />
+             </>
+           </ProtectedRoute>
+         }
+       />
+
+       <Route
+         path="/account"
+         element={
+           <ProtectedRoute>
+             <>
+               <NavBar />
+               <AccountManagement />
+             </>
+           </ProtectedRoute>
+         }
+       />
       </Routes>
     </Router>
   );

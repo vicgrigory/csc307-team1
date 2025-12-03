@@ -38,6 +38,22 @@ app.get("/users/:id", authenticateUser, (req, res) => {
     });
 });
 
+app.get("/me", authenticateUser, async (req, res) => {
+  try {
+    const username = req.user.username; // coming from JWT
+    const user = await userServices.getUser(username);
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    res.send(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 app.delete("/users", authenticateUser, (req, res) => {
   deleteByID(req.body._id)
     .then((result) => {

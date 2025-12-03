@@ -3,23 +3,48 @@
 import "./Profile.css"
 
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../auth/AuthProvider";
 
 export default function Profile() {
-  // Example user data (can come from backend later)
-  const username = "Briggs";
-  const accountType = "Moderator";
+  const { token, username: loggedInUsername } = useAuth();
 
-  const isCurrentUser = true;
+  const [username, setUsername] = useState("");
+  const [accountType, setAccountType] = useState("Regular");
+  const [bio, setBio] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
-
-  const [bio, setBio] = useState("All about me!");
   const [isEditing, setIsEditing] = useState(false);
 
-  // Profile picture state
-  const [profilePic, setProfilePic] = useState("https://media.newyorker.com/photos/59095bb86552fa0be682d9d0/master/w_2240,c_limit/Monkey-Selfie.jpg");
+  const [profilePic, setProfilePic] = useState("");
+  const [followers, setFollowers] = useState([]);
 
-  const followers = ["Matthew", "Tobin", "Vic", "Briggs", "Matthew"]
+  const isCurrentUser = true;
+
+  // Fetch user data from backend
+  useEffect(() => {
+    async function fetchUser() {
+      const res = await fetch("https://team1project-g9eehgd9fybtere2.westus3-01.azurewebsites.net//me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        console.error("Failed to fetch profile data");
+        return;
+      }
+
+      const data = await res.json();
+
+      setUsername(data.username);
+      setAccountType(data.type ?? "Regular");
+      setBio(data.about ?? "");
+      setProfilePic(data.profile ?? "");
+      setFollowers(data.followers ?? []);
+    }
+
+    fetchUser();
+  }, [token]);
 
   const handleEdit = () => setIsEditing(true);
   const handleSave = () => setIsEditing(false);
