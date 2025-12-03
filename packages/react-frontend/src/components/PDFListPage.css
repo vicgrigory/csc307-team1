@@ -78,4 +78,13 @@
     border-radius: 6px;         
 }
 
+/* Change color of metadata */
+.pdf-card-metadata {
+    color: #444;
+}
+
+/* Change color of metadata */
+.pdf-card-extra {
+    color: #444;
+}
 
