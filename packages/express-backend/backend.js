@@ -37,6 +37,10 @@ app.post("/login", loginUser);
 
 app.post("/signup", registerUser);
 
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
 app.get("/users/:id", authenticateUser, (req, res) => {
   const _id = req.params.id;
   findUserById(_id)
