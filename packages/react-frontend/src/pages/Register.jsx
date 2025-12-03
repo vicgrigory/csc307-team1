@@ -1,3 +1,9 @@
+// Register.jsx
+
+import "./Login.css"; 
+
+import logo from "../assets/OpenShelf-Logo.png";
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
@@ -24,35 +30,45 @@ export default function Register() {
   }
 
   return (
-    <div className="register-container">
-      <h2>Create Account</h2>
-
-      <form onSubmit={handleSubmit} className="register-form">
-        {error && <p className="error">{error}</p>}
-
-        <label>Username:</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
+    <div className="login-container">
+      <div className="login-card">
+        <img
+          src={logo}
+          alt="OpenShelf Logo"
+          className="Login-Logo"
         />
 
-        <label>Password:</label>
-        <input
-          type="password"
-          value={pwd}
-          onChange={(e) => setPwd(e.target.value)}
-          required
-        />
+        <h2>Create Account</h2>
 
-        <button type="submit">Register</button>
-      </form>
+        <form onSubmit={handleSubmit} className="login-form">
+          {error && <p className="error">{error}</p>}
 
-      <p>
-        Already have an account?{" "}
-        <Link to="/login">Log in</Link>
-      </p>
+          <label>Username:</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+
+          <label>Password:</label>
+          <input
+            type="password"
+            value={pwd}
+            onChange={(e) => setPwd(e.target.value)}
+            required
+          />
+
+          <button type="submit">Register</button>
+        </form>
+
+        <p className="login-footer">
+          Already have an account?{" "}
+          <Link to="/login">Log in</Link>
+        </p>
+      </div>
     </div>
   );
 }
+
+
