@@ -56,16 +56,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-      
       - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'team1project'
           slot-name: 'Production'
-          package: .
-
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FE20453577CF4D7B9DAAC1EAFFA7D634 }}
+          package: packages/express-backend/release.zip
+          startup-command: "node backend.js"
 
 
 
