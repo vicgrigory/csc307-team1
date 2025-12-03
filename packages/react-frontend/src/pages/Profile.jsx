@@ -113,7 +113,7 @@ export default function Profile() {
         <div className="profile-picture-wrapper">
           <img
             src={profilePic}
-            alt={`${username}'s profile`}
+            alt={""}
             className="profile-pic"
           />
           <label htmlFor="profilePicUpload" className="upload-button">
