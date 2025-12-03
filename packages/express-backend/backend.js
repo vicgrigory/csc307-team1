@@ -104,6 +104,6 @@ app.get("/search", (req, res) => {
     .catch(() => res.status(500).send("Internal Server Error."));
 });
 
-app.listen(port, () => {
+app.listen(PORT, () => {
   console.log("REST API is listening on ${PORT}.");
 });
