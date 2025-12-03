@@ -4,7 +4,7 @@
   "type": "module",
   "main": "backend.js",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles --forceExit",
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest --detectOpenHandles --forceExit --coverage",
     "dev": "npx nodemon backend.js",
     "start": "node backend.js"
   },
