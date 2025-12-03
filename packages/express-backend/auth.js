@@ -4,27 +4,42 @@ import userServices from "./user-services.js";
 import dotenv from 'dotenv';
 
 
-export function registerUser(req, res) {
-  const { username, pwd } = req.body; // from form in frontend
+export async function registerUser(req, res) {
+  const { username, pwd } = req.body;
 
   if (!username || !pwd) {
-    res.status(400).send("Bad request: Invalid input data.");
-  } else if (userServices.getUser(username) !== null) {
-    console.log(userServices.getUser(username));
-    res.status(409).send("Username already taken");
-  } else {
-    bcrypt
-      .genSalt(10)
-      .then((salt) => bcrypt.hash(pwd, salt))
-      .then((hashedPassword) => {
-        generateAccessToken(username).then((token) => {
-          console.log("Token:", token);
-          res.status(201).send({ token: token });
-          userServices.createUser(username, hashedPassword);
-        });
-      });
+    return res.status(400).send("Bad request: Invalid input data.");
+  }
+
+  let existingUser = null;
+
+  try {
+    existingUser = await userServices.getUser(username); // <-- MUST await
+  } catch (err) {
+    existingUser = null;
+  }
+
+  if (existingUser) {
+    return res.status(409).send("Username already taken");
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(pwd, salt);
+
+    const token = await generateAccessToken(username);
+
+    // respond BEFORE creating user, just like your logic wants
+    res.status(201).send({ token });
+
+    await userServices.createUser(username, hashedPassword);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
   }
 }
+
+
 
 export function authenticateUser(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -35,11 +50,9 @@ export function authenticateUser(req, res, next) {
     console.log("No token received");
     res.status(401).end();
   } else {
-    jwt.verify(
-      token,
-      process.env.TOKEN_SECRET,
-      (error, decoded) => {
+    jwt.verify(token, process.env.TOKEN_SECRET, (error, decoded) => {
         if (decoded) {
+          req.user = decoded;
           next();
         } else {
           console.log("JWT error:", error);
@@ -50,33 +63,31 @@ export function authenticateUser(req, res, next) {
   }
 }
 
-export function loginUser(req, res) {
-  const { username, pwd } = req.body; // from form
-  const retrievedUser = userServices.getUser(
-    (c) => c.username === username
-  );
+export async function loginUser(req, res) {
+  const { username, pwd } = req.body;
+
+  let retrievedUser = null;
+
+  try {
+    retrievedUser = await userServices.getUser(username);
+  } catch (err) {
+    return res.status(401).send("Unauthorized invalid username");
+  }
 
   if (!retrievedUser) {
-    // invalid username
-    res.status(401).send("Unauthorized invalid username");
-  } else {
-    bcrypt
-      .compare(pwd, retrievedUser.hashedPassword)
-      .then((matched) => {
-        if (matched) {
-          generateAccessToken(username).then((token) => {
-            res.status(200).send({ token: token });
-          });
-        } else {
-          // invalid password
-          res.status(401).send("Unauthorized");
-        }
-      })
-      .catch(() => {
-        res.status(401).send("Unauthorized");
-      });
+    return res.status(401).send("Unauthorized invalid username");
   }
+
+  const matched = await bcrypt.compare(pwd, retrievedUser.hashedPassword);
+
+  if (!matched) {
+    return res.status(401).send("Unauthorized");
+  }
+
+  const token = await generateAccessToken(username);
+  res.status(200).send({ token });
 }
+
 
 function generateAccessToken(username) {
   return new Promise((resolve, reject) => {
