@@ -9,8 +9,9 @@
 
 /* Changes the size and position of the subtext under the header */
 .pdf-list-subtitle {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     text-align: center;
+    color: #444;
 }
 
 .pdf-list-header {
@@ -35,8 +36,8 @@
     grid-template-columns: repeat(5, 1fr); 
     gap: 20px;
     max-width: 1200px; 
-    justify-content: center;
     margin-bottom: 30px;
+    justify-items: start;
 }
 
 /* Add tan boxes and adjust size for each card */
@@ -45,7 +46,8 @@
     padding: 12px;
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    width: 300px;
+    width: 100%;
+    box-sizing: border-box;
     border: 2px solid black;
     cursor: pointer;
 }
