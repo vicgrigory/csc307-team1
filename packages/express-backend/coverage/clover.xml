@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1764721050562" clover="3.2.0">
-  <project timestamp="1764721050562" name="All files">
-    <metrics statements="341" coveredstatements="286" conditionals="245" coveredconditionals="217" methods="23" coveredmethods="21" elements="609" coveredelements="524" complexity="0" loc="341" ncloc="341" packages="1" files="7" classes="7"/>
+<coverage generated="1764721858515" clover="3.2.0">
+  <project timestamp="1764721858515" name="All files">
+    <metrics statements="338" coveredstatements="286" conditionals="245" coveredconditionals="217" methods="22" coveredmethods="21" elements="605" coveredelements="524" complexity="0" loc="338" ncloc="338" packages="1" files="7" classes="7"/>
     <file name="file-services.js" path="/Users/vic/csc307-team1/packages/express-backend/file-services.js">
       <metrics statements="162" coveredstatements="128" conditionals="126" coveredconditionals="104" methods="9" coveredmethods="8"/>
       <line num="18" count="8" type="cond" truecount="2" falsecount="0"/>
@@ -262,15 +262,12 @@
       <line num="33" count="1" type="stmt"/>
     </file>
     <file name="services.js" path="/Users/vic/csc307-team1/packages/express-backend/services.js">
-      <metrics statements="8" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="1"/>
+      <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
       <line num="4" count="97" type="cond" truecount="2" falsecount="0"/>
       <line num="5" count="11" type="stmt"/>
       <line num="7" count="86" type="stmt"/>
       <line num="8" count="86" type="stmt"/>
       <line num="10" count="1" type="stmt"/>
-      <line num="15" count="0" type="stmt"/>
-      <line num="16" count="0" type="stmt"/>
-      <line num="18" count="0" type="stmt"/>
     </file>
     <file name="user-services.js" path="/Users/vic/csc307-team1/packages/express-backend/user-services.js">
       <metrics statements="84" coveredstatements="77" conditionals="52" coveredconditionals="52" methods="7" coveredmethods="7"/>
