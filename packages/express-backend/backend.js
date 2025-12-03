@@ -6,7 +6,7 @@ import fileServices from "./file-services.js";
 import { authenticateUser, registerUser, loginUser } from "./auth.js";
 
 const app = express();
-const port = 8000;
+const PORT = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.json());
@@ -105,5 +105,5 @@ app.get("/search", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log("REST API is listening.");
+  console.log("REST API is listening on ${PORT}.");
 });
