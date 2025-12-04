@@ -34,7 +34,7 @@ export default function FileDetailPage() {
     const fetchFileData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8000/files/${fileId}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}`);
 
         if (!response.ok) {
           throw new Error("File not found");
@@ -57,7 +57,7 @@ export default function FileDetailPage() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/files/${fileId}/reviews`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/reviews`);
         if (response.ok) {
           const reviewData = await response.json();
           setReviews(reviewData);
@@ -75,7 +75,7 @@ export default function FileDetailPage() {
   useEffect(() => {
     const fetchDiscussions = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/files/${fileId}/discussions`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/discussions`);
         if (response.ok) {
           const discussionData = await response.json();
           setDiscussions(discussionData);
@@ -100,7 +100,7 @@ export default function FileDetailPage() {
 
   const handleAddReview = async (reviewData) => {
     try {
-      const response = await fetch(`http://localhost:8000/files/${fileId}/reviews`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/reviews`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +126,7 @@ export default function FileDetailPage() {
 
   const handleEditReview = async (reviewId, content, rating) => {
     try {
-      const response = await fetch(`http://localhost:8000/reviews/${reviewId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/reviews/${reviewId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -142,7 +142,7 @@ export default function FileDetailPage() {
         throw new Error("Failed to edit review");
       }
 
-      const reviewsResponse = await fetch(`http://localhost:8000/files/${fileId}/reviews`);
+      const reviewsResponse = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/reviews`);
       if (reviewsResponse.ok) {
         const reviewData = await reviewsResponse.json();
         setReviews(reviewData);
@@ -154,7 +154,7 @@ export default function FileDetailPage() {
 
   const handleDeleteReview = async (reviewId) => {
     try {
-      const response = await fetch(`http://localhost:8000/reviews/${reviewId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/reviews/${reviewId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -176,7 +176,7 @@ export default function FileDetailPage() {
 
   const handleAddDiscussion = async (content, parentId = null) => {
     try {
-      const response = await fetch(`http://localhost:8000/files/${fileId}/discussions`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/discussions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -188,7 +188,7 @@ export default function FileDetailPage() {
         throw new Error("Failed to add discussion");
       }
 
-      const discussionsResponse = await fetch(`http://localhost:8000/files/${fileId}/discussions`);
+      const discussionsResponse = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/discussions`);
       if (discussionsResponse.ok) {
         const discussionData = await discussionsResponse.json();
         setDiscussions(discussionData);
@@ -201,7 +201,7 @@ export default function FileDetailPage() {
 
   const handleEditDiscussion = async (discussionId, content) => {
     try {
-      const response = await fetch(`http://localhost:8000/discussions/${discussionId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/discussions/${discussionId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -213,7 +213,7 @@ export default function FileDetailPage() {
         throw new Error("Failed to edit discussion");
       }
 
-      const discussionsResponse = await fetch(`http://localhost:8000/files/${fileId}/discussions`);
+      const discussionsResponse = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/discussions`);
       if (discussionsResponse.ok) {
         const discussionData = await discussionsResponse.json();
         setDiscussions(discussionData);
@@ -225,7 +225,7 @@ export default function FileDetailPage() {
 
   const handleDeleteDiscussion = async (discussionId) => {
     try {
-      const response = await fetch(`http://localhost:8000/discussions/${discussionId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/discussions/${discussionId}`, {
         method: "DELETE",
         headers: {
         },
@@ -235,7 +235,7 @@ export default function FileDetailPage() {
         throw new Error("Failed to delete discussion");
       }
 
-      const discussionsResponse = await fetch(`http://localhost:8000/files/${fileId}/discussions`);
+      const discussionsResponse = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/discussions`);
       if (discussionsResponse.ok) {
         const discussionData = await discussionsResponse.json();
         setDiscussions(discussionData);
@@ -247,7 +247,7 @@ export default function FileDetailPage() {
 
   const handleLikeDiscussion = async (discussionId) => {
     try {
-      const response = await fetch(`http://localhost:8000/discussions/${discussionId}/like`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/discussions/${discussionId}/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -258,7 +258,7 @@ export default function FileDetailPage() {
         throw new Error("Failed to like discussion");
       }
 
-      const discussionsResponse = await fetch(`http://localhost:8000/files/${fileId}/discussions`);
+      const discussionsResponse = await fetch(`${import.meta.env.VITE_API_URL}/files/${fileId}/discussions`);
       if (discussionsResponse.ok) {
         const discussionData = await discussionsResponse.json();
         setDiscussions(discussionData);
@@ -299,7 +299,7 @@ export default function FileDetailPage() {
         {}
         <section className="file-viewer-section">
           <FileViewer
-            fileUrl={file.gridfsId ? `http://localhost:8000/files/${fileId}/download` : file.link}
+            fileUrl={file.gridfsId ? `${import.meta.env.VITE_API_URL}/files/${fileId}/download` : file.link}
             fileType={file.filetype}
             fileName={file.title}
           />

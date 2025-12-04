@@ -15,7 +15,7 @@ export default function Search() {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await fetch("http://localhost:8000/tags");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/tags`);
         if (response.ok) {
           const tags = await response.json();
           setAvailableTags(tags);
@@ -38,7 +38,7 @@ export default function Search() {
         params.append("mediaTypes", mediaTypes.join(","));
       }
 
-      const response = await fetch(`http://localhost:8000/search?${params.toString()}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/search?${params.toString()}`);
       if (!response.ok) {
         throw new Error("Search failed");
       }

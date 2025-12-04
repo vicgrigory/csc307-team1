@@ -9,7 +9,7 @@ export default function MostPopular() {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const response = await fetch("http://localhost:8000/search");
+        const response = await fetch("${import.meta.env.VITE_API_URL}/search");
         if (response.ok) {
           const data = await response.json();
 
@@ -18,7 +18,7 @@ export default function MostPopular() {
             title: file.title,
             type: file.filetype === "pdf" ? "PDF" : file.filetype.toUpperCase(),
             author: file.creator || "Unknown",
-            image: `http://localhost:8000/files/${file._id}/thumbnail`,
+            image: `${import.meta.env.VITE_API_URL}/files/${file._id}/thumbnail`,
             uploadedAt: file.upload,
             tags: file.tags || [],
           }));
