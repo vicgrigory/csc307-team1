@@ -7,7 +7,6 @@ import logo from "../assets/OpenShelf-Logo.png";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
-import { Helmet } from "react-helmet";
 
 export default function Login() {
   const { login } = useAuth();
@@ -31,9 +30,6 @@ export default function Login() {
   }
 
   return (
-    <Helmet>
-    <title>OpenShelf - Login</title>
-    </Helmet>
     <div className="login-container">
       <div className="login-card">
         <img 

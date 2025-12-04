@@ -30,9 +30,6 @@ export default function Layout({ children }) {
 
   return (
   <>
-      <head>
-        <title>OpenShelf</title>
-      </head>
       {/* Top header (logo left, search center, profile right) */}
       <header className="home-header">
 
