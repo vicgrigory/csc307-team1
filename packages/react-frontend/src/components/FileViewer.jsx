@@ -4,7 +4,7 @@ import screenfull from "screenfull";
 import "./FileViewer.css";
 
 // Use local worker file from public folder (no CDN/CORS issues)
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+pdfjs.GlobalWorkerOptions.workerSrc = `${import.meta.env.BASE_URL}pdf.worker.min.js`;
 
 export default function FileViewer({ fileUrl, fileType, fileName }) {
   const [numPages, setNumPages] = useState(null);
