@@ -80,7 +80,7 @@ export default function Help() {
         <section id="contact-support">
           <h2>Contact Support</h2>
           <p>Email: support@openshelf.com</p>
-          <p>Phone: (555) 123-4567</p>
+          <p>Phone: (248) 434-5508</p>
           <p>Typical response time: 1–2 business days</p>
         </section>
 
