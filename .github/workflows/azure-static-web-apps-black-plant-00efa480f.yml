@@ -15,8 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
-       id-token: write
-       contents: read
+        id-token: write
+        contents: read
+    
+    # --- ADDED ENVIRONMENT VARIABLE HERE ---
+    env:
+      # This variable will be available to the Vite build process.
+      # IMPORTANT: Replace the hardcoded string with ${{ secrets.VITE_API_URL }} for best practice.
+      VITE_API_URL: "https://team1project-g9eehgd9fybtere2.westus3-01.azurewebsites.net"
+      
     steps:
       - uses: actions/checkout@v3
         with:
@@ -28,10 +35,10 @@ jobs:
         uses: actions/github-script@v6
         id: idtoken
         with:
-           script: |
-               const coredemo = require('@actions/core')
-               return await coredemo.getIDToken()
-           result-encoding: string
+          script: |
+            const coredemo = require('@actions/core')
+            return await coredemo.getIDToken()
+          result-encoding: string
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1

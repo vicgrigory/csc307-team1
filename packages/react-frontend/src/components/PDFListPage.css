@@ -1,13 +1,13 @@
-/* PDFListPage.css */
 
-/* Changes the size and position of the main header */
+
+
 .pdf-list-page h1 {
     font-size: 6rem;
     font-weight: 800;
     text-align: center;
 }
 
-/* Changes the size and position of the subtext under the header */
+
 .pdf-list-subtitle {
     font-size: 1.5rem;
     text-align: center;
@@ -19,7 +19,7 @@
   margin-bottom: 24px;
 }
 
-/* Black line separating header and content */
+
 .pdf-list-divider {
   width: 80%; 
   margin: 12px auto; 
@@ -27,7 +27,7 @@
 }
 
 
-/* Changes the position of the media cards */
+
 .pdf-card-grid {
     list-style: none;
     padding: 0;
@@ -40,7 +40,14 @@
     justify-items: start;
 }
 
-/* Add tan boxes and adjust size for each card */
+
+.pdf-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+
 .pdf-card-wrapper {
     background-color: #f5deb3;
     padding: 12px;
@@ -50,15 +57,16 @@
     box-sizing: border-box;
     border: 2px solid black;
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Adds hover effect over each of the cards */
+
 .pdf-card-wrapper:hover {
-    transform: scale(1.03); 
-    box-shadow: 0 6px 16px rgba(0,0,0,0.2); 
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }
 
-/* Wrapper around the image */
+
 .pdf-card-image-wrapper {
     padding: 10px;
     background-color: #f5e6d3;
@@ -70,7 +78,7 @@
     border-radius: 6px;        
 }
 
-/* Actual image */
+
 .pdf-card-image {
     width: 100%;
     height: 100%;

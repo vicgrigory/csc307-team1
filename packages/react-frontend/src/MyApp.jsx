@@ -1,5 +1,3 @@
-// MyApp.jsx
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
@@ -20,6 +18,7 @@ import Reviews from "./pages/Reviews";
 import Eula from "./pages/Eula";
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
+import FileDetailPage from "./pages/FileDetailPage";
 
 import NavBar from "./components/NavBar";
 import ScrollToTop from "./components/ScrollToTop";
@@ -146,28 +145,28 @@ function MyApp() {
           }
         />
        <Route
-         path="/profile"
-         element={
-           <ProtectedRoute>
-             <>
-               <NavBar />
-               <Profile />
-             </>
-           </ProtectedRoute>
-         }
-       />
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <>
+                <NavBar />
+                <Profile />
+              </>
+            </ProtectedRoute>
+          }
+        />
 
-       <Route
-         path="/account"
-         element={
-           <ProtectedRoute>
-             <>
-               <NavBar />
-               <AccountManagement />
-             </>
-           </ProtectedRoute>
-         }
-       />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <>
+                <NavBar />
+                <AccountManagement />
+              </>
+            </ProtectedRoute>
+          }
+        />
         
         <Route
           path="/favorites"
@@ -208,6 +207,15 @@ function MyApp() {
             <>
               <NavBar />
               <Eula />
+            </>
+          }
+        />
+        <Route
+          path="/file/:fileId"
+          element={
+            <>
+              <NavBar />
+              <FileDetailPage />
             </>
           }
         />

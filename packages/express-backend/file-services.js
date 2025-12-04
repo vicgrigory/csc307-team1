@@ -1,11 +1,27 @@
 import fileModel from "./file.js";
 import service from "./services.js";
 import userFunctions from "./user-services.js";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from "url";
 
-/*
-Add a file.
-Returns a promise for that file (one JSON).
-*/
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({
+  path: path.join(__dirname, ".env"),
+  override: false,
+});
+if (!process.env.MONGODB_URI) {
+  throw new Error("MONGODB_URI is undefined at runtime!");
+}
+
+mongoose.set("debug", true);
+await mongoose
+  .connect(process.env.MONGODB_URI, {
+  })
+  .catch((error) => console.log(error));
+
+
 async function addFile(
   desiredUsername,
   fileTitle,
@@ -49,10 +65,7 @@ async function addFile(
   }
 }
 
-/*
-Get a file by its ID.
-Returns a promise for that file (one JSON).
-*/
+
 async function getFile(fileId) {
   if (!fileId) {
     throw new Error("FID: invalid!");
@@ -74,10 +87,7 @@ async function getFile(fileId) {
   }
 }
 
-/*
-Edit a file. Tags must be an array.
-Returns a promise for that file (one JSON).
-*/
+
 async function editFile(
   fileId,
   desiredUsername,
@@ -139,10 +149,7 @@ async function editFile(
   }
 }
 
-/*
-Delete a file.
-Returns a promise for that file (one JSON).
-*/
+
 async function removeFile(fileId, desiredUsername) {
   if (!fileId) {
     throw new Error("FID: invalid!");
@@ -174,10 +181,13 @@ async function removeFile(fileId, desiredUsername) {
   }
 }
 
-/*
-Search through files. Tags are custom, but must be in an array.
-Returns a promise of a list of files (array of JSONs).
-*/
+
+function escapeRegex(string) {
+  if (!string) return string;
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+
 function searchFiles(query, type, tag) {
   if (query === undefined) {
     query = null;
@@ -194,6 +204,8 @@ function searchFiles(query, type, tag) {
   if (!!type && !Array.isArray(type)) {
     throw new Error("Type: not an array!");
   }
+
+  const escapedQuery = query ? escapeRegex(query) : null;
   switch (true) {
     case !query && !tag && !type:
       try {
@@ -217,8 +229,8 @@ function searchFiles(query, type, tag) {
       try {
         return fileModel.find({
           $or: [
-            { title: { $regex: query, $options: "i" } },
-            { creator: { $regex: query, $options: "i" } },
+            { title: { $regex: escapedQuery, $options: "i" } },
+            { creator: { $regex: escapedQuery, $options: "i" } },
           ],
         });
       } catch (error) {
@@ -234,8 +246,8 @@ function searchFiles(query, type, tag) {
       try {
         return fileModel.find({
           $or: [
-            { title: { $regex: query, $options: "i" } },
-            { creator: { $regex: query, $options: "i" } },
+            { title: { $regex: escapedQuery, $options: "i" } },
+            { creator: { $regex: escapedQuery, $options: "i" } },
           ],
           filetype: { $in: type },
         });
@@ -246,8 +258,8 @@ function searchFiles(query, type, tag) {
       try {
         return fileModel.find({
           $or: [
-            { title: { $regex: query, $options: "i" } },
-            { creator: { $regex: query, $options: "i" } },
+            { title: { $regex: escapedQuery, $options: "i" } },
+            { creator: { $regex: escapedQuery, $options: "i" } },
           ],
           tags: { $all: tag },
         });
@@ -258,8 +270,8 @@ function searchFiles(query, type, tag) {
       try {
         return fileModel.find({
           $or: [
-            { title: { $regex: query, $options: "i" } },
-            { creator: { $regex: query, $options: "i" } },
+            { title: { $regex: escapedQuery, $options: "i" } },
+            { creator: { $regex: escapedQuery, $options: "i" } },
           ],
           filetype: { $in: type },
           tags: { $all: tag },
@@ -349,17 +361,32 @@ async function removeFavorite(desiredUsername, fileId) {
   }
 }
 
-function findFiles(query, mediaTypes = []) {
+function findFiles(query, mediaTypes = [], tags = []) {
   let type = null;
   if (mediaTypes && mediaTypes.length > 0) {
     const mappedTypes = [];
-    if (mediaTypes.includes("Book")) mappedTypes.push("pdf");
-    if (mediaTypes.includes("Music")) mappedTypes.push("mp3");
+    for (const mediaType of mediaTypes) {
+      if (mediaType === "Book" || mediaType === "PDF") mappedTypes.push("pdf");
+      else if (mediaType === "Music" || mediaType === "MP3") mappedTypes.push("mp3");
+      else mappedTypes.push(mediaType.toLowerCase());
+    }
     if (mappedTypes.length > 0) {
-      type = mappedTypes;
+      type = [...new Set(mappedTypes)];
     }
   }
-  return searchFiles(query, type, null);
+  const tagArray = tags && tags.length > 0 ? tags : null;
+  return searchFiles(query, type, tagArray);
+}
+
+async function getAllTags() {
+  try {
+    const files = await fileModel.find({ tags: { $exists: true, $ne: [] } }, { tags: 1 });
+    const allTags = files.flatMap(file => file.tags);
+    const uniqueTags = [...new Set(allTags)].sort();
+    return uniqueTags;
+  } catch (error) {
+    throw new Error("Mongo: error getting tags!", error);
+  }
 }
 
 export default {
@@ -372,4 +399,5 @@ export default {
   addFavorite,
   removeFavorite,
   findFiles,
+  getAllTags,
 };

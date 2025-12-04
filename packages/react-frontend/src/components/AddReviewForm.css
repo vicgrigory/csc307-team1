@@ -1,0 +1,132 @@
+.add-review-form {
+  background: #f5deb3;
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-review-form h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.4rem;
+  color: #333;
+}
+
+.add-review-form .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.add-review-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.add-review-form input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.add-review-form input[type="text"]:focus {
+  outline: none;
+  border-color: #1a4f7a;
+  box-shadow: 0 0 0 3px rgba(26, 79, 122, 0.1);
+}
+
+.add-review-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 120px;
+  background: #fff;
+}
+
+.add-review-form textarea:focus {
+  outline: none;
+  border-color: #1a4f7a;
+  box-shadow: 0 0 0 3px rgba(26, 79, 122, 0.1);
+}
+
+.add-review-form .char-count {
+  display: block;
+  text-align: right;
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.submit-btn {
+  flex: 1;
+  padding: 0.75rem 2rem;
+  background: #1a4f7a;
+  color: #fff;
+  border: 2px solid #000;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #2a6f9a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.submit-btn:disabled {
+  background: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cancel-btn {
+  padding: 0.75rem 2rem;
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+
+@media (max-width: 768px) {
+  .add-review-form {
+    padding: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .submit-btn,
+  .cancel-btn {
+    width: 100%;
+  }
+}

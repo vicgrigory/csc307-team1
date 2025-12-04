@@ -1,67 +1,68 @@
-import reviewModel from "./review";
-import fileFunctions from "./file-services";
-import userFunctions from "./user-services";
-import service from "./services";
+import reviewModel from "./review.js";
+import fileFunctions from "./file-services.js";
+import userFunctions from "./user-services.js";
+import service from "./services.js";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import path from "path";
+import { fileURLToPath } from "url";
 
-/*
-Adds a review for a user under a media.
-Returns a promise for that review (one JSON).
-** reviewRating is an integer from 0 to 5. See review.js
-*/
-async function addReview(
-  fileId,
-  desiredUsername,
-  reviewTitle,
-  reviewContent,
-  reviewRating,
-) {
-  if (!fileId) {
-    throw new Error("FID: invalid!");
-  }
-  if (!desiredUsername) {
-    throw new Error("Username: invalid!");
-  }
-  if (!reviewTitle) {
-    throw new Error("Title: invalid!");
-  }
-  if (!reviewContent) {
-    throw new Error("Content: invalid!");
-  }
-  if (
-    !Number.isInteger(reviewRating) ||
-    !(0 <= reviewRating && reviewRating <= 5)
-  ) {
-    throw new Error("Rating: invalid!");
-  }
-  const f = await fileFunctions.getFile(fileId);
-  if (!f) {
-    throw new Error("FID: 404!");
-  }
-  const u = await userFunctions.getUser(desiredUsername);
-  if (!u) {
-    throw new Error("Username: 404!");
-  }
-  const dup = await reviewModel.findOne({ mediaID: f._id, userID: u._id });
-  if (dup) {
-    throw new Error("Review: duplicate!");
-  }
-  try {
-    return reviewModel.insertOne({
-      mediaID: f._id,
-      userID: u._id,
-      title: reviewTitle,
-      content: reviewContent,
-      rating: reviewRating,
-    });
-  } catch (error) {
-    throw new Error("Mongo: error!", error);
-  }
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({
+    path: path.join(__dirname, ".env"),
+    override: false,
+});
+if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI is undefined at runtime!");
 }
 
-/*
-Gets reviews for a file.
-Returns a promise for a list of reviews (array of JSONs).
-*/
+mongoose.set("debug", true);
+await mongoose.connect(process.env.MONGODB_URI, {
+        }).catch((error) => console.log(error));
+
+
+async function addReview(fileId, desiredUsername, reviewTitle, reviewContent, reviewRating) {
+    if (!fileId) {
+        throw new Error("FID: invalid!");
+    }
+    if (!desiredUsername) {
+        throw new Error("Username: invalid!");
+    }
+    if (!reviewTitle) {
+        throw new Error("Title: invalid!");
+    }
+    if (!reviewContent) {
+        throw new Error("Content: invalid!");
+    }
+    if (!(Number.isInteger(reviewRating)) || !(0<=reviewRating&&reviewRating<=5)) {
+        throw new Error("Rating: invalid!");
+    }
+    const f = await fileFunctions.getFile(fileId);
+    if (!f) {
+        throw new Error("FID: 404!");
+    }
+    const u = await userFunctions.getUser(desiredUsername);
+    if (!u) {
+        throw new Error("Username: 404!");
+    }
+    const dup = await reviewModel.findOne({mediaID: f._id, userID: u._id});
+    if (dup) {
+        throw new Error("Review: duplicate!");
+    }
+    try {
+        return reviewModel.insertOne({
+            mediaID: f._id,
+            userID: u._id,
+            title: reviewTitle,
+            content: reviewContent,
+            rating: reviewRating
+        });
+    } catch (error) {
+        throw new Error("Mongo: error!", error);
+    }
+}
+
+
 async function getReviewsMedia(fileId) {
   if (!fileId) {
     throw new Error("FID: invalid!");
@@ -77,10 +78,7 @@ async function getReviewsMedia(fileId) {
   }
 }
 
-/*
-Gets reviews made by a user.
-Returns a promise for a list of reviews (array of JSONs).
-*/
+
 async function getReviewsUser(desiredUsername) {
   if (!desiredUsername) {
     throw new Error("Username: invalid!");
@@ -96,66 +94,48 @@ async function getReviewsUser(desiredUsername) {
   }
 }
 
-/*
-Edits an existing review.
-Returns a promise for that review (one JSON).
-*/
-async function editReview(
-  desiredUsername,
-  reviewId,
-  reviewContent,
-  reviewRating,
-) {
-  if (!reviewId) {
-    throw new Error("RID: invalid!");
-  }
-  if (!desiredUsername) {
-    throw new Error("Username: invalid!");
-  }
-  if (
-    reviewRating &&
-    (!Number.isInteger(reviewRating) ||
-      !(0 <= reviewRating && reviewRating <= 5))
-  ) {
-    throw new Error("Rating: invalid!");
-  }
-  let reviewIdObj;
-  try {
-    reviewIdObj = service.makeObjectId(reviewId);
-  } catch (error) {
-    throw new Error("RID: Not a string!");
-  }
-  const r = await reviewModel.findOne({ _id: reviewIdObj });
-  if (!r) {
-    throw new Error("RID: 404!");
-  }
-  const u = await userFunctions.getUser(desiredUsername);
-  if (!u) {
-    throw new Error("Username: 404!");
-  }
-  if (!r.userID.equals(u._id) && u.type != "moderator") {
-    throw new Error("Username: unauthorized!");
-  }
-  if (!reviewContent) {
-    reviewContent = r.content;
-  }
-  if (reviewRating === null || reviewRating === undefined) {
-    reviewRating = r.rating; // Allows 0
-  }
-  try {
-    return reviewModel.updateOne(
-      { _id: r._id },
-      { content: reviewContent, rating: reviewRating },
-    );
-  } catch (error) {
-    throw new Error("Mongo: error!", error);
-  }
+
+async function editReview(desiredUsername, reviewId, reviewContent, reviewRating) {
+    if (!reviewId) {
+        throw new Error("RID: invalid!");
+    }
+    if (!desiredUsername) {
+        throw new Error("Username: invalid!");
+    }
+    if (reviewRating && (!(Number.isInteger(reviewRating)) || !(0<=reviewRating&&reviewRating<=5))) {
+        throw new Error("Rating: invalid!");
+    }
+    let reviewIdObj;
+    try {
+        reviewIdObj = service.makeObjectId(reviewId);
+    } catch(error) {
+        throw new Error("RID: Not a string!");
+    }
+    const r = await reviewModel.findOne({ _id: reviewIdObj });
+    if (!r) {
+        throw new Error("RID: 404!");
+    }
+    const u = await userFunctions.getUser(desiredUsername);
+    if (!u) {
+        throw new Error("Username: 404!");
+    }
+    if (!(r.userID.equals(u._id)) && (u.type != 'moderator')) {
+        throw new Error("Username: unauthorized!");
+    }
+    if (!reviewContent) {
+        reviewContent = r.content;
+    }
+    if (reviewRating === null || reviewRating === undefined) {
+        reviewRating = r.rating;
+    }
+    try {
+        return reviewModel.updateOne({ _id: r._id }, { content: reviewContent, rating: reviewRating });
+    } catch(error) {
+        throw new Error("Mongo: error!", error);
+    }
 }
 
-/*
-Deletes a review.
-Returns a promise for that review (one JSON).
-*/
+
 async function deleteReview(desiredUsername, reviewId) {
   if (!reviewId) {
     throw new Error("RID: invalid!");

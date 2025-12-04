@@ -1,0 +1,108 @@
+.discussion-form {
+  background: #f5deb3;
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.discussion-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  min-height: 80px;
+  background: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.discussion-form textarea:focus {
+  outline: none;
+  border-color: #1a4f7a;
+  box-shadow: 0 0 0 3px rgba(26, 79, 122, 0.1);
+}
+
+.discussion-form textarea:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-count {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.discussion-form .submit-btn {
+  padding: 0.6rem 1.5rem;
+  background: #1a4f7a;
+  color: #fff;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.discussion-form .submit-btn:hover:not(:disabled) {
+  background: #2a6f9a;
+  transform: translateY(-2px);
+}
+
+.discussion-form .submit-btn:disabled {
+  background: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.discussion-form .cancel-btn {
+  padding: 0.6rem 1.5rem;
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.discussion-form .cancel-btn:hover:not(:disabled) {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+.discussion-form .cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+@media (max-width: 768px) {
+  .form-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .form-actions {
+    width: 100%;
+  }
+
+  .discussion-form .submit-btn,
+  .discussion-form .cancel-btn {
+    flex: 1;
+  }
+}

@@ -1,0 +1,65 @@
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.star-rating .stars {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.star {
+  color: #ddd;
+  transition: color 0.2s ease, transform 0.2s ease;
+  user-select: none;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.star.half {
+  background: linear-gradient(90deg, #ffc107 50%, #ddd 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.star.interactive {
+  cursor: pointer;
+}
+
+.star.interactive:hover {
+  transform: scale(1.1);
+}
+
+.star.interactive:focus {
+  outline: 2px solid #1a4f7a;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.star-rating.small .star {
+  font-size: 1rem;
+}
+
+.star-rating.medium .star {
+  font-size: 1.5rem;
+}
+
+.star-rating.large .star {
+  font-size: 2rem;
+}
+
+.star-rating .review-count {
+  font-size: 0.9rem;
+  color: #666;
+  margin-left: 0.25rem;
+}
+
+.star-rating .rating-number {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 600;
+}
