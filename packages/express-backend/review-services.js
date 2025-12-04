@@ -64,34 +64,34 @@ async function addReview(fileId, desiredUsername, reviewTitle, reviewContent, re
 
 
 async function getReviewsMedia(fileId) {
-    if (!fileId) {
-        throw new Error("FID: invalid!");
-    }
-    const f = await fileFunctions.getFile(fileId);
-    if (!f) {
-        throw new Error("FID: 404!");
-    }
-    try {
-        return reviewModel.find({ mediaID: f._id });
-    } catch (error) {
-        throw new Error("Mongo: error!", error);
-    }
+  if (!fileId) {
+    throw new Error("FID: invalid!");
+  }
+  const f = await fileFunctions.getFile(fileId);
+  if (!f) {
+    throw new Error("FID: 404!");
+  }
+  try {
+    return reviewModel.find({ mediaID: f._id });
+  } catch (error) {
+    throw new Error("Mongo: error!", error);
+  }
 }
 
 
 async function getReviewsUser(desiredUsername) {
-    if (!desiredUsername) {
-        throw new Error("Username: invalid!");
-    }
-    const u = await userFunctions.getUser(desiredUsername);
-    if (!u) {
-        throw new Error("Username: 404!");
-    }
-    try {
-        return reviewModel.find({ userID: u._id });
-    } catch(error) {
-        throw new Error("Mongo: error!", error);
-    }
+  if (!desiredUsername) {
+    throw new Error("Username: invalid!");
+  }
+  const u = await userFunctions.getUser(desiredUsername);
+  if (!u) {
+    throw new Error("Username: 404!");
+  }
+  try {
+    return reviewModel.find({ userID: u._id });
+  } catch (error) {
+    throw new Error("Mongo: error!", error);
+  }
 }
 
 
@@ -137,36 +137,40 @@ async function editReview(desiredUsername, reviewId, reviewContent, reviewRating
 
 
 async function deleteReview(desiredUsername, reviewId) {
-    if (!reviewId) {
-        throw new Error("RID: invalid!");
-    }
-    if (!desiredUsername) {
-        throw new Error("Username: invalid!");
-    }
-    let reviewIdObj;
-    try {
-        reviewIdObj = service.makeObjectId(reviewId);
-    } catch(error) {
-        throw new Error("RID: Not a string!");
-    }
-    const r = await reviewModel.findOne({ _id: reviewIdObj });
-    if (!r) {
-        throw new Error("RID: 404!");
-    }
-    const u = await userFunctions.getUser(desiredUsername);
-    if (!u) {
-        throw new Error("Username: 404!");
-    }
-    if (!(r.userID.equals(u._id)) && (u.type != 'moderator')) {
-        throw new Error("Username: unauthorized!");
-    }
-    try {
-        return reviewModel.deleteOne({ _id: r._id });
-    } catch(error) {
-        throw new Error("Mongo: error!", error);
-    }
+  if (!reviewId) {
+    throw new Error("RID: invalid!");
+  }
+  if (!desiredUsername) {
+    throw new Error("Username: invalid!");
+  }
+  let reviewIdObj;
+  try {
+    reviewIdObj = service.makeObjectId(reviewId);
+  } catch (error) {
+    throw new Error("RID: Not a string!");
+  }
+  const r = await reviewModel.findOne({ _id: reviewIdObj });
+  if (!r) {
+    throw new Error("RID: 404!");
+  }
+  const u = await userFunctions.getUser(desiredUsername);
+  if (!u) {
+    throw new Error("Username: 404!");
+  }
+  if (!r.userID.equals(u._id) && u.type != "moderator") {
+    throw new Error("Username: unauthorized!");
+  }
+  try {
+    return reviewModel.deleteOne({ _id: r._id });
+  } catch (error) {
+    throw new Error("Mongo: error!", error);
+  }
 }
 
 export default {
-    addReview, getReviewsMedia, getReviewsUser, editReview, deleteReview
+  addReview,
+  getReviewsMedia,
+  getReviewsUser,
+  editReview,
+  deleteReview,
 };

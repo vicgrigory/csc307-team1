@@ -11,7 +11,7 @@ import discussionServices from "./discussion-services.js";
 import { authenticateUser, registerUser, loginUser } from "./auth.js";
 
 const app = express();
-const port = 8000;
+const PORT = process.env.PORT || 8000;
 
 app.use(cors());
 app.use(express.json());
@@ -65,6 +65,10 @@ app.post("/login", loginUser);
 
 app.post("/signup", registerUser);
 
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
 app.get("/users/:id", authenticateUser, (req, res) => {
   const _id = req.params.id;
   findUserById(_id)
@@ -78,6 +82,22 @@ app.get("/users/:id", authenticateUser, (req, res) => {
     .catch(() => {
       res.status(500).send("Internal Server Error.");
     });
+});
+
+app.get("/me", authenticateUser, async (req, res) => {
+  try {
+    const username = req.user.username; // coming from JWT
+    const user = await userServices.getUser(username);
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    res.send(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 app.delete("/users", authenticateUser, (req, res) => {
@@ -427,6 +447,6 @@ app.post("/discussions/:id/like", authenticateUser, (req, res) => {
     });
 });
 
-app.listen(port, () => {
-  console.log("REST API is listening.");
+app.listen(PORT, () => {
+  console.log(`REST API is listening on ${PORT}.`);
 });

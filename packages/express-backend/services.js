@@ -11,12 +11,4 @@ function makeObjectId(key) {
     }
 };
 
-function makeString(key) {
-    try {
-        return key.toString();
-    } catch(error) {
-        throw new Error("Key: failed to create String!", error);
-    }
-}
-
-export default { makeObjectId, makeString };
+export default { makeObjectId };

@@ -9,14 +9,14 @@
 
 
 .home-hero h1 {
-    font-size: 3.5rem;     
-    font-weight: 1000;
+    font-size: 6rem;     
+    font-weight: 800;
     margin-bottom: 1rem;
 }
 
 
 .home-hero p {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     line-height: 1.65;
     max-width: 850px;
     margin: 0 auto;       

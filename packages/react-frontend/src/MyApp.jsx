@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
@@ -8,10 +7,15 @@ import MostPopular from "./pages/MostPopular";
 import ContinueReading from "./pages/ContinueReading";
 import Recommended from "./pages/Recommended";
 import RecentlyPosted from "./pages/RecentlyPosted";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./auth/ProtectedRoute";
 import Categories from "./pages/Categories";
 import Help from "./pages/Help";
 import UserFavorites from "./pages/UserFavorites";
 import UserUploads from "./pages/UserUploaded";
+import Reviews from "./pages/Reviews";
+
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
 import FileDetailPage from "./pages/FileDetailPage";
@@ -24,6 +28,14 @@ function MyApp() {
     <Router>
       <ScrollToTop />
       <Routes>
+        <Route
+          path="/login"
+          element={<Login />} 
+          />
+          <Route 
+            path="/register" 
+            element={<Register 
+          />} />
         <Route
           path="/"
           element={
@@ -45,19 +57,12 @@ function MyApp() {
         <Route
           path="/post"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <Upload />
             </>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <>
-              <NavBar />
-              <Profile />
-            </>
+            </ProtectedRoute>
           }
         />
         <Route 
@@ -117,36 +122,66 @@ function MyApp() {
         <Route
           path="/search"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <Search />
             </>
+            </ProtectedRoute>
           }
         />
+       <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <>
+                <NavBar />
+                <Profile />
+              </>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/account"
           element={
-            <>
-              <NavBar />
-              <AccountManagement />
-            </>
+            <ProtectedRoute>
+              <>
+                <NavBar />
+                <AccountManagement />
+              </>
+            </ProtectedRoute>
           }
         />
+        
         <Route
           path="/favorites"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <UserFavorites />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/uploads"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <UserUploads />
+            </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reviews"
+          element={
+            <>
+              <NavBar />
+              <Reviews />
             </>
           }
         />

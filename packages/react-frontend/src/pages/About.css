@@ -31,10 +31,20 @@
     padding-left: 2rem; 
 }
 
+/* About page title */
+.about-title {
+    font-size: 4rem;
+}
+
+/* Section titles */
+.sub-section-title {
+    font-size: 2.5rem;
+}
+
 /* Left column: text */
 .about-text {
     flex: 2;
     text-align: left;
-    font-size: 1.1rem;
+    font-size: 1.6rem;
     line-height: 1.6;
 }

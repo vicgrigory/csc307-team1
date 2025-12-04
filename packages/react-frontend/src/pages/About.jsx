@@ -16,7 +16,7 @@ export default function About() {
           {/* About Us text */}
           <div className="about-page-content">
             <section>
-              <h1>About Us</h1>
+              <h1 className="about-title">About Us</h1>
               <p>
                 OpenShelf is a student-driven digital library dedicated to making academic
                 knowledge accessible, organized, and openly shared. Built with the vision
@@ -33,7 +33,7 @@ export default function About() {
             </section>
 
             <section>
-              <h2>Our Mission</h2>
+              <h2 className="sub-section-title">Our Mission</h2>
               <p>
                 We aim to empower students by giving them the tools to organize, share,
                 and access high-quality learning materials. OpenShelf encourages an
@@ -48,7 +48,7 @@ export default function About() {
             </section>
 
             <section>
-              <h2>Our Values</h2>
+              <h2 className="sub-section-title">Our Values</h2>
               <p>
                 OpenShelf follows three core values: Openness, Community, and Integrity.
                 We believe in knowledge without barriers, collaboration without ego, and
@@ -57,7 +57,7 @@ export default function About() {
             </section>
 
             <section>
-              <h2>Who We Serve</h2>
+              <h2 className="sub-section-title">Who We Serve</h2>
               <p>
                 While OpenShelf was created for students, our library welcomes anyone who
                 wants to expand their knowledge. Educators, independent researchers,
@@ -67,7 +67,7 @@ export default function About() {
             </section>
 
             <section>
-              <h2>Contact Us</h2>
+              <h2 className="sub-section-title">Contact Us</h2>
               <p>Email: support@openshelf.com</p>
               <p>Phone Number: (805) 123-4567</p>
             </section>

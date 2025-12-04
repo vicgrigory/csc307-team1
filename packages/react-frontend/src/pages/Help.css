@@ -19,7 +19,7 @@
 /* Subheader */
 .help-page > .page-content > p:first-of-type {
     font-size: 1.5rem;
-    text-align: center;
+    color: #444;
 }
 
 /* Add boxes around sections */
@@ -30,6 +30,7 @@
     padding: 1.5rem 1.75rem;
     margin-bottom: 2rem;
     box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+    text-align: left;
 }
 
 /* Section titles */
@@ -64,6 +65,7 @@
 
 .help-toc ul li {
     margin-bottom: 0.5rem;
+    
 }
 
 .help-toc a {

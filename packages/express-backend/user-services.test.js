@@ -1,11 +1,9 @@
 import userStuff from './user-services.js';
 import users from './user.js';
 import mongoose from "mongoose";
-//import DB from "./connect";
 
 /* Initialization */
 beforeAll(async () => {
-    //await DB.setupDB(false);
     await mongoose.connect("mongodb://localhost:27017/data", {
         //useNewUrlParser: true,
         //useUnifiedTopology: true
@@ -15,7 +13,6 @@ beforeAll(async () => {
     await setupDB();
 })
 afterAll(async () => {
-    //await DB.destroyDB();
     await teardownDB();
 })
 /* Functions */

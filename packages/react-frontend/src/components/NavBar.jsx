@@ -7,10 +7,12 @@ import { useState } from "react";
 
 import logo from "../assets/OpenShelf-Logo.png";
 import profile_pic from "../assets/Profile-Picture.png";
+import { useAuth } from "../auth/AuthProvider";
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
   const [navSearchQuery, setNavSearchQuery] = useState("");
+  const { isLoggedIn, logout } = useAuth();
 
   const handleNavSearch = (e) => {
     e.preventDefault();
@@ -19,6 +21,11 @@ export default function Layout({ children }) {
     } else {
       navigate('/search');
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -43,9 +50,31 @@ export default function Layout({ children }) {
         </form>
 
         {/* Profile picture */}
-        <Link to="/profile">
-          <img src={profile_pic} className="profile-picture" alt="Profile" />
-        </Link>
+        <div className="nav-auth-area" style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+          {isLoggedIn ? (
+            <>
+              {/* Profile picture when logged in */}
+              <Link to="/profile">
+                <img src={profile_pic} className="profile-picture" alt="Profile" />
+              </Link>
+
+              {/* Logout button */}
+              <button className="logout-button" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              {/* Show Login button when logged out */}
+              <button
+                className="login-button"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </button>
+            </>
+          )}
+        </div>
       </header>
 
       {/* Links bar */}

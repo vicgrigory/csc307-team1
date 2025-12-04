@@ -1,4 +1,3 @@
-
 import "./Home.css";
 
 import { useRef, useState, useEffect } from "react";
@@ -12,6 +11,21 @@ function Row({ title, items, viewMoreTo }) {
     const amount = direction === "left" ? -element.clientWidth : element.clientWidth;
     element.scrollBy({ left: amount, behavior: "smooth" });
   };
+
+// Helper function to handle upload dates
+function formatDate(dateString) {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) return dateString;
+
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+}
 
   return (
     <section className="home-section">
@@ -47,6 +61,11 @@ function Row({ title, items, viewMoreTo }) {
                   <p className="home-card-meta">
                     {item.type} • {item.author}
                   </p>
+                  {item.uploadedAt && (
+                   <p className="home-card-meta">
+                     Uploaded {formatDate(item.uploadedAt)}
+                   </p>
+                  )}
                 </div>
               </div>
             </Link>
@@ -121,6 +140,7 @@ export default function Home() {
   const recommendedForYou = [...allFiles].slice(3, 6);
   const todaysTopPicks = [...allFiles].slice(6, 9);
 
+
   return (
     <div className="page-container">
       <main className="home-page-content">
@@ -139,13 +159,12 @@ export default function Home() {
         </section>
 
         {}
-        <Row title="Most Popular" items={mostPopular.slice(0, 10)} viewMoreTo="/popular" />
-        <Row title="Continue Reading" items={continueReading.slice(0, 10)} viewMoreTo="/continue" />
-        <Row title="Recommended for You" items={recommendedForYou.slice(0, 10)} viewMoreTo="/recommended" />
-        <Row title="Today’s Top Picks" items={todaysTopPicks.slice(0, 10)} />
-        <Row title="Recently Uploaded" items={recentlyUploaded.slice(0, 10)} viewMoreTo="/recentposted" />
+        <Row title="Most Popular" items={mostPopular} viewMoreTo="/popular" />
+        <Row title="Continue Reading" items={continueReading} viewMoreTo="/continue" />
+        <Row title="Recommended for You" items={recommendedForYou} viewMoreTo="/recommended" />
+        <Row title="Today’s Top Picks" items={todaysTopPicks} />
+        <Row title="Recently Uploaded" items={recentlyUploaded} viewMoreTo="/recentposted" />
       </main>
     </div>
   );
 }
-
