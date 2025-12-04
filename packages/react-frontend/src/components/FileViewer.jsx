@@ -3,8 +3,8 @@ import { Document, Page, pdfjs } from "react-pdf";
 import screenfull from "screenfull";
 import "./FileViewer.css";
 
-// Use CDN for reliable worker loading across all environments
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
+// Use local worker file from public folder (no CDN/CORS issues)
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 export default function FileViewer({ fileUrl, fileType, fileName }) {
   const [numPages, setNumPages] = useState(null);
