@@ -24,7 +24,7 @@ export default function AuthProvider({ children }) {
   // -------------------------
   async function login(usernameInput, passwordInput) {
     try {
-      const res = await fetch("team1project-g9eehgd9fybtere2.westus3-01.azurewebsites.net/login", {
+      const res = await fetch("https://team1project-g9eehgd9fybtere2.westus3-01.azurewebsites.net/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -56,7 +56,7 @@ export default function AuthProvider({ children }) {
   // -------------------------
   async function register(usernameInput, passwordInput) {
     try {
-      const res = await fetch("https://team1project-g9eehgd9fybtere2.westus3-01.azurewebsites.net//signup", {
+      const res = await fetch("https://team1project-g9eehgd9fybtere2.westus3-01.azurewebsites.net/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
