@@ -3,7 +3,8 @@ Project Documentation
 OpenShelf is a file-sharing website designed for students, educators and other people in the acadamia field to share and discuss copyright free resources. It is able to host both pdf documents and mp3 videos, allowing users to download these resources or view them in-browser.
 
 UI Prototype link:
-https://www.figma.com/design/r9PrJpdZSoNvuIEjlUbSyT/Team-1-project-pages?node-id=41-54&p=f&t=4YSbYMiOG6IxdymB-0
+https://www.figma.com/design/r9PrJpdZSoNvuIEjlUbSyT/Team-1-project-pages?node-id=41-54&p=f&t=4YSbYMiOG6IxdymB-0  
+Last modified: November 12
 
 Development environment setup:
 
