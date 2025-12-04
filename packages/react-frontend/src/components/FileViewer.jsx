@@ -24,8 +24,17 @@ export default function FileViewer({ fileUrl, fileType, fileName }) {
     }
   }, []);
 
+  useEffect(() => {
+    console.log("fileUrl changed:", fileUrl);
+  }, [fileUrl]);
+
   const onDocumentLoadSuccess = ({ numPages }) => {
+    console.log("PDF loaded successfully:", numPages, "pages");
     setNumPages(numPages);
+  };
+
+  const onDocumentLoadError = (error) => {
+    console.error("PDF load error:", error);
   };
 
   const toggleFullscreen = () => {
@@ -92,6 +101,7 @@ export default function FileViewer({ fileUrl, fileType, fileName }) {
               <Document
                 file={fileUrl}
                 onLoadSuccess={onDocumentLoadSuccess}
+                onLoadError={onDocumentLoadError}
                 loading={<div className="loading">Loading PDF...</div>}
                 error={<div className="error">Failed to load PDF. <a href={fileUrl} target="_blank" rel="noopener noreferrer">Open file in new tab</a></div>}
               >
