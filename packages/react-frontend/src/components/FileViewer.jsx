@@ -7,6 +7,8 @@ import "./FileViewer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `${import.meta.env.BASE_URL}pdf.worker.min.js`;
 
 export default function FileViewer({ fileUrl, fileType, fileName }) {
+  console.log("FileViewer props:", { fileUrl, fileType, fileName });
+
   const [numPages, setNumPages] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [scale, setScale] = useState(1.0);
@@ -68,6 +70,7 @@ export default function FileViewer({ fileUrl, fileType, fileName }) {
 
   const renderContent = () => {
     const category = getFileTypeCategory();
+    console.log("File category:", category, "fileType:", fileType, "fileUrl:", fileUrl);
 
     switch (category) {
       case "pdf":
