@@ -8,8 +8,6 @@ import { useState } from "react";
 import logo from "../assets/OpenShelf-Logo.png";
 import profile_pic from "../assets/Profile-Picture.png";
 import { useAuth } from "../auth/AuthProvider";
-import { Helmet } from "react-helmet";
-
 
 export default function Layout({ children }) {
   const navigate = useNavigate();
@@ -32,9 +30,9 @@ export default function Layout({ children }) {
 
   return (
   <>
-      <Helmet>
+      <head>
         <title>OpenShelf</title>
-      </Helmet>
+      </head>
       {/* Top header (logo left, search center, profile right) */}
       <header className="home-header">
 
