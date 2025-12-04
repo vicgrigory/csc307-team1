@@ -17,7 +17,7 @@ import Help from "./pages/Help";
 import UserFavorites from "./pages/UserFavorites";
 import UserUploads from "./pages/UserUploaded";
 import Reviews from "./pages/Reviews";
-
+import Eula from "./pages/Eula";
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
 
@@ -49,10 +49,12 @@ function MyApp() {
         <Route
           path="/about"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <About />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
@@ -69,55 +71,67 @@ function MyApp() {
         <Route 
           path="/popular"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <MostPopular />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/continue"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <ContinueReading />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/recommended"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <Recommended />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/recentposted"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <RecentlyPosted />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/categories"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <Categories />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/help"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <Help />
             </>
+            </ProtectedRoute>
           }
         />
         <Route
@@ -180,9 +194,20 @@ function MyApp() {
         <Route
           path="/reviews"
           element={
+            <ProtectedRoute>
             <>
               <NavBar />
               <Reviews />
+            </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/eula"
+          element={
+            <>
+              <NavBar />
+              <Eula />
             </>
           }
         />

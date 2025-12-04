@@ -88,6 +88,7 @@ export default function Layout({ children }) {
           <Link to="/recentposted" className="links-link">Recently Posted</Link>
           <Link to="/categories" className="links-link">Categories</Link>
           <Link to="/help" className="links-link">Help</Link>
+          <Link to="/eula" className="links-link">Eula</Link>
         </nav>
       </header>
 
