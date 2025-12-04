@@ -2,6 +2,7 @@ import "./Home.css";
 
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthProvider";
 
 function Row({ title, items, viewMoreTo }) {
   const rowRef = useRef(null);
@@ -85,6 +86,7 @@ function formatDate(dateString) {
 }
 
 export default function Home() {
+  const { isLoggedIn } = useAuth();
   const [allFiles, setAllFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -158,9 +160,9 @@ export default function Home() {
 
         {}
         <Row title="Most Popular" items={mostPopular} viewMoreTo="/popular" />
-        <Row title="Continue Reading" items={continueReading} viewMoreTo="/continue" />
+        {isLoggedIn && <Row title="Continue Reading" items={continueReading} viewMoreTo="/continue" />}
         <Row title="Recommended for You" items={recommendedForYou} viewMoreTo="/recommended" />
-        <Row title="Today’s Top Picks" items={todaysTopPicks} />
+        <Row title="Today's Top Picks" items={todaysTopPicks} />
         <Row title="Recently Uploaded" items={recentlyUploaded} viewMoreTo="/recentposted" />
       </main>
     </div>
