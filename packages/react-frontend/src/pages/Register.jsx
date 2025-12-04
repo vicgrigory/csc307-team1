@@ -30,6 +30,9 @@ export default function Register() {
   }
 
   return (
+    <head>
+      <title>OpenShelf - Signup</title>
+    </head>
     <div className="login-container">
       <div className="login-card">
         <img
