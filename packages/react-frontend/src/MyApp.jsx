@@ -214,8 +214,10 @@ function MyApp() {
           path="/file/:fileId"
           element={
             <>
+              <ProtectedRoute>
               <NavBar />
               <FileDetailPage />
+              </ProtectedRoute>
             </>
           }
         />
