@@ -30,6 +30,9 @@ export default function Login() {
   }
 
   return (
+    <head>
+    <title>OpenShelf - Login</title>
+    </head>
     <div className="login-container">
       <div className="login-card">
         <img 
