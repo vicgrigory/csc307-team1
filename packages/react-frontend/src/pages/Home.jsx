@@ -117,8 +117,6 @@ export default function Home() {
     fetchFiles();
   }, []);
 
-  console.log("Current allFiles state:", allFiles.length);
-
   if (loading) {
     return (
       <div className="page-container">
