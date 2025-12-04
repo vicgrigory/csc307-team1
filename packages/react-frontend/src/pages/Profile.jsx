@@ -190,7 +190,7 @@ export default function Profile() {
         {/* RIGHT: info card next to the name */}
         <aside className="profile-info-card">
           <h3>Profile Overview</h3>
-          <p><strong>Member since:</strong> Jan 2025</p>
+          <p><strong>Member since:</strong> Just now</p>
           <p><strong>Account Type:</strong> {accountType}</p>
           <p><strong>Uploaded media:</strong> {uploaded.length}</p>
           <p><strong>Favorites:</strong> {favoriteMedia.length}</p>
