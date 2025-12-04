@@ -7,6 +7,7 @@ import logo from "../assets/OpenShelf-Logo.png";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
+import { Helmet } from "react-helmet";
 
 export default function Register() {
   const { register } = useAuth();
@@ -30,9 +31,9 @@ export default function Register() {
   }
 
   return (
-    <head>
+    <Helmet>
       <title>OpenShelf - Signup</title>
-    </head>
+    </Helmet>
     <div className="login-container">
       <div className="login-card">
         <img
