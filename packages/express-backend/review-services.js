@@ -1,14 +1,16 @@
-import reviewModel from "./review";
-import fileFunctions from "./file-services";
-import userFunctions from "./user-services";
-import service from "./services";
+import reviewModel from "./review.js";
+import fileFunctions from "./file-services.js";
+import userFunctions from "./user-services.js";
+import service from "./services.js";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({
     path: path.join(__dirname, ".env"),
     override: false,
-    // quiet: true // Silences dot.env logs.
 });
 if (!process.env.MONGODB_URI) {
     throw new Error("MONGODB_URI is undefined at runtime!");
@@ -16,15 +18,9 @@ if (!process.env.MONGODB_URI) {
 
 mongoose.set("debug", true);
 await mongoose.connect(process.env.MONGODB_URI, {
-            //useNewUrlParser: true,
-            //useUnifiedTopology: true
         }).catch((error) => console.log(error));
 
-/*
-Adds a review for a user under a media.
-Returns a promise for that review (one JSON).
-** reviewRating is an integer from 0 to 5. See review.js
-*/
+
 async function addReview(fileId, desiredUsername, reviewTitle, reviewContent, reviewRating) {
     if (!fileId) {
         throw new Error("FID: invalid!");
@@ -66,10 +62,7 @@ async function addReview(fileId, desiredUsername, reviewTitle, reviewContent, re
     }
 }
 
-/*
-Gets reviews for a file.
-Returns a promise for a list of reviews (array of JSONs).
-*/
+
 async function getReviewsMedia(fileId) {
     if (!fileId) {
         throw new Error("FID: invalid!");
@@ -85,10 +78,7 @@ async function getReviewsMedia(fileId) {
     }
 }
 
-/*
-Gets reviews made by a user.
-Returns a promise for a list of reviews (array of JSONs).
-*/
+
 async function getReviewsUser(desiredUsername) {
     if (!desiredUsername) {
         throw new Error("Username: invalid!");
@@ -104,10 +94,7 @@ async function getReviewsUser(desiredUsername) {
     }
 }
 
-/*
-Edits an existing review.
-Returns a promise for that review (one JSON).
-*/
+
 async function editReview(desiredUsername, reviewId, reviewContent, reviewRating) {
     if (!reviewId) {
         throw new Error("RID: invalid!");
@@ -139,7 +126,7 @@ async function editReview(desiredUsername, reviewId, reviewContent, reviewRating
         reviewContent = r.content;
     }
     if (reviewRating === null || reviewRating === undefined) {
-        reviewRating = r.rating; // Allows 0
+        reviewRating = r.rating;
     }
     try {
         return reviewModel.updateOne({ _id: r._id }, { content: reviewContent, rating: reviewRating });
@@ -148,10 +135,7 @@ async function editReview(desiredUsername, reviewId, reviewContent, reviewRating
     }
 }
 
-/*
-Deletes a review.
-Returns a promise for that review (one JSON).
-*/
+
 async function deleteReview(desiredUsername, reviewId) {
     if (!reviewId) {
         throw new Error("RID: invalid!");

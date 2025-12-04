@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const FileSchema = new mongoose.Schema(
-    { // _id is primary key
+    {
     title: {
         type: String,
         required: [true, "File requires a title."]
@@ -9,6 +9,10 @@ const FileSchema = new mongoose.Schema(
     link: {
         type: String,
         required: [true, "No link to file specified."]
+    },
+    gridfsId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'fs.files'
     },
     filetype: {
         type: String,
@@ -26,7 +30,7 @@ const FileSchema = new mongoose.Schema(
         required: [true, "A valid user ID was not given."],
         immutable: true
     },
-    upload: { // Do not specify
+    upload: {
         type: Date,
         default: Date.now(),
         immutable: true

@@ -1,4 +1,3 @@
-// MyApp.jsx
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
@@ -13,9 +12,9 @@ import Categories from "./pages/Categories";
 import Help from "./pages/Help";
 import UserFavorites from "./pages/UserFavorites";
 import UserUploads from "./pages/UserUploaded";
-
 import Search from "./pages/Search";
 import AccountManagement from "./pages/AccountManagement";
+import FileDetailPage from "./pages/FileDetailPage";
 
 import NavBar from "./components/NavBar";
 import ScrollToTop from "./components/ScrollToTop";
@@ -148,6 +147,15 @@ function MyApp() {
             <>
               <NavBar />
               <UserUploads />
+            </>
+          }
+        />
+        <Route
+          path="/file/:fileId"
+          element={
+            <>
+              <NavBar />
+              <FileDetailPage />
             </>
           }
         />

@@ -1,0 +1,295 @@
+.file-detail-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1a4f7a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-state h2 {
+  color: #d32f2f;
+  margin-bottom: 1rem;
+}
+
+.error-state p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.back-btn {
+  padding: 0.75rem 2rem;
+  background: #1a4f7a;
+  color: #fff;
+  border: 2px solid #000;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: #2a6f9a;
+  transform: translateY(-2px);
+}
+
+
+.file-viewer-section {
+  margin-bottom: 2rem;
+}
+
+.file-metadata {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: #f5deb3;
+  border: 2px solid #000;
+  border-radius: 8px;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: #333;
+}
+
+.file-meta-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.file-type {
+  padding: 0.25rem 0.75rem;
+  background: #1a4f7a;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.meta-separator {
+  color: #999;
+}
+
+.file-creator,
+.file-date {
+  font-weight: 500;
+}
+
+.file-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.tag {
+  padding: 0.4rem 0.8rem;
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.file-rating-summary {
+  flex-shrink: 0;
+}
+
+
+.tabs-section {
+  background: #fff;
+  border: 2px solid #000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tab-navigation {
+  display: flex;
+  border-bottom: 2px solid #000;
+  background: #f5deb3;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-right: 2px solid #000;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #666;
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.tab-btn.active {
+  background: #fff;
+  color: #1a4f7a;
+  position: relative;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #1a4f7a;
+}
+
+.tab-content {
+  padding: 2rem;
+  min-height: 400px;
+}
+
+
+.reviews-tab {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.add-review-btn {
+  width: 100%;
+  padding: 1rem;
+  background: #1a4f7a;
+  color: #fff;
+  border: 2px solid #000;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 2rem;
+}
+
+.add-review-btn:hover {
+  background: #2a6f9a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.reviews-list {
+  margin-top: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #999;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+}
+
+
+.discussions-tab {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+
+@media (max-width: 1024px) {
+  .file-detail-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .file-metadata {
+    flex-direction: column;
+  }
+
+  .file-rating-summary {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .file-detail-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .file-metadata {
+    padding: 1rem;
+  }
+
+  .file-title {
+    font-size: 1.5rem;
+  }
+
+  .tab-navigation {
+    flex-direction: column;
+  }
+
+  .tab-btn {
+    border-right: none;
+    border-bottom: 2px solid #000;
+  }
+
+  .tab-btn:last-child {
+    border-bottom: none;
+  }
+
+  .tab-content {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .file-title {
+    font-size: 1.25rem;
+  }
+
+  .tab-btn {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+}

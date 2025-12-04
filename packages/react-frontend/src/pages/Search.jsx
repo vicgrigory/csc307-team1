@@ -1,25 +1,42 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const [selectedSubjects, setSelectedSubjects] = useState([]);
-  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   const [selectedMediaTypes, setSelectedMediaTypes] = useState([]);
 
-  // Unified search function with backend integration
-  const fetchSearchResults = async (query, mediaTypes) => {
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/tags");
+        if (response.ok) {
+          const tags = await response.json();
+          setAvailableTags(tags);
+        }
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+    fetchTags();
+  }, []);
+
+  const fetchSearchResults = async (query, tags, mediaTypes) => {
     try {
       const params = new URLSearchParams();
       if (query) params.append("q", query);
+      if (tags && tags.length > 0) {
+        params.append("tags", tags.join(","));
+      }
       if (mediaTypes && mediaTypes.length > 0) {
         params.append("mediaTypes", mediaTypes.join(","));
       }
-      // note: subject and genre filters are stored in state but the backend file schema does not currently support them. 
 
       const response = await fetch(`http://localhost:8000/search?${params.toString()}`);
       if (!response.ok) {
@@ -27,16 +44,14 @@ export default function Search() {
       }
       const data = await response.json();
 
-      // Map backend data to frontend display format
       const formattedResults = data.map((item) => ({
         id: item._id,
         title: item.title,
         author: item.creator || "Unknown",
-        type: item.filetype === "pdf" ? "Book" : item.filetype === "mp3" ? "Music" : item.filetype,
+        type: item.filetype === "pdf" ? "PDF" : item.filetype === "mp3" ? "MP3" : item.filetype.toUpperCase(),
         year: item.creationDate ? new Date(item.creationDate).getFullYear() : "N/A",
         description: item.description || "No description available.",
-        subject: "General", // Placeholder until Schema update
-        genre: "General"    // Placeholder until Schema update
+        tags: item.tags || []
       }));
 
       setSearchResults(formattedResults);
@@ -51,32 +66,36 @@ export default function Search() {
     const queryParam = searchParams.get('q');
     if (queryParam) {
       setSearchQuery(queryParam);
-      fetchSearchResults(queryParam, []); //note, the empty array is just an assumption that url searches won't have any extra filters
+      fetchSearchResults(queryParam, [], []);
     }
   }, [searchParams]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setSearchParams({ q: searchQuery }); 
-    fetchSearchResults(searchQuery, selectedMediaTypes);
+    setSearchParams({ q: searchQuery });
+    fetchSearchResults(searchQuery, selectedTags, selectedMediaTypes);
   };
 
-  const handleClear = () => {
-    setSearchQuery("");
-    setSearchResults([]);
-    setHasSearched(false);
-    setSelectedSubjects([]);
-    setSelectedGenres([]);
+  const handleClearFilters = () => {
+    setSelectedTags([]);
     setSelectedMediaTypes([]);
-    setSearchParams({});
+    if (searchQuery) {
+      fetchSearchResults(searchQuery, [], []);
+    }
   };
 
   const toggleFilter = (filterArray, setFilterArray, value) => {
+    let newFilterArray;
     if (filterArray.includes(value)) {
-      setFilterArray(filterArray.filter(item => item !== value));
+      newFilterArray = filterArray.filter(item => item !== value);
     } else {
-      setFilterArray([...filterArray, value]);
+      newFilterArray = [...filterArray, value];
     }
+    setFilterArray(newFilterArray);
+
+    const updatedTags = setFilterArray === setSelectedTags ? newFilterArray : selectedTags;
+    const updatedMediaTypes = setFilterArray === setSelectedMediaTypes ? newFilterArray : selectedMediaTypes;
+    fetchSearchResults(searchQuery, updatedTags, updatedMediaTypes);
   };
 
   const styles = {
@@ -269,58 +288,34 @@ export default function Search() {
     noResultsText: {
       fontSize: "1.1rem",
       color: "#718096"
+    },
+    resultTags: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "0.5rem",
+      marginBottom: "0.75rem"
+    },
+    resultTag: {
+      padding: "0.25rem 0.75rem",
+      borderRadius: "12px",
+      fontSize: "0.8rem",
+      backgroundColor: "#e6f7ff",
+      color: "#0066cc",
+      border: "1px solid #b3d9ff"
     }
   };
 
   return (
     <div className="page-container">
       <div style={styles.pageLayout}>
-        {/* Filters Sidebar */}
+        {}
         <aside style={styles.sidebar}>
           <div style={styles.filterSection}>
             <div style={styles.filterTitle}>
-              Subject <span>^</span>
+              Media Type
             </div>
             <div style={styles.checkboxList}>
-              {["Art", "Biology", "Business", "Chemistry", "Computer Science", "Economics", "Engineering", "English", "Finance", "Geography", "History", "Mathematics", "Music", "Physics", "Political Science", "Psychology"].map(subject => (
-                <label key={subject} style={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={selectedSubjects.includes(subject)}
-                    onChange={() => toggleFilter(selectedSubjects, setSelectedSubjects, subject)}
-                    style={styles.checkbox}
-                  />
-                  {subject}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div style={styles.filterSection}>
-            <div style={styles.filterTitle}>
-              Genre <span>v</span>
-            </div>
-            <div style={styles.checkboxList}>
-              {["Romance", "Rock", "Sci-Fi", "Historical", "Classical", "Horror", "Educational", "Drama", "Comedy", "Documentary"].map(genre => (
-                <label key={genre} style={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={selectedGenres.includes(genre)}
-                    onChange={() => toggleFilter(selectedGenres, setSelectedGenres, genre)}
-                    style={styles.checkbox}
-                  />
-                  {genre}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div style={styles.filterSection}>
-            <div style={styles.filterTitle}>
-              Media Type <span>^</span>
-            </div>
-            <div style={styles.checkboxList}>
-              {["Book", "Music", "Film"].map(type => (
+              {["PDF", "MP3"].map(type => (
                 <label key={type} style={styles.checkboxLabel}>
                   <input
                     type="checkbox"
@@ -333,9 +328,32 @@ export default function Search() {
               ))}
             </div>
           </div>
+
+          <div style={styles.filterSection}>
+            <div style={styles.filterTitle}>
+              Filter by Tags
+            </div>
+            <div style={styles.checkboxList}>
+              {availableTags.length === 0 ? (
+                <p style={{ color: "#718096", fontSize: "0.9rem" }}>Loading tags...</p>
+              ) : (
+                availableTags.map(tag => (
+                  <label key={tag} style={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={selectedTags.includes(tag)}
+                      onChange={() => toggleFilter(selectedTags, setSelectedTags, tag)}
+                      style={styles.checkbox}
+                    />
+                    {tag}
+                  </label>
+                ))
+              )}
+            </div>
+          </div>
         </aside>
 
-        {/* Main Content */}
+        {}
         <main style={styles.mainContent}>
           <div style={styles.header}>
             <h1 style={styles.title}>Search Library</h1>
@@ -344,7 +362,7 @@ export default function Search() {
             </p>
           </div>
 
-          {/* Search Section */}
+          {}
           <div style={styles.searchSection}>
             <form onSubmit={handleSearch}>
               <div style={styles.searchWrapper}>
@@ -368,7 +386,7 @@ export default function Search() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleClear}
+                  onClick={handleClearFilters}
                   style={styles.clearButton}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#cbd5e0"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#e2e8f0"}
@@ -379,7 +397,7 @@ export default function Search() {
             </form>
           </div>
 
-          {/* Search Results */}
+          {}
           {hasSearched && (
             <div>
               <h2 style={styles.resultsHeader}>
@@ -394,6 +412,7 @@ export default function Search() {
                     <div
                       key={result.id}
                       style={styles.resultCard}
+                      onClick={() => navigate(`/file/${result.id}`)}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
                         e.currentTarget.style.borderColor = "#cbd5e0";
@@ -413,10 +432,21 @@ export default function Search() {
 
                       <p style={styles.resultDescription}>{result.description}</p>
 
+                      {result.tags && result.tags.length > 0 && (
+                        <div style={styles.resultTags}>
+                          {result.tags.map((tag, index) => (
+                            <span key={index} style={styles.resultTag}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                       <div style={styles.resultFooter}>
                         <span style={styles.resultYear}>Published: {result.year}</span>
                         <button
                           style={styles.viewButton}
+                          onClick={() => navigate(`/file/${result.id}`)}
                           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#3182ce"}
                           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#4299e1"}
                         >

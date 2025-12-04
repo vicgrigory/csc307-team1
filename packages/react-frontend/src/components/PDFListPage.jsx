@@ -1,8 +1,7 @@
-// PDFListPage.jsx
 
+import { Link } from "react-router-dom";
 import "./PDFListPage.css";
 
-// Helper function to handle upload dates
 function formatDate(dateString) {
     if (!dateString) return "";
 
@@ -33,37 +32,39 @@ export default function PDFListPage({ pageTitle, pageSubtitle, items }) {
                     <ul className="pdf-card-grid">
                         {items.map((item) => (
                             <li key={item.id} className="pdf-card-wrapper">
-                                <div className="pdf-card-image-wrapper">
-                                    <img
-                                        src={item.image}
-                                        alt={item.title}
-                                        className="pdf-card-image"
-                                    />
-                                </div>
+                                <Link to={`/file/${item.id}`} className="pdf-card-link">
+                                    <div className="pdf-card-image-wrapper">
+                                        <img
+                                            src={item.image}
+                                            alt={item.title}
+                                            className="pdf-card-image"
+                                        />
+                                    </div>
 
-                                <div className="pdf-card-body">
-                                    <h2 className="pdf-card-title">{item.title}</h2>
-                                    <p className="pdf-card-metadata">
-                                        <span className="pdf-card-type">{item.type}</span>
-                                        {" • "}
-                                        <span className="pdf-card-author">{item.author}</span>
-                                    </p>
-
-                                    {(typeof item.views === "number" || item.uploadedAt) && (
-                                        <p className="pdf-card-extra">
-                                            {typeof item.views === "number" && (
-                                                <span>{item.views} views</span>
-                                            )}
-
-                                            {item.uploadedAt && (
-                                                <span>
-                                                    {typeof item.views === "number" && " • "}
-                                                    Uploaded {formatDate(item.uploadedAt)}
-                                                </span>
-                                            )}
+                                    <div className="pdf-card-body">
+                                        <h2 className="pdf-card-title">{item.title}</h2>
+                                        <p className="pdf-card-metadata">
+                                            <span className="pdf-card-type">{item.type}</span>
+                                            {" • "}
+                                            <span className="pdf-card-author">{item.author}</span>
                                         </p>
-                                    )}
-                                </div>
+
+                                        {(typeof item.views === "number" || item.uploadedAt) && (
+                                            <p className="pdf-card-extra">
+                                                {typeof item.views === "number" && (
+                                                    <span>{item.views} views</span>
+                                                )}
+
+                                                {item.uploadedAt && (
+                                                    <span>
+                                                        {typeof item.views === "number" && " • "}
+                                                        Uploaded {formatDate(item.uploadedAt)}
+                                                    </span>
+                                                )}
+                                            </p>
+                                        )}
+                                    </div>
+                                </Link>
                             </li>
                         ))}
                     </ul>

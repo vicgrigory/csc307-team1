@@ -1,11 +1,9 @@
-// Home.jsx
 
 import "./Home.css";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-// Helper Function for creating the rows of content
 function Row({ title, items, viewMoreTo }) {
   const rowRef = useRef(null);
   const scroll = (direction) => {
@@ -37,19 +35,21 @@ function Row({ title, items, viewMoreTo }) {
 
         <div className="home-row" ref={rowRef}>
           {items.map((item) => (
-            <div className="home-card" key={item.id}>
-              <img
-                src={item.image}
-                alt={item.title}
-                className="home-card-thumb"
-              />
-              <div className="home-card-text">
-                <p className="home-card-title">{item.title}</p>
-                <p className="home-card-meta">
-                  {item.type} • {item.author}
-                </p>
+            <Link to={`/file/${item.id}`} key={item.id} className="home-card-link">
+              <div className="home-card">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="home-card-thumb"
+                />
+                <div className="home-card-text">
+                  <p className="home-card-title">{item.title}</p>
+                  <p className="home-card-meta">
+                    {item.type} • {item.author}
+                  </p>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -66,55 +66,65 @@ function Row({ title, items, viewMoreTo }) {
 }
 
 export default function Home() {
-  // Dummy data (replace with actual content later)
-  const mostPopular = [
-    { id: 1, title: "Introduction to Algorithms", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=Algorithms", views: 1542, uploadedAt: "2025-01-05T10:00:00Z" },
-    { id: 2, title: "Linear Algebra Made Easy", type: "Notes", author: "Steven Arata", image: "https://via.placeholder.com/200x280?text=Linear+Algebra", views: 1320, uploadedAt: "2025-01-08T14:30:00Z" },
-    { id: 3, title: "Operating Systems Overview", type: "Slides", author: "Zach Peterson", image: "https://via.placeholder.com/200x280?text=OS+Overview", views: 1104, uploadedAt: "2025-01-10T08:45:00Z" },
-    { id: 4, title: "Discrete Mathematics Essentials", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=Discrete+Math", views: 975, uploadedAt: "2025-01-12T11:15:00Z" },
-    { id: 5, title: "Data Structures in C++", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=C++", views: 860, uploadedAt: "2025-01-14T09:20:00Z" },
-    { id: 6, title: "Machine Learning Basics", type: "PDF", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=ML+Basics", views: 845, uploadedAt: "2025-01-15T13:00:00Z" },
-    { id: 7, title: "Deep Learning Notes", type: "Notes", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Deep+Learning", views: 780, uploadedAt: "2025-01-17T11:30:00Z" },
-    { id: 9, title: "Neural Networks Explained", type: "Video", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Neural+Nets", views: 990, uploadedAt: "2025-01-18T08:00:00Z" },
-    { id: 10, title: "Probability for CS", type: "Textbook", author: "Bret Holladay", image: "https://via.placeholder.com/200x280?text=Probability", views: 720, uploadedAt: "2025-01-19T14:45:00Z" },
-  ];
+  const [allFiles, setAllFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const continueReading = [
-    { id: 6, title: "Machine Learning Basics", type: "PDF", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=ML+Basics" },
-    { id: 7, title: "Deep Learning Notes", type: "Notes", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Deep+Learning" },
-    { id: 8, title: "Research Methods Primer", type: "Paper", author: "Jean Davidson", image: "https://via.placeholder.com/200x280?text=Research+Methods" },
-  ];
+  useEffect(() => {
+    const fetchFiles = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/search");
+        if (response.ok) {
+          const files = await response.json();
 
-  const recommendedForYou = [
-    { id: 9, title: "Neural Networks Explained", type: "Video", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Neural+Nets" },
-    { id: 10, title: "Probability for CS", type: "Textbook", author: "Bret Holladay", image: "https://via.placeholder.com/200x280?text=Probability" },
-    { id: 11, title: "Database Systems Summary", type: "Notes", author: "Andrew Migler", image: "https://via.placeholder.com/200x280?text=Databases" },
-  ];
+          const transformedFiles = files.map((file) => ({
+            id: file._id,
+            title: file.title,
+            type: file.filetype === "pdf" ? "PDF" : file.filetype.toUpperCase(),
+            author: file.creator || "Unknown",
+            image: `http://localhost:8000/files/${file._id}/thumbnail`,
+            uploadedAt: file.upload,
+            tags: file.tags || [],
+          }));
 
-  const todaysTopPicks = [
-    { id: 12, title: "Intro to HCI", type: "Lecture Notes", author: "Ayaan Kazerouni", image: "https://via.placeholder.com/200x280?text=HCI" },
-    { id: 13, title: "Ethics in AI", type: "Article", author: "Jane Lehr", image: "https://via.placeholder.com/200x280?text=AI+Ethics" },
-    { id: 14, title: "Distributed Systems 101", type: "Slides", author: "Dev Sisodia", image: "https://via.placeholder.com/200x280?text=Distributed+Systems" },
-  ];
+          setAllFiles(transformedFiles);
+        }
+      } catch (error) {
+        console.error("Error fetching files:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const recentlyUploaded = [
-    { id: 10, title: "Probability for CS", type: "Textbook", author: "Bret Holladay", image: "https://via.placeholder.com/200x280?text=Probability", views: 720, uploadedAt: "2025-01-19T14:45:00Z" },
-    { id: 9, title: "Neural Networks Explained", type: "Video", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Neural+Nets", views: 990, uploadedAt: "2025-01-18T08:00:00Z" },
-    { id: 7, title: "Deep Learning Notes", type: "Notes", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=Deep+Learning", views: 780, uploadedAt: "2025-01-17T11:30:00Z" },
-    { id: 6, title: "Machine Learning Basics", type: "PDF", author: "Paul Anderson", image: "https://via.placeholder.com/200x280?text=ML+Basics", views: 845, uploadedAt: "2025-01-15T13:00:00Z" },
-    { id: 5, title: "Data Structures in C++", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=C++", views: 860, uploadedAt: "2025-01-14T09:20:00Z" },
-    { id: 4, title: "Discrete Mathematics Essentials", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=Discrete+Math", views: 975, uploadedAt: "2025-01-12T11:15:00Z" },
-    { id: 3, title: "Operating Systems Overview", type: "Slides", author: "Zach Peterson", image: "https://via.placeholder.com/200x280?text=OS+Overview", views: 1104, uploadedAt: "2025-01-10T08:45:00Z" },
-    { id: 2, title: "Linear Algebra Made Easy", type: "Notes", author: "Steven Arata", image: "https://via.placeholder.com/200x280?text=Linear+Algebra", views: 1320, uploadedAt: "2025-01-08T14:30:00Z" },
-    { id: 1, title: "Introduction to Algorithms", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=Algorithms", views: 1542, uploadedAt: "2025-01-05T10:00:00Z" },
-    { id: 22, title: "Last thing", type: "Notes", author: "Steven Arata", image: "https://via.placeholder.com/200x280?text=Linear+Algebra", views: 1320, uploadedAt: "2025-01-08T14:30:00Z" },
-    { id: 22, title: "shouldnt show up", type: "Textbook", author: "Christopher Siu", image: "https://via.placeholder.com/200x280?text=Algorithms", views: 1542, uploadedAt: "2025-01-05T10:00:00Z" },
-  ];
+    fetchFiles();
+  }, []);
+
+  console.log("Current allFiles state:", allFiles.length);
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <main className="home-page-content">
+          <div style={{ textAlign: "center", padding: "50px" }}>
+            Loading textbooks...
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const recentlyUploaded = [...allFiles]
+    .sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt))
+    .slice(0, 10);
+
+  const mostPopular = [...allFiles].slice(0, 10);
+  const continueReading = [...allFiles].slice(0, 3);
+  const recommendedForYou = [...allFiles].slice(3, 6);
+  const todaysTopPicks = [...allFiles].slice(6, 9);
 
   return (
     <div className="page-container">
       <main className="home-page-content">
-        {/* Welcome message */}
+        {}
         <section className="home-hero">
           <h1>Welcome to OpenShelf!</h1>
           <p>
@@ -128,7 +138,7 @@ export default function Home() {
           </p>
         </section>
 
-        {/* Sections */}
+        {}
         <Row title="Most Popular" items={mostPopular.slice(0, 10)} viewMoreTo="/popular" />
         <Row title="Continue Reading" items={continueReading.slice(0, 10)} viewMoreTo="/continue" />
         <Row title="Recommended for You" items={recommendedForYou.slice(0, 10)} viewMoreTo="/recommended" />
