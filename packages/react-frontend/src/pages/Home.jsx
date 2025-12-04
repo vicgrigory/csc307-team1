@@ -91,7 +91,7 @@ export default function Home() {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        const response = await fetch('${import.meta.env.VITE_API_URL}/search');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/search`);
         if (response.ok) {
           const files = await response.json();
 
