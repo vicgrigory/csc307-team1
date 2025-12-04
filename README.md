@@ -20,6 +20,12 @@ Before beginning make sure you have installed on your machine:
 5. Lastly confirm that ports 5173 and 8000 are free on your system or choose alternative ports that you prefer. One will be used for the frontend and one for the backend.  
  
 
+UML Diagram (last updated October 28th):
+<img width="841" height="655" alt="UML" src="https://github.com/user-attachments/assets/8c1fc4a2-9e79-4685-84c5-bef4d5c4e98c" />
+
+
+
+
 Continuous integration/cloud location:
 https://black-plant-00efa480f.3.azurestaticapps.net
 
